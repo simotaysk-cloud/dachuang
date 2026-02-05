@@ -12,6 +12,24 @@ Page({
     canIUseGetUserProfile: wx.canIUse('getUserProfile'),
     canIUseNicknameComp: wx.canIUse('input.type.nickname'),
   },
+  onLoad() {
+    // 测试 Spring Boot 后端衔接
+    wx.request({
+      url: 'http://localhost:8080/api/hello',
+      method: 'GET',
+      success: (res) => {
+        console.log('Successfully connected to Spring Boot:', res.data);
+        if (res.data && res.data.message) {
+          this.setData({
+            motto: res.data.message
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('Failed to connect to Spring Boot. Make sure the server is running on http://localhost:8080', err);
+      }
+    });
+  },
   bindViewTap() {
     wx.navigateTo({
       url: '../logs/logs'
