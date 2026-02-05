@@ -15,7 +15,7 @@ Page({
   onLoad() {
     // 测试 Spring Boot 后端衔接
     wx.request({
-      url: 'http://localhost:8080/api/hello',
+      url: 'http://localhost:8081/api/hello',
       method: 'GET',
       success: (res) => {
         console.log('Successfully connected to Spring Boot:', res.data);
@@ -26,7 +26,7 @@ Page({
         }
       },
       fail: (err) => {
-        console.error('Failed to connect to Spring Boot. Make sure the server is running on http://localhost:8080', err);
+        console.error('Failed to connect to Spring Boot. Make sure the server is running on http://localhost:8081', err);
       }
     });
   },
