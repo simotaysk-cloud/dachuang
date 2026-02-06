@@ -2,10 +2,13 @@ package com.example.dachuang.auth.controller;
 
 import com.example.dachuang.auth.dto.AuthRequest;
 import com.example.dachuang.auth.dto.AuthResponse;
+import com.example.dachuang.auth.dto.UserProfileResponse;
 import com.example.dachuang.auth.service.WxAuthService;
 import com.example.dachuang.common.api.Result;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,5 +25,11 @@ public class AuthController {
     public Result<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
         AuthResponse response = wxAuthService.login(request.getCode());
         return Result.success(response);
+    }
+
+    @GetMapping("/me")
+    public Result<UserProfileResponse> me(HttpServletRequest request) {
+        String openid = (String) request.getAttribute("openid");
+        return Result.success(wxAuthService.getProfile(openid));
     }
 }

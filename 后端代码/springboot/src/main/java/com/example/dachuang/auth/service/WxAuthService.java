@@ -1,8 +1,11 @@
 package com.example.dachuang.auth.service;
 
 import com.example.dachuang.auth.dto.AuthResponse;
+import com.example.dachuang.auth.dto.UserProfileResponse;
 import com.example.dachuang.auth.entity.User;
 import com.example.dachuang.auth.repository.UserRepository;
+import com.example.dachuang.common.exception.BusinessException;
+import com.example.dachuang.common.util.PhoneMaskUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,6 +47,19 @@ public class WxAuthService {
         return AuthResponse.builder()
                 .token(token)
                 .openid(openid)
+                .build();
+    }
+
+    public UserProfileResponse getProfile(String openid) {
+        User user = userRepository.findByOpenid(openid)
+                .orElseThrow(() -> new BusinessException(404, "User not found"));
+        return UserProfileResponse.builder()
+                .openid(user.getOpenid())
+                .nickname(user.getNickname())
+                .avatarUrl(user.getAvatarUrl())
+                .role(user.getRole())
+                .name(user.getName())
+                .phone(PhoneMaskUtil.mask(user.getPhone()))
                 .build();
     }
 }

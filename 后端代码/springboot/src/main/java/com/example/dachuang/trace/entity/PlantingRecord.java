@@ -18,4 +18,7 @@ public class PlantingRecord extends BaseEntity {
     private String operation; // 操作类型（施肥、灌溉、采收）
     private String details; // 详情
     private String operator; // 操作员
+
+    private String imageUrl; // 现场照片
+    private String audioUrl; // 语音录入
 }

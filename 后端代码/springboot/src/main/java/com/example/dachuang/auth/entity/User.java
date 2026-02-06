@@ -21,4 +21,7 @@ public class User extends BaseEntity {
     private String nickname;
     private String avatarUrl;
     private String role; // ADMIN, USER, FARMER, etc.
+
+    private String name; // 真实姓名
+    private String phone; // 联系方式（需脱敏）
 }

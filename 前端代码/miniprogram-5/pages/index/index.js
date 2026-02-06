@@ -11,6 +11,7 @@ Page({
     batchForm: {
       id: '',
       batchNo: '',
+      minCode: '',
       name: '',
       category: '',
       origin: '',
@@ -42,8 +43,10 @@ Page({
       batchNo: '',
       fromLocation: '',
       toLocation: '',
+      trackingNo: '',
       status: '',
-      trackingNo: ''
+      location: '',
+      updateTime: ''
     },
     inspectionForm: {
       id: '',
