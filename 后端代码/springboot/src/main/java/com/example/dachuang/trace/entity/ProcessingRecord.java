@@ -18,4 +18,6 @@ public class ProcessingRecord extends BaseEntity {
     private String factory; // 工厂名称
     private String details;
     private String operator;
+
+    private String imageUrl; // 加工现场/成品照片
 }

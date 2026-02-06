@@ -27,6 +27,10 @@ public class BatchService {
         if (batchRepository.findByBatchNo(batch.getBatchNo()).isPresent()) {
             throw new BusinessException(400, "Batch number already exists");
         }
+        // 生成隐形码（如果未提供）
+        if (batch.getMinCode() == null || batch.getMinCode().isBlank()) {
+            batch.setMinCode(java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 16));
+        }
         return batchRepository.save(batch);
     }
 

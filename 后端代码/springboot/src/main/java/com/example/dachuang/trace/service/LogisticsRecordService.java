@@ -28,11 +28,29 @@ public class LogisticsRecordService {
     public LogisticsRecord update(Long id, LogisticsRecord record) {
         LogisticsRecord existing = logisticsRecordRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(404, "Logistics record not found"));
-        existing.setBatchNo(record.getBatchNo());
-        existing.setFromLocation(record.getFromLocation());
-        existing.setToLocation(record.getToLocation());
-        existing.setStatus(record.getStatus());
-        existing.setTrackingNo(record.getTrackingNo());
+        if (record.getBatchNo() != null && !record.getBatchNo().isBlank()) {
+            existing.setBatchNo(record.getBatchNo());
+        }
+
+        if (record.getFromLocation() != null && !record.getFromLocation().isBlank()) {
+            existing.setFromLocation(record.getFromLocation());
+        }
+        if (record.getToLocation() != null && !record.getToLocation().isBlank()) {
+            existing.setToLocation(record.getToLocation());
+        }
+        if (record.getTrackingNo() != null && !record.getTrackingNo().isBlank()) {
+            existing.setTrackingNo(record.getTrackingNo());
+        }
+
+        if (record.getLocation() != null && !record.getLocation().isBlank()) {
+            existing.setLocation(record.getLocation());
+        }
+        if (record.getStatus() != null && !record.getStatus().isBlank()) {
+            existing.setStatus(record.getStatus());
+        }
+        if (record.getUpdateTime() != null && !record.getUpdateTime().isBlank()) {
+            existing.setUpdateTime(record.getUpdateTime());
+        }
         return logisticsRecordRepository.save(existing);
     }
 

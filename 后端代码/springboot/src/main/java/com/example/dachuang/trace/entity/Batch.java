@@ -16,7 +16,10 @@ import lombok.*;
 public class Batch extends BaseEntity {
 
     @Column(unique = true, nullable = false)
-    private String batchNo; // GS1 编码或自定义批次号
+    private String batchNo; // GS1 编码或自定义批次号（明码）
+
+    @Column(nullable = false)
+    private String minCode; // 隐形码（防伪校验）
 
     private String name; // 中药材名称
     private String category; // 类别（如：灵芝、当归）

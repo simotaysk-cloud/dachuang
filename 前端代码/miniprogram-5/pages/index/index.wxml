@@ -21,6 +21,7 @@
       <view class="section-title">批次 Batch</view>
       <input class="input" placeholder="ID（更新/删除用）" value="{{batchForm.id}}" data-field="id" bindinput="onBatchInput" />
       <input class="input" placeholder="batchNo" value="{{batchForm.batchNo}}" data-field="batchNo" bindinput="onBatchInput" />
+      <input class="input" placeholder="minCode（可选，后端可自动生成）" value="{{batchForm.minCode}}" data-field="minCode" bindinput="onBatchInput" />
       <input class="input" placeholder="name" value="{{batchForm.name}}" data-field="name" bindinput="onBatchInput" />
       <input class="input" placeholder="category" value="{{batchForm.category}}" data-field="category" bindinput="onBatchInput" />
       <input class="input" placeholder="origin" value="{{batchForm.origin}}" data-field="origin" bindinput="onBatchInput" />
@@ -82,8 +83,10 @@
       <input class="input" placeholder="batchNo" value="{{logisticsForm.batchNo}}" data-field="batchNo" bindinput="onLogisticsInput" />
       <input class="input" placeholder="fromLocation" value="{{logisticsForm.fromLocation}}" data-field="fromLocation" bindinput="onLogisticsInput" />
       <input class="input" placeholder="toLocation" value="{{logisticsForm.toLocation}}" data-field="toLocation" bindinput="onLogisticsInput" />
-      <input class="input" placeholder="status" value="{{logisticsForm.status}}" data-field="status" bindinput="onLogisticsInput" />
       <input class="input" placeholder="trackingNo" value="{{logisticsForm.trackingNo}}" data-field="trackingNo" bindinput="onLogisticsInput" />
+      <input class="input" placeholder="status" value="{{logisticsForm.status}}" data-field="status" bindinput="onLogisticsInput" />
+      <input class="input" placeholder="location" value="{{logisticsForm.location}}" data-field="location" bindinput="onLogisticsInput" />
+      <input class="input" placeholder="updateTime" value="{{logisticsForm.updateTime}}" data-field="updateTime" bindinput="onLogisticsInput" />
       <view class="row">
         <button class="btn" bindtap="createLogistics">新增</button>
         <button class="btn" bindtap="updateLogistics">更新</button>
