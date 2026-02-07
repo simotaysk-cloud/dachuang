@@ -4,6 +4,7 @@ import com.example.dachuang.common.entity.BaseEntity;
 import jakarta.persistence.Index;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -21,13 +22,20 @@ import lombok.*;
         }
 )
 public class ProcessingRecord extends BaseEntity {
+    @Column(nullable = false, length = 64)
     @NotBlank(message = "batchNo cannot be blank")
     private String batchNo;
+    @Column(length = 64)
     private String parentBatchNo; // 原料/上游批次号（分叉时填写）
+    @Column(length = 64)
     private String processType; // 加工工艺
+    @Column(length = 128)
     private String factory; // 工厂名称
+    @Column(length = 1000)
     private String details;
+    @Column(length = 64)
     private String operator;
 
+    @Column(length = 255)
     private String imageUrl; // 加工现场/成品照片
 }

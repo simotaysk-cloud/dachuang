@@ -150,6 +150,7 @@ Page({
                         that.listAll()
                     } catch (err) {
                         console.error(err)
+                        wx.showToast({ title: err?.data?.message || '删除失败', icon: 'none' })
                     }
                 }
             }

@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,7 +127,7 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .category("中药材")
                 .origin("甘肃-岷县")
                 .status("PLANTING")
-                .quantity(1000.0)
+                .quantity(new BigDecimal("1000.0"))
                 .unit("kg")
                 .description("演示数据：根批次（种植原料）")
                 .build();
@@ -227,7 +228,7 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .trackingNo("LEGACY-TRACK-0001")
                 .location("甘肃-岷县仓")
                 .status("已出库")
-                .updateTime("2026-02-07 09:10")
+                .updateTime(LocalDateTime.of(2026, 2, 7, 9, 10))
                 .build());
 
         logisticsRecordRepository.save(LogisticsRecord.builder()
@@ -237,7 +238,7 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .trackingNo("LEGACY-TRACK-0001")
                 .location("兰州中转仓")
                 .status("到站")
-                .updateTime("2026-02-07 18:30")
+                .updateTime(LocalDateTime.of(2026, 2, 7, 18, 30))
                 .build());
     }
 

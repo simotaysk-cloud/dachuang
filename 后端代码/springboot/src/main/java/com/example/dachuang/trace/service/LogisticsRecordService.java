@@ -51,7 +51,7 @@ public class LogisticsRecordService {
         if (record.getStatus() != null && !record.getStatus().isBlank()) {
             existing.setStatus(record.getStatus());
         }
-        if (record.getUpdateTime() != null && !record.getUpdateTime().isBlank()) {
+        if (record.getUpdateTime() != null) {
             existing.setUpdateTime(record.getUpdateTime());
         }
         return logisticsRecordRepository.save(existing);

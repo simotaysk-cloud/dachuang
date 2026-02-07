@@ -9,6 +9,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 @Slf4j
 @Component
 @Profile("dev")
@@ -72,10 +74,10 @@ public class DataInitializer implements CommandLineRunner {
                     .category("根茎类")
                     .origin("吉林省抚松县")
                     .status("PLANTING")
-                    .quantity(500.0)
+                    .quantity(new BigDecimal("500.0"))
                     .unit("jin")
                     .gs1LotNo("BATCH001")
-                    .gs1Code(gs1Service.generateGs1HRI("BATCH001", 500.0, "jin"))
+                    .gs1Code(gs1Service.generateGs1HRI("BATCH001", new BigDecimal("500.0"), "jin"))
                     .gs1Locked(true)
                     .description("2024年春季种植示范批次")
                     .build();
@@ -110,10 +112,10 @@ public class DataInitializer implements CommandLineRunner {
                     .category("加工品")
                     .origin("吉林省抚松县加工厂")
                     .status("PROCESSING")
-                    .quantity(50.0)
+                    .quantity(new BigDecimal("50.0"))
                     .unit("kg") // 500斤 -> ~50kg finished product (just mock)
                     .gs1LotNo("BATCH001-P")
-                    .gs1Code(gs1Service.generateGs1HRI("BATCH001-P", 50.0, "kg"))
+                    .gs1Code(gs1Service.generateGs1HRI("BATCH001-P", new BigDecimal("50.0"), "kg"))
                     .gs1Locked(true)
                     .description("经多道工序精制而成")
                     .build();

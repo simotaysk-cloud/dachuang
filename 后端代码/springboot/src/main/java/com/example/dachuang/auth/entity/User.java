@@ -22,20 +22,25 @@ import lombok.*;
 )
 public class User extends BaseEntity {
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 64)
     @NotBlank(message = "username cannot be blank")
     private String username;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     @NotBlank(message = "password cannot be blank")
     private String password;
 
+    @Column(length = 64)
     private String nickname;
+    @Column(length = 255)
     private String avatarUrl;
+    @Column(nullable = false, length = 32)
     private String role; // ADMIN, USER, FARMER, etc.
 
+    @Column(length = 64)
     private String name; // 真实姓名
+    @Column(length = 32)
     private String phone; // 联系方式（需脱敏）
-    @Column(nullable = true)
+    @Column(nullable = true, unique = true, length = 128)
     private String openid; // 保留作为可选识别码
 }
