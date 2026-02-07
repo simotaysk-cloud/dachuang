@@ -13,6 +13,7 @@ import java.util.List;
 public class InspectionRecordService {
 
     private final InspectionRecordRepository inspectionRecordRepository;
+    private final BatchService batchService;
 
     public List<InspectionRecord> list(String batchNo) {
         if (batchNo == null || batchNo.isBlank()) {
@@ -22,12 +23,14 @@ public class InspectionRecordService {
     }
 
     public InspectionRecord create(InspectionRecord record) {
+        batchService.getBatchByNo(record.getBatchNo());
         return inspectionRecordRepository.save(record);
     }
 
     public InspectionRecord update(Long id, InspectionRecord record) {
         InspectionRecord existing = inspectionRecordRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(404, "Inspection record not found"));
+        batchService.getBatchByNo(record.getBatchNo());
         existing.setBatchNo(record.getBatchNo());
         existing.setResult(record.getResult());
         existing.setReportUrl(record.getReportUrl());

@@ -33,6 +33,8 @@ public class ProcessingRecordService {
             String childNo = record.getBatchNo();
             Batch child = batchService.deriveBatch(parentNo, childNo, "PROCESSING", record.getProcessType(), record.getDetails());
             record.setBatchNo(child.getBatchNo());
+        } else {
+            batchService.getBatchByNo(record.getBatchNo());
         }
         return processingRecordRepository.save(record);
     }
@@ -40,6 +42,10 @@ public class ProcessingRecordService {
     public ProcessingRecord update(Long id, ProcessingRecord record) {
         ProcessingRecord existing = processingRecordRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(404, "Processing record not found"));
+        batchService.getBatchByNo(record.getBatchNo());
+        if (record.getParentBatchNo() != null && !record.getParentBatchNo().isBlank()) {
+            batchService.getBatchByNo(record.getParentBatchNo());
+        }
         existing.setBatchNo(record.getBatchNo());
         existing.setParentBatchNo(record.getParentBatchNo());
         existing.setProcessType(record.getProcessType());

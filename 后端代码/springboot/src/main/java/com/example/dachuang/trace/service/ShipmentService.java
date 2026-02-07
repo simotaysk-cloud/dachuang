@@ -22,11 +22,13 @@ public class ShipmentService {
 
     private final ShipmentRepository shipmentRepository;
     private final ShipmentEventRepository shipmentEventRepository;
+    private final BatchService batchService;
 
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.BASIC_ISO_DATE; // yyyyMMdd
 
     public Shipment create(CreateShipmentRequest request) {
+        batchService.getBatchByNo(request.getBatchNo());
         String shipmentNo = generateShipmentNo();
         Shipment shipment = Shipment.builder()
                 .shipmentNo(shipmentNo)
@@ -89,4 +91,3 @@ public class ShipmentService {
         throw new BusinessException(500, "Failed to generate shipment number");
     }
 }
-

@@ -13,6 +13,7 @@ import java.util.List;
 public class LogisticsRecordService {
 
     private final LogisticsRecordRepository logisticsRecordRepository;
+    private final BatchService batchService;
 
     public List<LogisticsRecord> list(String batchNo) {
         if (batchNo == null || batchNo.isBlank()) {
@@ -22,6 +23,7 @@ public class LogisticsRecordService {
     }
 
     public LogisticsRecord create(LogisticsRecord record) {
+        batchService.getBatchByNo(record.getBatchNo());
         return logisticsRecordRepository.save(record);
     }
 
@@ -29,6 +31,7 @@ public class LogisticsRecordService {
         LogisticsRecord existing = logisticsRecordRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(404, "Logistics record not found"));
         if (record.getBatchNo() != null && !record.getBatchNo().isBlank()) {
+            batchService.getBatchByNo(record.getBatchNo());
             existing.setBatchNo(record.getBatchNo());
         }
 

@@ -54,7 +54,7 @@ public class InspectionRecordController {
     }
 
     @PostMapping
-    public Result<InspectionRecord> create(@RequestBody InspectionRecord record) {
+    public Result<InspectionRecord> create(@Valid @RequestBody InspectionRecord record) {
         return Result.success(inspectionRecordService.create(record));
     }
 

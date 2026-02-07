@@ -3,7 +3,9 @@ package com.example.dachuang.auth.entity;
 import com.example.dachuang.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Data
@@ -12,13 +14,20 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
+@Table(
+        name = "users",
+        indexes = {
+                @Index(name = "idx_users_openid", columnList = "openid")
+        }
+)
 public class User extends BaseEntity {
 
     @Column(unique = true, nullable = false)
+    @NotBlank(message = "username cannot be blank")
     private String username;
 
     @Column(nullable = false)
+    @NotBlank(message = "password cannot be blank")
     private String password;
 
     private String nickname;
