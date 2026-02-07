@@ -14,6 +14,7 @@ import lombok.*;
 @Table(name = "processing_records")
 public class ProcessingRecord extends BaseEntity {
     private String batchNo;
+    private String parentBatchNo; // 原料/上游批次号（分叉时填写）
     private String processType; // 加工工艺
     private String factory; // 工厂名称
     private String details;

@@ -6,7 +6,8 @@
     <view class="card">
         <view class="section-title">加工登记</view>
         <input class="input" placeholder="记录ID（编辑用）" value="{{form.id}}" data-field="id" bindinput="onInput" />
-        <input class="input" placeholder="对应批次号 (batchNo)" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />
+        <input class="input" placeholder="上游/原料批次号 (parentBatchNo)" value="{{form.parentBatchNo}}" data-field="parentBatchNo" bindinput="onInput" />
+        <input class="input" placeholder="产出批次号 (batchNo，可空自动生成)" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />
         <input class="input" placeholder="加工工艺 (processType)" value="{{form.processType}}" data-field="processType" bindinput="onInput" />
         <input class="input" placeholder="工厂名称 (factory)" value="{{form.factory}}" data-field="factory" bindinput="onInput" />
         <input class="input" placeholder="操作人 (operator)" value="{{form.operator}}" data-field="operator" bindinput="onInput" />
@@ -23,6 +24,10 @@
         <view class="search-bar">
             <input class="input-inline" placeholder="输入 batchNo" value="{{queryNo}}" bindinput="onQueryInput" />
             <button class="btn-small" bindtap="query">查询</button>
+        </view>
+        <view class="search-bar">
+            <input class="input-inline" placeholder="输入 parentBatchNo" value="{{parentQueryNo}}" bindinput="onParentQueryInput" />
+            <button class="btn-small" bindtap="queryByParent">查上游</button>
         </view>
     </view>
     <view class="result-area" wx:if="{{result}}">
