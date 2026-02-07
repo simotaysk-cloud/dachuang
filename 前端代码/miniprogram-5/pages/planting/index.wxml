@@ -4,7 +4,7 @@
         <view class="desc">录入药材在田间的日常操作与生长情况</view>
     </view>
     <view class="card">
-        <view class="section-title">数据状态</view>
+        <view class="section-title">记录列表</view>
         <view class="stat-row">
             <view class="stat-item">
                 <view class="stat-value">{{records.length}}</view>
@@ -18,10 +18,6 @@
         <view class="meta" wx:if="{{lastUpdatedAt}}">
             最近刷新: {{lastUpdatedAt}}
         </view>
-    </view>
-
-    <view class="card">
-        <view class="section-title">记录列表</view>
         <view class="search-bar">
             <input class="input-inline" placeholder="按 batchNo 筛选（可空）" value="{{filterBatchNo}}" bindinput="onFilterInput" />
             <button class="btn-small" bindtap="refresh">刷新</button>
