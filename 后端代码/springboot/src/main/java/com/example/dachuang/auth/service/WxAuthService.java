@@ -9,6 +9,7 @@ import com.example.dachuang.common.util.PhoneMaskUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -18,6 +19,7 @@ public class WxAuthService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${wx.appid:mock-appid}")
     private String appid;
@@ -36,15 +38,26 @@ public class WxAuthService {
                     return new BusinessException(401, "Username or password incorrect");
                 });
 
-        // Simple password check (In production, use BCrypt.checkPassword)
-        if (!user.getPassword().equals(password)) {
+        String stored = user.getPassword() == null ? "" : user.getPassword();
+        boolean ok = passwordEncoder.matches(password, stored);
+
+        // Backward-compat: if old rows were stored as plain text, accept once and migrate.
+        if (!ok && !stored.startsWith("$2a$") && !stored.startsWith("$2b$") && !stored.startsWith("$2y$")) {
+            ok = stored.equals(password);
+            if (ok) {
+                user.setPassword(passwordEncoder.encode(password));
+                userRepository.save(user);
+            }
+        }
+
+        if (!ok) {
             log.warn("Login failed: Password mismatch for user [{}]", username);
             // Optional: for dev, log characters if suspicious, but let's stick to lengths
             // for now
             throw new BusinessException(401, "Username or password incorrect");
         }
 
-        String token = jwtService.generateToken(user.getUsername());
+        String token = jwtService.generateToken(user.getUsername(), user.getRole());
         return AuthResponse.builder()
                 .token(token)
                 .username(user.getUsername())

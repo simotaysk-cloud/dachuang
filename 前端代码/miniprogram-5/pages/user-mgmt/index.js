@@ -24,7 +24,7 @@ Page({
     async loadUsers() {
         try {
             const res = await api.request('/api/v1/users')
-            this.setData({ users: res })
+            this.setData({ users: res?.data || [] })
         } catch (error) {
             console.error(error)
         }
@@ -85,10 +85,25 @@ Page({
 
         try {
             if (isEdit) {
-                await api.request(`/api/v1/users/${editId}`, 'PUT', form)
+                const payload = {
+                    password: form.password,
+                    nickname: form.nickname,
+                    role: form.role,
+                    name: form.name,
+                    phone: form.phone
+                }
+                await api.request(`/api/v1/users/${editId}`, 'PUT', payload)
             } else {
                 if (!form.password) return wx.showToast({ title: '密码必填', icon: 'none' })
-                await api.request('/api/v1/users', 'POST', form)
+                const payload = {
+                    username: form.username,
+                    password: form.password,
+                    nickname: form.nickname,
+                    role: form.role,
+                    name: form.name,
+                    phone: form.phone
+                }
+                await api.request('/api/v1/users', 'POST', payload)
             }
             wx.showToast({ title: isEdit ? '更新成功' : '创建成功' })
             this.closeModal()
