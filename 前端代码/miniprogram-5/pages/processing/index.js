@@ -19,8 +19,10 @@ Page({
     },
 
     onLoad() {
-        // Optionally load recent records if API supports it, or just empty
-        // For now let's query a dummy one or just wait for user query
+        if (api.role === 'FARMER') {
+            wx.showToast({ title: '无权限（农户仅可使用种植相关模块）', icon: 'none' })
+            return wx.redirectTo({ url: '/pages/index/index' })
+        }
     },
 
     onInput(e) {

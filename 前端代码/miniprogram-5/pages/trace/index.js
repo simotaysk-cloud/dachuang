@@ -6,6 +6,13 @@ Page({
         result: ''
     },
 
+    onLoad() {
+        if (api.role === 'FARMER') {
+            wx.showToast({ title: '无权限（农户仅可使用种植相关模块）', icon: 'none' })
+            return wx.redirectTo({ url: '/pages/index/index' })
+        }
+    },
+
     onInput(e) {
         this.setData({ batchNo: e.detail.value })
     },
