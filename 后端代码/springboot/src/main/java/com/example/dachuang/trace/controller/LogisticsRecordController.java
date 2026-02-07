@@ -3,6 +3,7 @@ package com.example.dachuang.trace.controller;
 import com.example.dachuang.common.api.Result;
 import com.example.dachuang.trace.entity.LogisticsRecord;
 import com.example.dachuang.trace.service.LogisticsRecordService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ public class LogisticsRecordController {
     }
 
     @PostMapping
-    public Result<LogisticsRecord> create(@RequestBody LogisticsRecord record) {
+    public Result<LogisticsRecord> create(@Valid @RequestBody LogisticsRecord record) {
         return Result.success(logisticsRecordService.create(record));
     }
 

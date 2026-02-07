@@ -32,7 +32,7 @@ public class ShipmentController {
     @PostMapping("/{shipmentNo}/events")
     public Result<ShipmentEvent> addEvent(
             @PathVariable String shipmentNo,
-            @RequestBody CreateShipmentEventRequest request
+            @Valid @RequestBody CreateShipmentEventRequest request
     ) {
         return Result.success(shipmentService.addEvent(shipmentNo, request));
     }
@@ -42,4 +42,3 @@ public class ShipmentController {
         return Result.success(shipmentService.listEvents(shipmentNo));
     }
 }
-

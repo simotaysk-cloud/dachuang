@@ -1,8 +1,10 @@
 package com.example.dachuang.trace.entity;
 
 import com.example.dachuang.common.entity.BaseEntity;
+import jakarta.persistence.Index;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Data
@@ -11,8 +13,15 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "processing_records")
+@Table(
+        name = "processing_records",
+        indexes = {
+                @Index(name = "idx_processing_batch_no", columnList = "batch_no"),
+                @Index(name = "idx_processing_parent_batch_no", columnList = "parent_batch_no")
+        }
+)
 public class ProcessingRecord extends BaseEntity {
+    @NotBlank(message = "batchNo cannot be blank")
     private String batchNo;
     private String parentBatchNo; // 原料/上游批次号（分叉时填写）
     private String processType; // 加工工艺

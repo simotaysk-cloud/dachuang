@@ -13,6 +13,7 @@ import java.util.List;
 public class PlantingRecordService {
 
     private final PlantingRecordRepository plantingRecordRepository;
+    private final BatchService batchService;
 
     public List<PlantingRecord> list(String batchNo) {
         if (batchNo == null || batchNo.isBlank()) {
@@ -22,12 +23,14 @@ public class PlantingRecordService {
     }
 
     public PlantingRecord create(PlantingRecord record) {
+        batchService.getBatchByNo(record.getBatchNo());
         return plantingRecordRepository.save(record);
     }
 
     public PlantingRecord update(Long id, PlantingRecord record) {
         PlantingRecord existing = plantingRecordRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(404, "Planting record not found"));
+        batchService.getBatchByNo(record.getBatchNo());
         existing.setBatchNo(record.getBatchNo());
         existing.setFieldName(record.getFieldName());
         existing.setOperation(record.getOperation());
