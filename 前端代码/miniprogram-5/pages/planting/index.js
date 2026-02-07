@@ -130,15 +130,9 @@ Page({
             return
         }
 
-        // Keep behavior consistent with other modules: "查询" always based on latest list.
-        if (!this.data.lastUpdatedAt) {
-            await this.refresh()
-            return
-        }
-
-        const records = this.applyQuery(this.data.allRecords || [], this.data.queryKey)
-        this.setData({ records })
-        if (this.data.queryKey && records.length === 0) {
+        // Keep behavior consistent with other modules: query triggers a fetch, then filters.
+        await this.refresh()
+        if (this.data.queryKey && (!this.data.records || this.data.records.length === 0)) {
             wx.showToast({ title: '未找到记录', icon: 'none' })
         }
     },
