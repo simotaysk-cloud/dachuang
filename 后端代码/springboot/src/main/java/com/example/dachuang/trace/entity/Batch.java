@@ -16,7 +16,7 @@ import lombok.*;
 public class Batch extends BaseEntity {
 
     @Column(unique = true, nullable = false)
-    private String batchNo; // GS1 编码或自定义批次号（明码）
+    private String batchNo; // 批次号（业务主键）
 
     @Column(nullable = false)
     private String minCode; // 隐形码（防伪校验）
@@ -28,4 +28,14 @@ public class Batch extends BaseEntity {
 
     @Column(length = 1000)
     private String description;
+
+    // Inventory & GS1
+    private Double quantity; // 数量
+    private String unit; // 单位 (kg, g, ton, etc.)
+
+    @Column(unique = true)
+    private String gs1LotNo; // GS1 AI(10) Lot/Batch (<= 20 chars, unique in our system)
+
+    @Column(unique = true)
+    private String gs1Code; // GS1-128 HRI: (01)...(10)...(310x)...
 }
