@@ -104,6 +104,7 @@ Page({
         try {
             const payload = { ...this.data.form }
             if (!payload.id) delete payload.id
+            if (!payload.batchNo) delete payload.batchNo // allow backend to gen (recommended for farmers)
 
             // Quantity handling
             if (payload.quantity === '' || payload.quantity == null) {

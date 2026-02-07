@@ -64,10 +64,19 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void ensureMockData() {
+        Long farmerId = userRepository.findByUsername("farmer").map(User::getId).orElse(null);
+
         // 1. Planting Batch
         String plantingBatchNo = "MOCK-2024001";
-        if (batchRepository.findByBatchNo(plantingBatchNo).isEmpty()) {
+        com.example.dachuang.trace.entity.Batch existingPlant = batchRepository.findByBatchNo(plantingBatchNo).orElse(null);
+        if (existingPlant != null) {
+            if (existingPlant.getOwnerUserId() == null && farmerId != null) {
+                existingPlant.setOwnerUserId(farmerId);
+                batchRepository.save(existingPlant);
+            }
+        } else {
             com.example.dachuang.trace.entity.Batch pBatch = com.example.dachuang.trace.entity.Batch.builder()
+                    .ownerUserId(farmerId)
                     .batchNo(plantingBatchNo)
                     .minCode("MC-001")
                     .name("长白山人参 (模拟数据)")
@@ -104,8 +113,15 @@ public class DataInitializer implements CommandLineRunner {
 
         // 2. Processing Batch (Derived)
         String processBatchNo = "MOCK-2024001-P";
-        if (batchRepository.findByBatchNo(processBatchNo).isEmpty()) {
+        com.example.dachuang.trace.entity.Batch existingProc = batchRepository.findByBatchNo(processBatchNo).orElse(null);
+        if (existingProc != null) {
+            if (existingProc.getOwnerUserId() == null && farmerId != null) {
+                existingProc.setOwnerUserId(farmerId);
+                batchRepository.save(existingProc);
+            }
+        } else {
             com.example.dachuang.trace.entity.Batch procBatch = com.example.dachuang.trace.entity.Batch.builder()
+                    .ownerUserId(farmerId)
                     .batchNo(processBatchNo)
                     .minCode("MC-001-P")
                     .name("特级红参片 (模拟数据)")
@@ -188,7 +204,7 @@ public class DataInitializer implements CommandLineRunner {
                         .eventTime(java.time.LocalDateTime.now().minusHours(2))
                         .build());
 
-                log.info("Mock Logistics Data Created: {}", shipmentNo);
+            log.info("Mock Logistics Data Created: {}", shipmentNo);
             }
         }
     }

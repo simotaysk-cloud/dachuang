@@ -27,8 +27,12 @@ public class BatchController {
     }
 
     @PostMapping
-    public Result<Batch> create(@RequestBody Batch batch) {
-        return Result.success(batchService.createBatch(batch));
+    public Result<Batch> create(
+            @RequestBody Batch batch,
+            @RequestAttribute("username") String username,
+            @RequestAttribute("role") String role
+    ) {
+        return Result.success(batchService.createBatch(batch, username, role));
     }
 
     @PostMapping("/{parentBatchNo}/derive")

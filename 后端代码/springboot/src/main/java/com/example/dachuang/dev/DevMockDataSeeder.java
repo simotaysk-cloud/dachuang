@@ -120,7 +120,13 @@ public class DevMockDataSeeder implements CommandLineRunner {
     }
 
     private void seedBatchesAndLineage() {
+        Long ownerId = userRepository.findByUsername("farmer1")
+                .or(() -> userRepository.findByUsername("farmer"))
+                .map(User::getId)
+                .orElse(null);
+
         Batch root = Batch.builder()
+                .ownerUserId(ownerId)
                 .batchNo(ROOT_BATCH_NO)
                 .minCode("") // auto-generate
                 .name("当归")
