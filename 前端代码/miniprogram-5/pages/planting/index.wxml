@@ -22,22 +22,16 @@
 
     <view class="card">
         <view class="section-title">记录列表</view>
-        <view class="stat-row">
-            <view class="stat-item">
-                <view class="stat-value">{{records.length}}</view>
-                <view class="stat-label">已录入条数</view>
-            </view>
-            <view class="stat-item">
-                <view class="stat-value">{{loading ? '加载中' : '就绪'}}</view>
-                <view class="stat-label">接口状态</view>
-            </view>
-        </view>
-        <view class="meta" wx:if="{{lastUpdatedAt}}">
-            最近刷新: {{lastUpdatedAt}}
+        <view class="search-bar">
+            <input class="input-inline" placeholder="输入ID/地块/操作/操作人查询" value="{{queryKey}}" bindinput="onQueryInput" />
+            <button class="btn-small" bindtap="query">查询</button>
         </view>
         <view class="btn-group">
             <button class="btn btn-primary" bindtap="startCreate">新建记录</button>
-            <button class="btn btn-outline" bindtap="refresh">重新拉取</button>
+            <button class="btn btn-outline" bindtap="refresh">刷新列表</button>
+        </view>
+        <view class="meta" wx:if="{{lastUpdatedAt}}">
+            最近刷新: {{lastUpdatedAt}}
         </view>
         <view class="empty" wx:if="{{!loading && records.length === 0}}">
             暂无数据，可以点击“新建记录”开始录入。
