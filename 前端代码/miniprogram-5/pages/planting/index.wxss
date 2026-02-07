@@ -30,6 +30,12 @@
   margin-top: 6rpx;
 }
 
+.field-label {
+  margin: 8rpx 0 10rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
+}
+
 .readonly-row {
   display: flex;
   align-items: center;
