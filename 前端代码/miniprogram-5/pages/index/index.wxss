@@ -1,73 +1,40 @@
-.dashboard-header {
-  padding: 40rpx 0;
-  text-align: center;
-}
-
-.status-bar {
-  display: flex;
-  justify-content: center;
-  gap: 30rpx;
-  margin-top: 30rpx;
-}
-
-.status-item {
-  font-size: 24rpx;
-  color: var(--text-sub);
-  display: flex;
-  align-items: center;
-}
-
-.dot {
-  width: 12rpx;
-  height: 12rpx;
-  border-radius: 50%;
-  margin-right: 10rpx;
-}
-
-.online {
-  background-color: #2ecc71;
-  box-shadow: 0 0 10rpx #2ecc71;
-}
-
-.offline {
-  background-color: #e74c3c;
-}
-
-.setup-card {
-  margin-top: -20rpx;
-}
-
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 30rpx;
-  margin-top: 40rpx;
 }
 
 .menu-item {
-  background: white;
-  height: 200rpx;
-  border-radius: 20rpx;
+  background: #fff;
+  height: 180rpx;
+  border-radius: 16rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s;
+  border: 2rpx solid var(--border-color);
 }
 
 .menu-item:active {
-  transform: scale(0.95);
   background: #f0f0f0;
 }
 
 .menu-icon {
-  font-size: 60rpx;
-  margin-bottom: 16rpx;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 999rpx;
+  background: rgba(44, 62, 80, 0.08);
+  color: var(--primary-color);
+  font-size: 34rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14rpx;
 }
 
 .menu-label {
-  font-size: 28rpx;
+  font-size: 26rpx;
   color: var(--primary-color);
   font-weight: 500;
 }

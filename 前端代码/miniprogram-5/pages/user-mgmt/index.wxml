@@ -1,0 +1,59 @@
+<view class="page-container">
+    <view class="header">
+        <view class="title">用户管理</view>
+        <view class="desc">管理系统账号与角色权限</view>
+    </view>
+
+    <view class="card">
+        <view class="section-title">用户列表</view>
+        <view class="btn-group" style="margin-bottom: 20rpx;">
+            <button class="btn btn-primary" bindtap="openCreate">新增用户</button>
+            <button class="btn btn-outline" bindtap="loadUsers">刷新列表</button>
+        </view>
+
+        <view class="empty" wx:if="{{!users || users.length === 0}}">暂无用户</view>
+        <view class="list" wx:if="{{users && users.length > 0}}">
+            <view class="list-item" wx:for="{{users}}" wx:key="id">
+                <view class="list-main">
+                    <view class="list-title">
+                        <text class="role-tag {{item.role}}">{{item.role}}</text>
+                        {{item.username}}
+                    </view>
+                    <view class="list-sub">昵称: {{item.nickname || '-'}}</view>
+                    <view class="list-meta">姓名: {{item.name || '-'}} · 电话: {{item.phone || '-'}}</view>
+                </view>
+                <view class="list-actions">
+                    <button class="btn-mini btn-mini-outline" data-user="{{item}}" bindtap="openEdit">编辑</button>
+                    <button class="btn-mini btn-mini-warn" data-id="{{item.id}}" bindtap="deleteUser">删除</button>
+                </view>
+            </view>
+        </view>
+    </view>
+
+    <view class="modal-mask" wx:if="{{showModal}}">
+        <view class="modal">
+            <view class="section-title">{{isEdit ? '编辑用户' : '新增用户'}}</view>
+            <view class="field-label">用户名</view>
+            <input class="input" placeholder="用户名" value="{{form.username}}" data-field="username" bindinput="onInput" disabled="{{isEdit}}" />
+            <view class="field-label">密码</view>
+            <input class="input" placeholder="{{isEdit ? '密码 (留空不修改)' : '密码'}}" value="{{form.password}}" data-field="password" bindinput="onInput" password />
+            <view class="field-label">昵称</view>
+            <input class="input" placeholder="昵称" value="{{form.nickname}}" data-field="nickname" bindinput="onInput" />
+            <view class="field-label">角色</view>
+            <picker range="{{roles}}" bindchange="onRoleChange">
+                <view class="picker-row">
+                    <view class="picker-label">当前</view>
+                    <view class="picker-value">{{form.role}}</view>
+                </view>
+            </picker>
+            <view class="field-label">真实姓名</view>
+            <input class="input" placeholder="真实姓名" value="{{form.name}}" data-field="name" bindinput="onInput" />
+            <view class="field-label">电话</view>
+            <input class="input" placeholder="电话" value="{{form.phone}}" data-field="phone" bindinput="onInput" />
+            <view class="btn-group" style="margin-top: 10rpx;">
+                <button class="btn btn-outline" bindtap="closeModal">取消</button>
+                <button class="btn btn-primary" bindtap="submit">确认</button>
+            </view>
+        </view>
+    </view>
+</view>

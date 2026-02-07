@@ -3,36 +3,62 @@
         <view class="title">加工处理</view>
         <view class="desc">记录药材的烘干、切片、包装等工厂环节</view>
     </view>
+    <!-- 筛选与操作 -->
     <view class="card">
-        <view class="section-title">加工登记</view>
-        <input class="input" placeholder="记录ID（编辑用）" value="{{form.id}}" data-field="id" bindinput="onInput" />
-        <input class="input" placeholder="上游/原料批次号 (parentBatchNo)" value="{{form.parentBatchNo}}" data-field="parentBatchNo" bindinput="onInput" />
-        <input class="input" placeholder="产出批次号 (batchNo，可空自动生成)" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />
-        <input class="input" placeholder="加工工艺 (processType)" value="{{form.processType}}" data-field="processType" bindinput="onInput" />
-        <input class="input" placeholder="工厂名称 (factory)" value="{{form.factory}}" data-field="factory" bindinput="onInput" />
-        <input class="input" placeholder="操作人 (operator)" value="{{form.operator}}" data-field="operator" bindinput="onInput" />
-        <view class="section-title" style="margin-top:20rpx">加工现场</view>
-        <input class="input" placeholder="现场照片 (imageUrl)" value="{{form.imageUrl}}" data-field="imageUrl" bindinput="onInput" />
-        <textarea class="textarea" placeholder="详细说明 (details)" value="{{form.details}}" data-field="details" bindinput="onInput" />
-        <view class="btn-group">
-            <button class="btn btn-primary" bindtap="save">保存记录</button>
-            <button class="btn btn-warn" bindtap="remove">删除记录</button>
-        </view>
-    </view>
-    <view class="card">
-        <view class="section-title">历史查询</view>
+        <view class="section-title">加工记录列表</view>
         <view class="search-bar">
-            <input class="input-inline" placeholder="输入 batchNo" value="{{queryNo}}" bindinput="onQueryInput" />
+            <input class="input-inline" placeholder="输入产出批次号查询" value="{{queryNo}}" bindinput="onQueryInput" />
             <button class="btn-small" bindtap="query">查询</button>
         </view>
-        <view class="search-bar">
-            <input class="input-inline" placeholder="输入 parentBatchNo" value="{{parentQueryNo}}" bindinput="onParentQueryInput" />
-            <button class="btn-small" bindtap="queryByParent">查上游</button>
+        <view class="btn-group" style="margin-bottom: 20rpx;">
+            <button class="btn btn-primary" bindtap="startCreate">新建加工记录</button>
         </view>
+        <!-- 列表内容 -->
+        <view class="list" wx:if="{{records && records.length > 0}}">
+            <view class="list-item" wx:for="{{records}}" wx:key="id" bindtap="editFromList" data-item="{{item}}">
+                <view class="list-main">
+                    <view class="list-title">
+                        {{item.processType || '未命名工艺'}}
+                        <text style="font-size:24rpx; color:#999;">#{{item.id}}</text>
+                    </view>
+                    <view class="list-sub">
+                        原料: {{item.parentBatchNo}}
+                        <text wx:if="{{item.batchNo}}">➡ 产出: {{item.batchNo}}</text>
+                    </view>
+                    <view class="list-meta">
+                        工厂: {{item.factory || '-'}} · 操作人: {{item.operator || '-'}}
+                    </view>
+                </view>
+                <view class="list-action">详情</view>
+            </view>
+        </view>
+        <view class="empty" wx:if="{{(!records || records.length === 0) && !loading}}">暂无记录</view>
     </view>
-    <view class="result-area" wx:if="{{result}}">
-        <scroll-view scroll-y class="result-scroll">
-            <text class="result-text">{{result}}</text>
-        </scroll-view>
+    <!-- 表单 -->
+    <view class="card" wx:if="{{showForm}}">
+        <view class="section-title">{{form.id ? '编辑记录' : '新建加工'}}</view>
+        <view class="readonly-row" wx:if="{{form.id}}">
+            <view class="readonly-label">记录ID</view>
+            <view class="readonly-value">#{{form.id}}</view>
+        </view>
+        <view class="field-label">原料批次号 (Parent Batch)</view>
+        <input class="input" placeholder="输入上游批次号" value="{{form.parentBatchNo}}" data-field="parentBatchNo" bindinput="onInput" />
+        <view class="field-label">产出批次号 (Child Batch)</view>
+        <input class="input" placeholder="留空则自动生成新批次号" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />
+        <view class="field-label">加工工艺</view>
+        <input class="input" placeholder="例如：切片、烘干、包装" value="{{form.processType}}" data-field="processType" bindinput="onInput" />
+        <view class="field-label">工厂名称</view>
+        <input class="input" placeholder="例如：同仁堂加工厂" value="{{form.factory}}" data-field="factory" bindinput="onInput" />
+        <view class="field-label">操作人</view>
+        <input class="input" placeholder="记录员姓名" value="{{form.operator}}" data-field="operator" bindinput="onInput" />
+        <view class="field-label">现场照片</view>
+        <input class="input" placeholder="图片URL" value="{{form.imageUrl}}" data-field="imageUrl" bindinput="onInput" />
+        <view class="field-label">详细说明</view>
+        <textarea class="textarea" placeholder="备注信息..." value="{{form.details}}" data-field="details" bindinput="onInput" />
+        <view class="btn-group">
+            <button class="btn btn-primary" bindtap="save">保存</button>
+            <button class="btn btn-warn" wx:if="{{form.id}}" bindtap="remove">删除</button>
+        </view>
+        <button class="btn btn-outline" style="margin-top:20rpx;" bindtap="cancelEdit">取消</button>
     </view>
 </view>

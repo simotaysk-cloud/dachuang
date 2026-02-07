@@ -1,6 +1,19 @@
-<!--logs.wxml-->
-<scroll-view class="scrollarea" scroll-y type="list">
-  <block wx:for="{{logs}}" wx:key="timeStamp" wx:for-item="log">
-    <view class="log-item">{{index + 1}}. {{log.date}}</view>
-  </block>
-</scroll-view>
+<view class="page-container">
+  <view class="header">
+    <view class="title">操作日志</view>
+    <view class="desc">开发期：查看小程序本地日志</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">最近日志</view>
+    <view class="empty" wx:if="{{!logs || logs.length === 0}}">暂无日志</view>
+    <view class="list" wx:if="{{logs && logs.length > 0}}">
+      <view class="list-item" wx:for="{{logs}}" wx:key="timeStamp" wx:for-item="log">
+        <view class="list-main">
+          <view class="list-title">#{{index + 1}}</view>
+          <view class="list-sub">{{log.date}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

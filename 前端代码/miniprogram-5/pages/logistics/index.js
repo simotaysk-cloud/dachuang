@@ -2,6 +2,10 @@ const api = require('../../utils/api')
 
 Page({
     data: {
+        shipments: [],
+        events: [],
+        currentShipment: null,
+
         shipmentForm: {
             batchNo: '',
             distributorName: '',
@@ -9,33 +13,22 @@ Page({
             trackingNo: '',
             remarks: ''
         },
+        // For searching shipments
         shipmentQueryBatchNo: '',
-        shipmentEventsQueryNo: '',
+
+        // For adding new event
         shipmentEventForm: {
-            shipmentNo: '',
-            eventTime: '',
             location: '',
             status: '',
             details: ''
         },
 
-        form: {
-            id: '',
-            batchNo: '',
-            fromLocation: '',
-            toLocation: '',
-            trackingNo: '',
-            location: '',
-            status: '',
-            updateTime: ''
-        },
-        queryNo: '',
-        result: ''
+        showShipmentForm: false,
+        loading: false
     },
 
-    onInput(e) {
-        const { field } = e.currentTarget.dataset
-        this.setData({ [`form.${field}`]: e.detail.value })
+    onLoad() {
+        // Optionally load recent shipments
     },
 
     onShipmentInput(e) {
@@ -52,106 +45,99 @@ Page({
         this.setData({ [`shipmentEventForm.${field}`]: e.detail.value })
     },
 
-    onShipmentEventQueryInput(e) {
-        this.setData({ shipmentEventsQueryNo: e.detail.value })
+    startCreateShipment() {
+        this.setData({
+            showShipmentForm: true,
+            shipmentForm: {
+                batchNo: '',
+                distributorName: '',
+                carrier: '',
+                trackingNo: '',
+                remarks: ''
+            }
+        })
     },
 
-    onQueryInput(e) {
-        this.setData({ queryNo: e.detail.value })
+    cancelShipmentEdit() {
+        this.setData({ showShipmentForm: false })
     },
 
-    setResult(data) {
-        this.setData({ result: JSON.stringify(data, null, 2) })
+    async listShipments() {
+        this.setData({ loading: true })
+        try {
+            const batchNo = (this.data.shipmentQueryBatchNo || '').trim()
+            const qs = batchNo ? `?batchNo=${encodeURIComponent(batchNo)}` : ''
+            const res = await api.request(`/api/v1/shipments${qs}`)
+
+            // API returns list or single depending on backend implementation for query
+            // Assuming it returns a list for this endpoint
+            this.setData({ shipments: Array.isArray(res.data) ? res.data : (res.data ? [res.data] : []) })
+
+            if (!this.data.shipments || this.data.shipments.length === 0) {
+                wx.showToast({ title: '未找到发运单', icon: 'none' })
+            }
+        } catch (err) {
+            console.error(err)
+            wx.showToast({ title: '查询失败', icon: 'none' })
+        } finally {
+            this.setData({ loading: false })
+        }
     },
 
     async createShipment() {
         try {
             const res = await api.request('/api/v1/shipments', 'POST', this.data.shipmentForm)
-            this.setResult(res)
-            if (res?.data?.shipmentNo) {
-                this.setData({ [`shipmentEventForm.shipmentNo`]: res.data.shipmentNo })
-            }
             wx.showToast({ title: '创建成功' })
+            this.setData({ showShipmentForm: false })
+            // Refresh list
+            this.listShipments()
         } catch (err) {
-            this.setResult(err)
+            console.error(err)
+            wx.showToast({ title: '创建失败', icon: 'none' })
         }
     },
 
-    async listShipments() {
+    async viewShipmentDetail(e) {
+        const item = e.currentTarget.dataset.item
+        this.setData({ currentShipment: item })
+        this.loadEvents(item.shipmentNo)
+    },
+
+    closeShipmentDetail() {
+        this.setData({ currentShipment: null, events: [] })
+    },
+
+    async loadEvents(shipmentNo) {
         try {
-            const batchNo = (this.data.shipmentQueryBatchNo || '').trim()
-            const qs = batchNo ? `?batchNo=${encodeURIComponent(batchNo)}` : ''
-            const res = await api.request(`/api/v1/shipments${qs}`)
-            this.setResult(res)
+            const res = await api.request(`/api/v1/shipments/${shipmentNo}/events`)
+            this.setData({ events: res.data || [] })
         } catch (err) {
-            this.setResult(err)
+            console.error(err)
         }
     },
 
     async addShipmentEvent() {
-        if (!this.data.shipmentEventForm.shipmentNo) {
-            return wx.showToast({ title: '请输入 shipmentNo', icon: 'none' })
-        }
+        if (!this.data.currentShipment) return
+
         try {
             const payload = {
-                eventTime: this.data.shipmentEventForm.eventTime || undefined,
                 location: this.data.shipmentEventForm.location,
                 status: this.data.shipmentEventForm.status,
                 details: this.data.shipmentEventForm.details
             }
-            const res = await api.request(`/api/v1/shipments/${this.data.shipmentEventForm.shipmentNo}/events`, 'POST', payload)
-            this.setResult(res)
+            await api.request(`/api/v1/shipments/${this.data.currentShipment.shipmentNo}/events`, 'POST', payload)
             wx.showToast({ title: '添加成功' })
+            // Clean form
+            this.setData({
+                'shipmentEventForm.location': '',
+                'shipmentEventForm.status': '',
+                'shipmentEventForm.details': ''
+            })
+            // Reload events
+            this.loadEvents(this.data.currentShipment.shipmentNo)
         } catch (err) {
-            this.setResult(err)
-        }
-    },
-
-    async listShipmentEvents() {
-        if (!this.data.shipmentEventsQueryNo) {
-            return wx.showToast({ title: '请输入 shipmentNo', icon: 'none' })
-        }
-        try {
-            const res = await api.request(`/api/v1/shipments/${this.data.shipmentEventsQueryNo}/events`)
-            this.setResult(res)
-        } catch (err) {
-            this.setResult(err)
-        }
-    },
-
-    async save() {
-        try {
-            let res
-            if (this.data.form.id) {
-                res = await api.request(`/api/v1/logistics/${this.data.form.id}`, 'PUT', this.data.form)
-            } else {
-                res = await api.request('/api/v1/logistics', 'POST', this.data.form)
-            }
-            this.setResult(res)
-            wx.showToast({ title: '保存成功' })
-        } catch (err) {
-            this.setResult(err)
-        }
-    },
-
-    async query() {
-        if (!this.data.queryNo) return wx.showToast({ title: '请输入 batchNo', icon: 'none' })
-        try {
-            const res = await api.request(`/api/v1/logistics?batchNo=${this.data.queryNo}`)
-            this.setResult(res)
-        } catch (err) {
-            this.setResult(err)
-        }
-    },
-
-    async remove() {
-        if (!this.data.form.id) return wx.showToast({ title: '请输入记录ID', icon: 'none' })
-        try {
-            const res = await api.request(`/api/v1/logistics/${this.data.form.id}`, 'DELETE')
-            this.setResult(res)
-            wx.showToast({ title: '删除成功' })
-        } catch (err) {
-            this.setResult(err)
+            console.error(err)
+            wx.showToast({ title: '添加失败', icon: 'none' })
         }
     }
 })

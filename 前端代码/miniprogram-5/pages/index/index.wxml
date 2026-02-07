@@ -1,54 +1,72 @@
 <view class="page-container">
-  <view class="dashboard-header">
+  <view class="header">
     <view class="title">智汇本草</view>
     <view class="desc">中药材全过程溯源管理系统</view>
-    <view class="status-bar">
-      <view class="status-item">
-        <text class="dot {{healthStatus === 'UP' ? 'online' : 'offline'}}"></text>
-        系统状态: {{healthStatus}}
+  </view>
+
+  <view class="card">
+    <view class="section-title">系统状态</view>
+    <view class="stat-row">
+      <view class="stat-item">
+        <view class="stat-value">{{healthStatus}}</view>
+        <view class="stat-label">服务健康</view>
       </view>
-      <view class="status-item">
-        <text class="dot {{token ? 'online' : 'offline'}}"></text>
-        身份认证: {{token ? '已登录' : '未登录'}}
+      <view class="stat-item">
+        <view class="stat-value">{{token ? '已登录' : '未登录'}}</view>
+        <view class="stat-label">身份认证</view>
       </view>
     </view>
   </view>
-  <view class="card setup-card">
+
+  <view class="card">
     <view class="section-title">环境配置</view>
-    <input class="input" placeholder="后端地址 (Base URL)" value="{{baseUrl}}" bindinput="onBaseUrlInput" />
+    <view class="field-label">后端地址（Base URL）</view>
+    <input class="input" placeholder="例如：http://127.0.0.1:8081" value="{{baseUrl}}" bindinput="onBaseUrlInput" />
     <view class="btn-group">
       <button class="btn btn-primary" bindtap="checkHealth">刷新状态</button>
       <button class="btn btn-outline" bindtap="goLogin">账号登录</button>
     </view>
   </view>
-  <view class="menu-grid">
-    <view class="menu-item" bindtap="navTo" data-url="/pages/batch/index">
-      <view class="menu-icon">📦</view>
-      <view class="menu-label">批次管理</view>
-    </view>
-    <view class="menu-item" bindtap="navTo" data-url="/pages/planting/index">
-      <view class="menu-icon">🌱</view>
-      <view class="menu-label">种植录入</view>
-    </view>
-    <view class="menu-item" bindtap="navTo" data-url="/pages/processing/index">
-      <view class="menu-icon">🏭</view>
-      <view class="menu-label">加工登记</view>
-    </view>
-    <view class="menu-item" bindtap="navTo" data-url="/pages/logistics/index">
-      <view class="menu-icon">🚚</view>
-      <view class="menu-label">物流追踪</view>
-    </view>
-    <view class="menu-item" bindtap="navTo" data-url="/pages/inspection/index">
-      <view class="menu-icon">📋</view>
-      <view class="menu-label">质检中心</view>
-    </view>
-    <view class="menu-item" bindtap="navTo" data-url="/pages/security/index">
-      <view class="menu-icon">🛡️</view>
-      <view class="menu-label">安全防伪</view>
-    </view>
-    <view class="menu-item" bindtap="navTo" data-url="/pages/logs/logs">
-      <view class="menu-icon">📑</view>
-      <view class="menu-label">操作日志</view>
+
+  <view class="card">
+    <view class="section-title">功能入口</view>
+    <view class="menu-grid">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/batch/index">
+        <view class="menu-icon">批</view>
+        <view class="menu-label">批次管理</view>
+      </view>
+      <view class="menu-item" bindtap="navTo" data-url="/pages/planting/index">
+        <view class="menu-icon">种</view>
+        <view class="menu-label">种植录入</view>
+      </view>
+      <view class="menu-item" bindtap="navTo" data-url="/pages/processing/index">
+        <view class="menu-icon">加</view>
+        <view class="menu-label">加工登记</view>
+      </view>
+      <view class="menu-item" bindtap="navTo" data-url="/pages/logistics/index">
+        <view class="menu-icon">物</view>
+        <view class="menu-label">物流追踪</view>
+      </view>
+      <view class="menu-item" bindtap="navTo" data-url="/pages/inspection/index">
+        <view class="menu-icon">检</view>
+        <view class="menu-label">质检中心</view>
+      </view>
+      <view class="menu-item" bindtap="navTo" data-url="/pages/security/index">
+        <view class="menu-icon">防</view>
+        <view class="menu-label">安全防伪</view>
+      </view>
+      <view class="menu-item" bindtap="navTo" data-url="/pages/trace/index">
+        <view class="menu-icon">溯</view>
+        <view class="menu-label">溯源查询</view>
+      </view>
+      <view class="menu-item" bindtap="navTo" data-url="/pages/logs/logs">
+        <view class="menu-icon">志</view>
+        <view class="menu-label">操作日志</view>
+      </view>
+      <view class="menu-item" bindtap="navTo" data-url="/pages/user-mgmt/index">
+        <view class="menu-icon">用</view>
+        <view class="menu-label">用户管理</view>
+      </view>
     </view>
   </view>
   <view class="footer">

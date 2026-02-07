@@ -3,65 +3,74 @@
         <view class="title">物流追踪</view>
         <view class="desc">更新药材的运输状态与实时位置</view>
     </view>
+    <!-- 发运单管理 -->
     <view class="card">
-        <view class="section-title">发运单（拆票）</view>
-        <input class="input" placeholder="成品批次号 (batchNo)" value="{{shipmentForm.batchNo}}" data-field="batchNo" bindinput="onShipmentInput" />
-        <input class="input" placeholder="经销商/收货方 (distributorName)" value="{{shipmentForm.distributorName}}" data-field="distributorName" bindinput="onShipmentInput" />
-        <input class="input" placeholder="承运商 (carrier)" value="{{shipmentForm.carrier}}" data-field="carrier" bindinput="onShipmentInput" />
-        <input class="input" placeholder="运单号 (trackingNo)" value="{{shipmentForm.trackingNo}}" data-field="trackingNo" bindinput="onShipmentInput" />
-        <textarea class="textarea" placeholder="备注 (remarks)" value="{{shipmentForm.remarks}}" data-field="remarks" bindinput="onShipmentInput" />
-        <view class="btn-group">
-            <button class="btn btn-primary" bindtap="createShipment">创建发运单</button>
-            <button class="btn btn-outline" bindtap="listShipments">查询发运单</button>
-        </view>
-        <view class="search-bar" style="margin-top:20rpx">
-            <input class="input-inline" placeholder="按 batchNo 查询发运单（可空查全部）" value="{{shipmentQueryBatchNo}}" bindinput="onShipmentQueryInput" />
-            <button class="btn-small" bindtap="listShipments">拉取</button>
-        </view>
-    </view>
-
-    <view class="card">
-        <view class="section-title">发运轨迹事件</view>
-        <input class="input" placeholder="发运单号 (shipmentNo)" value="{{shipmentEventForm.shipmentNo}}" data-field="shipmentNo" bindinput="onShipmentEventInput" />
-        <input class="input" placeholder="事件时间 (ISO，可空默认当前)" value="{{shipmentEventForm.eventTime}}" data-field="eventTime" bindinput="onShipmentEventInput" />
-        <input class="input" placeholder="位置 (location)" value="{{shipmentEventForm.location}}" data-field="location" bindinput="onShipmentEventInput" />
-        <input class="input" placeholder="状态 (status，如 IN_TRANSIT/DELIVERED)" value="{{shipmentEventForm.status}}" data-field="status" bindinput="onShipmentEventInput" />
-        <textarea class="textarea" placeholder="补充说明 (details)" value="{{shipmentEventForm.details}}" data-field="details" bindinput="onShipmentEventInput" />
-        <view class="btn-group">
-            <button class="btn btn-primary" bindtap="addShipmentEvent">添加事件</button>
-            <button class="btn btn-outline" bindtap="listShipmentEvents">拉取事件</button>
-        </view>
-        <view class="search-bar" style="margin-top:20rpx">
-            <input class="input-inline" placeholder="按 shipmentNo 查询事件" value="{{shipmentEventsQueryNo}}" bindinput="onShipmentEventQueryInput" />
-            <button class="btn-small" bindtap="listShipmentEvents">查询</button>
-        </view>
-    </view>
-
-    <view class="card">
-        <view class="section-title">兼容模式（旧物流表）</view>
-        <input class="input" placeholder="记录ID（编辑用）" value="{{form.id}}" data-field="id" bindinput="onInput" />
-        <input class="input" placeholder="对应批次号 (batchNo)" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />
-        <input class="input" placeholder="起点 (fromLocation)" value="{{form.fromLocation}}" data-field="fromLocation" bindinput="onInput" />
-        <input class="input" placeholder="终点 (toLocation)" value="{{form.toLocation}}" data-field="toLocation" bindinput="onInput" />
-        <input class="input" placeholder="物流单号 (trackingNo)" value="{{form.trackingNo}}" data-field="trackingNo" bindinput="onInput" />
-        <input class="input" placeholder="当前位置 (location)" value="{{form.location}}" data-field="location" bindinput="onInput" />
-        <input class="input" placeholder="状态 (status)" value="{{form.status}}" data-field="status" bindinput="onInput" />
-        <input class="input" placeholder="更新时间 (updateTime)" value="{{form.updateTime}}" data-field="updateTime" bindinput="onInput" />
-        <view class="btn-group">
-            <button class="btn btn-primary" bindtap="save">保存更新</button>
-            <button class="btn btn-warn" bindtap="remove">删除记录</button>
-        </view>
-    </view>
-    <view class="card">
-        <view class="section-title">旧轨迹查询</view>
+        <view class="section-title">发运单列表</view>
         <view class="search-bar">
-            <input class="input-inline" placeholder="输入 batchNo" value="{{queryNo}}" bindinput="onQueryInput" />
-            <button class="btn-small" bindtap="query">查询</button>
+            <input class="input-inline" placeholder="输入批次号查询发运单" value="{{shipmentQueryBatchNo}}" bindinput="onShipmentQueryInput" />
+            <button class="btn-small" bindtap="listShipments">查询</button>
+        </view>
+        <view class="btn-group" style="margin-bottom: 20rpx;">
+            <button class="btn btn-primary" bindtap="startCreateShipment">新建发运单</button>
+        </view>
+        <!-- 列表内容 -->
+        <view class="list" wx:if="{{shipments && shipments.length > 0}}">
+            <view class="list-item" wx:for="{{shipments}}" wx:key="id" bindtap="viewShipmentDetail" data-item="{{item}}">
+                <view class="list-main">
+                    <view class="list-title">单号: {{item.shipmentNo}}</view>
+                    <view class="list-sub">
+                        批次: {{item.batchNo}} ➡ 目的地: {{item.distributorName || '-'}}
+                    </view>
+                    <view class="list-meta">
+                        承运: {{item.carrier || '-'}} · 状态: {{item.status || '-'}}
+                    </view>
+                </view>
+                <view class="list-action">详情</view>
+            </view>
+        </view>
+        <view class="empty" wx:if="{{(!shipments || shipments.length === 0) && !loading}}">
+            暂无发运单
         </view>
     </view>
-    <view class="result-area" wx:if="{{result}}">
-        <scroll-view scroll-y class="result-scroll">
-            <text class="result-text">{{result}}</text>
-        </scroll-view>
+    <!-- 发运单表单 -->
+    <view class="card" wx:if="{{showShipmentForm}}">
+        <view class="section-title">新建发运单</view>
+        <view class="field-label">成品批次号</view>
+        <input class="input" placeholder="输入批次号" value="{{shipmentForm.batchNo}}" data-field="batchNo" bindinput="onShipmentInput" />
+        <view class="field-label">收货方/经销商</view>
+        <input class="input" placeholder="例如：某连锁药店" value="{{shipmentForm.distributorName}}" data-field="distributorName" bindinput="onShipmentInput" />
+        <view class="field-label">承运商</view>
+        <input class="input" placeholder="例如：顺丰冷链" value="{{shipmentForm.carrier}}" data-field="carrier" bindinput="onShipmentInput" />
+        <view class="field-label">物流运单号</view>
+        <input class="input" placeholder="快递单号" value="{{shipmentForm.trackingNo}}" data-field="trackingNo" bindinput="onShipmentInput" />
+        <view class="field-label">备注</view>
+        <textarea class="textarea" placeholder="发货备注..." value="{{shipmentForm.remarks}}" data-field="remarks" bindinput="onShipmentInput" />
+        <view class="btn-group">
+            <button class="btn btn-primary" bindtap="createShipment">创建</button>
+            <button class="btn btn-outline" bindtap="cancelShipmentEdit">取消</button>
+        </view>
+    </view>
+    <!-- 轨迹事件管理 (选中发运单后显示) -->
+    <view class="card" wx:if="{{currentShipment}}">
+        <view class="section-title">物流轨迹: {{currentShipment.shipmentNo}}</view>
+        <view class="list" wx:if="{{events && events.length > 0}}">
+            <view class="list-item" wx:for="{{events}}" wx:key="id">
+                <view class="list-main">
+                    <view class="list-title">{{item.status}} @ {{item.location}}</view>
+                    <view class="list-sub">{{item.details || ''}}</view>
+                    <view class="list-meta">{{item.eventTime}}</view>
+                </view>
+            </view>
+        </view>
+        <view class="section-title" style="margin-top:30rpx; border-top:1rpx solid #eee; padding-top:20rpx;">
+            添加新轨迹
+        </view>
+        <input class="input" placeholder="位置 (location)" value="{{shipmentEventForm.location}}" data-field="location" bindinput="onShipmentEventInput" />
+        <input class="input" placeholder="状态 (如 IN_TRANSIT, DELIVERED)" value="{{shipmentEventForm.status}}" data-field="status" bindinput="onShipmentEventInput" />
+        <input class="input" placeholder="说明 (details)" value="{{shipmentEventForm.details}}" data-field="details" bindinput="onShipmentEventInput" />
+        <button class="btn btn-primary" bindtap="addShipmentEvent">更新轨迹</button>
+        <button class="btn btn-outline" style="margin-top:20rpx;" bindtap="closeShipmentDetail">
+            关闭详情
+        </button>
     </view>
 </view>
