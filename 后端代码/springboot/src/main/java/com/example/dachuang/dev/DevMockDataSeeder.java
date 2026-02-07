@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +42,9 @@ public class DevMockDataSeeder implements CommandLineRunner {
     @Value("${app.mock-data.enabled:false}")
     private boolean enabled;
 
+    @Value("${app.mock-data.force:false}")
+    private boolean force;
+
     private final UserRepository userRepository;
     private final BatchRepository batchRepository;
     private final BatchLineageRepository batchLineageRepository;
@@ -54,12 +58,17 @@ public class DevMockDataSeeder implements CommandLineRunner {
     private final BatchService batchService;
     private final ShipmentService shipmentService;
     private final BlockchainService blockchainService;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     @Transactional
     public void run(String... args) {
         if (!enabled) {
             return;
+        }
+
+        if (force) {
+            purgeDemoData();
         }
 
         // If demo root already exists, assume the dataset has been seeded.
@@ -83,7 +92,7 @@ public class DevMockDataSeeder implements CommandLineRunner {
     }
 
     private void seedUsers() {
-        createUserIfMissing("admin", "123456", "ADMIN", "管理员", "13800000001");
+        // Note: default `admin` / `farmer` are handled by auth/config/DataInitializer.
         createUserIfMissing("farmer1", "123456", "FARMER", "张三", "13800000002");
         createUserIfMissing("factory1", "123456", "FACTORY", "李四", "13800000003");
         createUserIfMissing("regulator1", "123456", "REGULATOR", "王五", "13800000004");
@@ -152,6 +161,16 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .fieldName("一号地块")
                 .operation("施肥")
                 .details("使用有机肥 50kg。")
+                .operator("张三")
+                .imageUrl("")
+                .audioUrl("")
+                .build());
+
+        plantingRecordRepository.save(PlantingRecord.builder()
+                .batchNo(ROOT_BATCH_NO)
+                .fieldName("一号地块")
+                .operation("灌溉")
+                .details("滴灌 2 小时，天气晴。")
                 .operator("张三")
                 .imageUrl("")
                 .audioUrl("")
@@ -248,6 +267,19 @@ public class DevMockDataSeeder implements CommandLineRunner {
         s2Events.add(createEvent(LocalDateTime.now().minusDays(1).withHour(8).withMinute(40), "甘肃-岷县仓", "IN_TRANSIT", "已揽收"));
         s2Events.add(createEvent(LocalDateTime.now().withHour(11).withMinute(50), "上海虹桥转运中心", "DELIVERED", "签收完成"));
         addEventsIfNone(s2.getShipmentNo(), s2Events);
+
+        // One shipment for the REWORK branch, to show that different leaf batches can have different downstream flow.
+        Shipment s3 = shipmentService.create(createShipmentRequest(
+                INSP_B_REWORK_BATCH_NO,
+                "返工处理点（工厂复检）",
+                "自有车队",
+                "TRUCK-0001",
+                "演示：返工批次流转"
+        ));
+        List<CreateShipmentEventRequest> s3Events = new ArrayList<>();
+        s3Events.add(createEvent(LocalDateTime.now().minusHours(6), "兰州中转仓", "IN_TRANSIT", "转运发车"));
+        s3Events.add(createEvent(LocalDateTime.now().minusHours(2), "演示工厂-复检区", "DELIVERED", "到达复检区"));
+        addEventsIfNone(s3.getShipmentNo(), s3Events);
     }
 
     private CreateShipmentRequest createShipmentRequest(String batchNo, String distributorName, String carrier, String trackingNo, String remarks) {
@@ -282,5 +314,28 @@ public class DevMockDataSeeder implements CommandLineRunner {
         // Only create one record per batchNo for demo readability.
         blockchainService.recordOnChain(ROOT_BATCH_NO, "seed:root");
         blockchainService.recordOnChain(INSP_A_GRADE_A_BATCH_NO, "seed:leaf");
+    }
+
+    private void purgeDemoData() {
+        log.warn("Purging DEMO-* mock data (app.mock-data.force=true)...");
+
+        // child tables first
+        jdbcTemplate.update("""
+                delete from shipment_events
+                where shipment_no in (select shipment_no from shipments where batch_no like 'DEMO-%')
+                """);
+        jdbcTemplate.update("delete from shipments where batch_no like 'DEMO-%'");
+
+        jdbcTemplate.update("delete from logistics_records where batch_no like 'DEMO-%'");
+        jdbcTemplate.update("delete from inspection_records where batch_no like 'DEMO-%'");
+        jdbcTemplate.update("delete from processing_records where batch_no like 'DEMO-%'");
+        jdbcTemplate.update("delete from planting_records where batch_no like 'DEMO-%'");
+
+        jdbcTemplate.update("delete from batch_lineages where parent_batch_no like 'DEMO-%' or child_batch_no like 'DEMO-%'");
+        jdbcTemplate.update("delete from blockchain_records where batch_no like 'DEMO-%'");
+        jdbcTemplate.update("delete from batches where batch_no like 'DEMO-%'");
+
+        // Users seeded here (keep admin/farmer managed by DataInitializer).
+        jdbcTemplate.update("delete from users where username in ('farmer1','factory1','regulator1','logistics1')");
     }
 }
