@@ -8,7 +8,8 @@ Page({
 
     onInput(e) {
         const { field } = e.currentTarget.dataset
-        this.setData({ [field]: e.detail.value })
+        const value = (e.detail.value || '').trim()
+        this.setData({ [field]: value })
     },
 
     async handleLogin() {
