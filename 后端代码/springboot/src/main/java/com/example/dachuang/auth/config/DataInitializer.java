@@ -18,29 +18,34 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (userRepository.findByUsername("admin").isEmpty()) {
-            User admin = User.builder()
-                    .username("admin")
-                    .password("123456") // dev only
-                    .role("ADMIN")
-                    .nickname("系统管理员")
-                    .openid("dummy_admin")
-                    .build();
-            userRepository.save(admin);
-            log.info("Default admin account created: admin / 123456");
+        // Dev-only: keep default accounts usable even if the DB already contains old rows.
+        ensureDefaultUser("admin", "123456", "ADMIN", "系统管理员", "dummy_admin");
+        ensureDefaultUser("farmer", "123456", "FARMER", "示范农户", "dummy_farmer");
+        log.info("Default dev accounts ensured: admin/farmer (password: 123456)");
+    }
+
+    private void ensureDefaultUser(String username, String password, String role, String nickname, String openid) {
+        User user = userRepository.findByUsername(username).orElse(null);
+        if (user == null) {
+            userRepository.save(User.builder()
+                    .username(username)
+                    .password(password)
+                    .role(role)
+                    .nickname(nickname)
+                    .openid(openid)
+                    .build());
+            return;
         }
 
-        // 也可以顺便初始化一个农户账号方便测试
-        if (userRepository.findByUsername("farmer").isEmpty()) {
-            User farmer = User.builder()
-                    .username("farmer")
-                    .password("123456")
-                    .role("FARMER")
-                    .nickname("示范农户")
-                    .openid("dummy_farmer")
-                    .build();
-            userRepository.save(farmer);
-            log.info("Default farmer account created: farmer / 123456");
+        // Ensure fields for login and NOT NULL constraints.
+        user.setPassword(password);
+        user.setRole(role);
+        if (user.getNickname() == null || user.getNickname().isBlank()) {
+            user.setNickname(nickname);
         }
+        if (user.getOpenid() == null || user.getOpenid().isBlank()) {
+            user.setOpenid(openid);
+        }
+        userRepository.save(user);
     }
 }
