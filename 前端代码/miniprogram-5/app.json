@@ -8,7 +8,8 @@
     "pages/logistics/index",
     "pages/inspection/index",
     "pages/security/index",
-    "pages/logs/logs"
+    "pages/logs/logs",
+    "pages/user-mgmt/index"
   ],
   "window": {
     "navigationBarTextStyle": "black",

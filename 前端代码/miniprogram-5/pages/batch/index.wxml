@@ -3,38 +3,82 @@
         <view class="title">批次管理</view>
         <view class="desc">管理所有中药材的溯源身份批次</view>
     </view>
+    <!-- 列表展示 -->
     <view class="card">
-        <view class="section-title">新增/编辑批次</view>
-        <input class="input" placeholder="批次ID（编辑用）" value="{{form.id}}" data-field="id" bindinput="onInput" />
-        <input class="input" placeholder="批次号 (batchNo)" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />
-        <input class="input" placeholder="隐形码（为空则自动生成）" value="{{form.minCode}}" data-field="minCode" bindinput="onInput" />
-        <input class="input" placeholder="名称 (name)" value="{{form.name}}" data-field="name" bindinput="onInput" />
-        <input class="input" placeholder="类别 (category)" value="{{form.category}}" data-field="category" bindinput="onInput" />
-        <input class="input" placeholder="产地 (origin)" value="{{form.origin}}" data-field="origin" bindinput="onInput" />
-        <input class="input" placeholder="状态 (status)" value="{{form.status}}" data-field="status" bindinput="onInput" />
-        <view class="row">
-            <input class="input half" placeholder="数量 (quantity)" type="digit" value="{{form.quantity}}" data-field="quantity" bindinput="onInput" />
-            <input class="input half" placeholder="单位 (e.g. kg)" value="{{form.unit}}" data-field="unit" bindinput="onInput" />
-        </view>
-        <textarea class="textarea" placeholder="备注信息" value="{{form.description}}" data-field="description" bindinput="onInput" />
-        <view class="btn-group">
-            <button class="btn btn-primary" bindtap="save">保存批次</button>
-            <button class="btn btn-warn" bindtap="remove">删除批次</button>
-        </view>
-    </view>
-    <view class="card">
-        <view class="section-title">查询批次</view>
+        <view class="section-title">批次列表</view>
         <view class="search-bar">
-            <input class="input-inline" placeholder="输入 batchNo" value="{{queryNo}}" bindinput="onQueryInput" />
-            <button class="btn-small" bindtap="query">查单个</button>
+            <input class="input-inline" placeholder="输入 ID 或 批次号查询" value="{{queryNo}}" bindinput="onQueryInput" />
+            <button class="btn-small" bindtap="query">查询</button>
         </view>
-        <button class="btn btn-warn" bindtap="lockGs1">锁定GS1（贴标后）</button>
-        <button class="btn btn-outline" bindtap="listAll">获取全部批次列表</button>
+        <view class="btn-group" style="margin-bottom: 20rpx;">
+            <button class="btn btn-primary" bindtap="startCreate">新建批次</button>
+            <button class="btn btn-outline" bindtap="listAll">刷新列表</button>
+        </view>
+        <!-- 列表内容 -->
+        <view class="list" wx:if="{{batches && batches.length > 0}}">
+            <view class="list-item" wx:for="{{batches}}" wx:key="id" bindtap="editFromList" data-item="{{item}}">
+                <view class="list-main">
+                    <view class="list-title">
+                        {{item.name}}
+                        <text style="font-size:24rpx; color:#999; font-weight:normal;">
+                            ({{item.batchNo}})
+                        </text>
+                    </view>
+                    <view class="list-sub">
+                        产地: {{item.origin || '-'}} · 状态: {{item.status || '-'}}
+                    </view>
+                    <view class="list-meta" wx:if="{{item.quantity}}">
+                        库存: {{item.quantity}}{{item.unit}}
+                        <text wx:if="{{item.gs1Locked}}">🔒</text>
+                    </view>
+                </view>
+                <view class="list-action">编辑</view>
+            </view>
+        </view>
+        <view class="empty" wx:if="{{(!batches || batches.length === 0) && !loading}}">暂无批次数据</view>
     </view>
-    <view class="result-area" wx:if="{{result}}">
-        <view class="section-title">操作结果</view>
-        <scroll-view scroll-y class="result-scroll">
-            <text class="result-text">{{result}}</text>
-        </scroll-view>
+    <!-- 编辑/新增表单 (弹窗或折叠卡片) -->
+    <view class="card" wx:if="{{showForm}}">
+        <view class="section-title">{{form.id ? '编辑批次' : '新建批次'}}</view>
+        <view class="readonly-row" wx:if="{{form.id}}">
+            <view class="readonly-label">内部ID</view>
+            <view class="readonly-value">#{{form.id}}</view>
+        </view>
+        <view class="field-label">批次号 (BatchNo)</view>
+        <input class="input" placeholder="唯一标识 (必填)" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" disabled="{{form.id}}" />
+        <view class="field-label">药材名称</view>
+        <input class="input" placeholder="例如：长白山人参" value="{{form.name}}" data-field="name" bindinput="onInput" />
+        <view class="field-label">类别</view>
+        <input class="input" placeholder="例如：根茎类" value="{{form.category}}" data-field="category" bindinput="onInput" />
+        <view class="field-label">产地</view>
+        <input class="input" placeholder="例如：吉林省抚松县" value="{{form.origin}}" data-field="origin" bindinput="onInput" />
+        <view class="field-label">当前状态</view>
+        <input class="input" placeholder="例如：PLANTING" value="{{form.status}}" data-field="status" bindinput="onInput" />
+        <!-- 库存与GS1 -->
+        <view class="sub-title" style="margin-top:20rpx;">库存与GS1</view>
+        <view class="stat-row">
+            <view class="stat-item">
+                <view class="field-label">数量</view>
+                <input class="input input-compact" type="digit" value="{{form.quantity}}" data-field="quantity" bindinput="onInput" disabled="{{form.gs1Locked}}" />
+            </view>
+            <view class="stat-item">
+                <view class="field-label">单位</view>
+                <input class="input input-compact" value="{{form.unit}}" data-field="unit" bindinput="onInput" disabled="{{form.gs1Locked}}" />
+            </view>
+        </view>
+        <view class="meta" wx:if="{{form.gs1Locked}}" style="color:orange;">
+            ⚠️ GS1信息已锁定，不可修改数量与单位
+        </view>
+        <view class="field-label" style="margin-top:20rpx;">备注</view>
+        <textarea class="textarea" placeholder="更多描述..." value="{{form.description}}" data-field="description" bindinput="onInput" />
+        <view class="btn-group">
+            <button class="btn btn-primary" bindtap="save">保存</button>
+            <button class="btn btn-warn" wx:if="{{form.id}}" bindtap="remove">删除</button>
+        </view>
+        <button class="btn btn-outline" style="margin-top:20rpx;" bindtap="cancelEdit">取消</button>
+        <view wx:if="{{form.id && !form.gs1Locked}}" style="margin-top:30rpx; border-top:1rpx solid #eee; padding-top:20rpx;">
+            <button class="btn btn-warn" bindtap="lockGs1">🔒 锁定GS1 (打印贴标后)</button>
+            <view class="desc" style="text-align:center;">锁定后将无法修改数量，并生成最终条码</view>
+        </view>
     </view>
 </view>

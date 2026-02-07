@@ -1,0 +1,67 @@
+/* pages/user-mgmt/index.wxss */
+
+.role-tag {
+  font-size: 20rpx;
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  margin-right: 14rpx;
+  border: 2rpx solid var(--border-color);
+  color: var(--primary-color);
+  background: rgba(44, 62, 80, 0.05);
+}
+
+.role-tag.ADMIN {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  background: rgba(192, 57, 43, 0.06);
+}
+
+.role-tag.FARMER {
+  border-color: #27ae60;
+  color: #27ae60;
+  background: rgba(39, 174, 96, 0.08);
+}
+
+.role-tag.FACTORY {
+  border-color: #2980b9;
+  color: #2980b9;
+  background: rgba(41, 128, 185, 0.08);
+}
+
+.role-tag.LOGISTICS {
+  border-color: #8e44ad;
+  color: #8e44ad;
+  background: rgba(142, 68, 173, 0.08);
+}
+
+.role-tag.REGULATOR {
+  border-color: #f39c12;
+  color: #f39c12;
+  background: rgba(243, 156, 18, 0.10);
+}
+
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  padding: 30rpx;
+  box-sizing: border-box;
+}
+
+.modal {
+  width: 100%;
+  max-width: 680rpx;
+  background: var(--card-bg);
+  border-radius: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+}
+

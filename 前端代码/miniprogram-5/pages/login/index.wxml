@@ -1,19 +1,19 @@
-<view class="login-container">
-    <view class="login-header">
-        <image class="logo" src="/assets/logo.png" mode="aspectFit" />
-        <view class="title">智汇本草</view>
-        <view class="subtitle">让中药溯源更简单、更安全</view>
+<view class="page-container">
+    <view class="header login-header">
+        <image class="login-logo" src="/assets/logo.png" mode="aspectFit" />
+        <view class="title">账号登录</view>
+        <view class="desc">商户/生产者登录</view>
     </view>
-    <view class="login-card">
-        <view class="role-hint">商户/生产者登录</view>
-        <input class="input" placeholder="输入用户名" data-field="username" bindinput="onInput" />
-        <input class="input" placeholder="输入密码" password data-field="password" bindinput="onInput" />
-        <button class="login-btn" bindtap="handleLogin">
-            <view class="btn-content">
-                <text>立即登录</text>
-            </view>
-        </button>
-        <view class="agreement">登录即代表您同意《用户服务协议》</view>
+
+    <view class="card">
+        <view class="section-title">登录信息</view>
+        <view class="field-label">用户名</view>
+        <input class="input" placeholder="例如：admin" data-field="username" bindinput="onInput" />
+        <view class="field-label">密码</view>
+        <input class="input" placeholder="默认：123456" password data-field="password" bindinput="onInput" />
+        <button class="btn btn-primary" bindtap="handleLogin">登录</button>
+        <view class="meta" style="text-align:center;">登录即代表您同意《用户服务协议》</view>
     </view>
-    <view class="version">Version 1.0.2</view>
+
+    <view class="login-footer meta">Version 1.0.2</view>
 </view>
