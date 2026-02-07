@@ -18,6 +18,7 @@ public class BatchService {
 
     private final BatchRepository batchRepository;
     private final BatchLineageRepository batchLineageRepository;
+    private final Gs1Service gs1Service;
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
@@ -38,10 +39,20 @@ public class BatchService {
         if (batch.getMinCode() == null || batch.getMinCode().isBlank()) {
             batch.setMinCode(java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 16));
         }
+
+        // Generate GS1 lot & code if not provided. Use a short unique lotNo for AI(10) to avoid collisions.
+        if (batch.getGs1LotNo() == null || batch.getGs1LotNo().isBlank()) {
+            batch.setGs1LotNo(generateGs1LotNo(batch.getBatchNo()));
+        }
+        if (batch.getGs1Code() == null || batch.getGs1Code().isBlank()) {
+            batch.setGs1Code(gs1Service.generateGs1HRI(batch.getGs1LotNo(), batch.getQuantity(), batch.getUnit()));
+        }
+
         return batchRepository.save(batch);
     }
 
-    public Batch deriveBatch(String parentBatchNo, String childBatchNo, String stage, String processType, String details) {
+    public Batch deriveBatch(String parentBatchNo, String childBatchNo, String stage, String processType,
+            String details) {
         Batch parent = getBatchByNo(parentBatchNo);
 
         String outputNo = childBatchNo;
@@ -99,8 +110,10 @@ public class BatchService {
                     .toLowerCase(Locale.ROOT)
                     .replaceAll("[^a-z0-9]+", "-")
                     .replaceAll("^-+|-+$", "");
-            if (suffix.isBlank()) suffix = "proc";
-            if (suffix.length() > 12) suffix = suffix.substring(0, 12);
+            if (suffix.isBlank())
+                suffix = "proc";
+            if (suffix.length() > 12)
+                suffix = suffix.substring(0, 12);
         }
 
         for (int i = 0; i < 20; i++) {
@@ -124,7 +137,39 @@ public class BatchService {
         batch.setStatus(batchDetails.getStatus());
         batch.setDescription(batchDetails.getDescription());
 
+        batch.setQuantity(batchDetails.getQuantity());
+        batch.setUnit(batchDetails.getUnit());
+
+        // Refresh GS1 HRI when quantity/unit changes, but keep lotNo stable once created.
+        if (batch.getGs1LotNo() == null || batch.getGs1LotNo().isBlank()) {
+            batch.setGs1LotNo(generateGs1LotNo(batch.getBatchNo()));
+        }
+        batch.setGs1Code(gs1Service.generateGs1HRI(batch.getGs1LotNo(), batch.getQuantity(), batch.getUnit()));
+
         return batchRepository.save(batch);
+    }
+
+    private String generateGs1LotNo(String batchNo) {
+        String base = gs1Service.sanitizeLotNo(batchNo);
+        if (base != null && !base.isBlank() && !batchRepository.existsByGs1LotNo(base)) {
+            return base;
+        }
+
+        String prefix = (base == null || base.isBlank()) ? "LOT" : base;
+        if (prefix.length() > 12) {
+            prefix = prefix.substring(0, 12);
+        }
+
+        for (int i = 0; i < 50; i++) {
+            String rand = Integer.toString(RANDOM.nextInt(36 * 36 * 36 * 36 * 36 * 36 * 36), 36);
+            rand = String.format("%7s", rand).replace(' ', '0');
+            String candidate = prefix + "-" + rand;
+            candidate = gs1Service.sanitizeLotNo(candidate);
+            if (!batchRepository.existsByGs1LotNo(candidate)) {
+                return candidate;
+            }
+        }
+        throw new BusinessException(500, "Failed to generate GS1 lot number");
     }
 
     public void deleteBatch(Long id) {

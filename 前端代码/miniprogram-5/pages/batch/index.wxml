@@ -12,6 +12,10 @@
         <input class="input" placeholder="类别 (category)" value="{{form.category}}" data-field="category" bindinput="onInput" />
         <input class="input" placeholder="产地 (origin)" value="{{form.origin}}" data-field="origin" bindinput="onInput" />
         <input class="input" placeholder="状态 (status)" value="{{form.status}}" data-field="status" bindinput="onInput" />
+        <view class="row">
+            <input class="input half" placeholder="数量 (quantity)" type="digit" value="{{form.quantity}}" data-field="quantity" bindinput="onInput" />
+            <input class="input half" placeholder="单位 (e.g. kg)" value="{{form.unit}}" data-field="unit" bindinput="onInput" />
+        </view>
         <textarea class="textarea" placeholder="备注信息" value="{{form.description}}" data-field="description" bindinput="onInput" />
         <view class="btn-group">
             <button class="btn btn-primary" bindtap="save">保存批次</button>

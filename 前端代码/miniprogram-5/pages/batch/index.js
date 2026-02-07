@@ -10,6 +10,8 @@ Page({
             category: '',
             origin: '',
             status: '',
+            quantity: '',
+            unit: '',
             description: ''
         },
         queryNo: '',
@@ -31,11 +33,25 @@ Page({
 
     async save() {
         try {
+            const payload = { ...this.data.form }
+            if (payload.id === '') delete payload.id
+            if (payload.quantity === '' || payload.quantity == null) {
+                delete payload.quantity
+            } else {
+                const q = Number(payload.quantity)
+                if (Number.isNaN(q)) {
+                    delete payload.quantity
+                } else {
+                    payload.quantity = q
+                }
+            }
+            if (payload.unit === '') delete payload.unit
+
             let res
             if (this.data.form.id) {
-                res = await api.request(`/api/v1/batches/${this.data.form.id}`, 'PUT', this.data.form)
+                res = await api.request(`/api/v1/batches/${this.data.form.id}`, 'PUT', payload)
             } else {
-                res = await api.request('/api/v1/batches', 'POST', this.data.form)
+                res = await api.request('/api/v1/batches', 'POST', payload)
             }
             this.setResult(res)
             wx.showToast({ title: '保存成功' })
