@@ -1,0 +1,285 @@
+package com.example.dachuang.dev;
+
+import com.example.dachuang.auth.entity.User;
+import com.example.dachuang.auth.repository.UserRepository;
+import com.example.dachuang.blockchain.BlockchainService;
+import com.example.dachuang.trace.dto.CreateShipmentEventRequest;
+import com.example.dachuang.trace.dto.CreateShipmentRequest;
+import com.example.dachuang.trace.entity.*;
+import com.example.dachuang.trace.repository.*;
+import com.example.dachuang.trace.service.BatchService;
+import com.example.dachuang.trace.service.ShipmentService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Dev-only mock data seeder.
+ *
+ * Enable via env var: APP_MOCK_DATA_ENABLED=true
+ */
+@Slf4j
+@Component
+@Profile("dev")
+@RequiredArgsConstructor
+public class DevMockDataSeeder implements CommandLineRunner {
+
+    private static final String ROOT_BATCH_NO = "DEMO-PLANT-001";
+    private static final String PROC_A_BATCH_NO = "DEMO-PROC-A";
+    private static final String PROC_B_BATCH_NO = "DEMO-PROC-B";
+    private static final String INSP_A_GRADE_A_BATCH_NO = "DEMO-INSP-A-GRADE-A";
+    private static final String INSP_B_REWORK_BATCH_NO = "DEMO-INSP-B-REWORK";
+
+    @Value("${app.mock-data.enabled:false}")
+    private boolean enabled;
+
+    private final UserRepository userRepository;
+    private final BatchRepository batchRepository;
+    private final BatchLineageRepository batchLineageRepository;
+    private final PlantingRecordRepository plantingRecordRepository;
+    private final ProcessingRecordRepository processingRecordRepository;
+    private final InspectionRecordRepository inspectionRecordRepository;
+    private final LogisticsRecordRepository logisticsRecordRepository;
+    private final ShipmentRepository shipmentRepository;
+    private final ShipmentEventRepository shipmentEventRepository;
+
+    private final BatchService batchService;
+    private final ShipmentService shipmentService;
+    private final BlockchainService blockchainService;
+
+    @Override
+    @Transactional
+    public void run(String... args) {
+        if (!enabled) {
+            return;
+        }
+
+        // If demo root already exists, assume the dataset has been seeded.
+        if (batchRepository.findByBatchNo(ROOT_BATCH_NO).isPresent()) {
+            log.info("Mock data already present ({}). Skip seeding.", ROOT_BATCH_NO);
+            return;
+        }
+
+        log.info("Seeding mock data for dev environment...");
+
+        seedUsers();
+        seedBatchesAndLineage();
+        seedPlantingRecords();
+        seedProcessingRecords();
+        seedInspectionBranching();
+        seedLegacyLogistics();
+        seedShipmentsAndEvents();
+        seedBlockchain();
+
+        log.info("Mock data seed completed.");
+    }
+
+    private void seedUsers() {
+        createUserIfMissing("admin", "123456", "ADMIN", "管理员", "13800000001");
+        createUserIfMissing("farmer1", "123456", "FARMER", "张三", "13800000002");
+        createUserIfMissing("factory1", "123456", "FACTORY", "李四", "13800000003");
+        createUserIfMissing("regulator1", "123456", "REGULATOR", "王五", "13800000004");
+        createUserIfMissing("logistics1", "123456", "LOGISTICS", "赵六", "13800000005");
+    }
+
+    private void createUserIfMissing(String username, String password, String role, String name, String phone) {
+        if (userRepository.findByUsername(username).isPresent()) {
+            return;
+        }
+        User u = User.builder()
+                .username(username)
+                .password(password)
+                .role(role)
+                .nickname(username)
+                .name(name)
+                .phone(phone)
+                .openid(null)
+                .build();
+        userRepository.save(u);
+    }
+
+    private void seedBatchesAndLineage() {
+        Batch root = Batch.builder()
+                .batchNo(ROOT_BATCH_NO)
+                .minCode("") // auto-generate
+                .name("当归")
+                .category("中药材")
+                .origin("甘肃-岷县")
+                .status("PLANTING")
+                .quantity(1000.0)
+                .unit("kg")
+                .description("演示数据：根批次（种植原料）")
+                .build();
+        batchService.createBatch(root);
+
+        // Create deterministic processing branches using deriveBatch (so lineage exists).
+        batchService.deriveBatch(ROOT_BATCH_NO, PROC_A_BATCH_NO, "PROCESSING", "SLICE", "切片工艺分支");
+        batchService.deriveBatch(ROOT_BATCH_NO, PROC_B_BATCH_NO, "PROCESSING", "DRY", "晒干工艺分支");
+
+        // Pre-create inspection branches (derive stage INSPECTION). Records added in seedInspectionBranching.
+        batchService.deriveBatch(PROC_A_BATCH_NO, INSP_A_GRADE_A_BATCH_NO, "INSPECTION", "GRADE_A", "分级为 A");
+        batchService.deriveBatch(PROC_B_BATCH_NO, INSP_B_REWORK_BATCH_NO, "INSPECTION", "REWORK", "返工处理");
+
+        // Sanity: make sure lineage rows exist (deriveBatch should create them; this is just a guard).
+        List<BatchLineage> edges = batchLineageRepository.findAllByParentBatchNo(ROOT_BATCH_NO);
+        if (edges.isEmpty()) {
+            log.warn("No lineage edges found for root batch. Check BatchService.deriveBatch().");
+        }
+    }
+
+    private void seedPlantingRecords() {
+        plantingRecordRepository.save(PlantingRecord.builder()
+                .batchNo(ROOT_BATCH_NO)
+                .fieldName("一号地块")
+                .operation("播种")
+                .details("春季播种，土壤湿度正常。")
+                .operator("张三")
+                .imageUrl("")
+                .audioUrl("")
+                .build());
+
+        plantingRecordRepository.save(PlantingRecord.builder()
+                .batchNo(ROOT_BATCH_NO)
+                .fieldName("一号地块")
+                .operation("施肥")
+                .details("使用有机肥 50kg。")
+                .operator("张三")
+                .imageUrl("")
+                .audioUrl("")
+                .build());
+    }
+
+    private void seedProcessingRecords() {
+        // Record for branch A
+        processingRecordRepository.save(ProcessingRecord.builder()
+                .batchNo(PROC_A_BATCH_NO)
+                .parentBatchNo(ROOT_BATCH_NO)
+                .processType("SLICE")
+                .factory("演示工厂-1号车间")
+                .details("切片厚度 3mm")
+                .operator("李四")
+                .imageUrl("")
+                .build());
+
+        // Record for branch B
+        processingRecordRepository.save(ProcessingRecord.builder()
+                .batchNo(PROC_B_BATCH_NO)
+                .parentBatchNo(ROOT_BATCH_NO)
+                .processType("DRY")
+                .factory("演示工厂-2号车间")
+                .details("日晒 48 小时")
+                .operator("李四")
+                .imageUrl("")
+                .build());
+    }
+
+    private void seedInspectionBranching() {
+        inspectionRecordRepository.save(InspectionRecord.builder()
+                .batchNo(INSP_A_GRADE_A_BATCH_NO)
+                .result("GRADE_A")
+                .reportUrl("https://example.com/reports/demo-grade-a.pdf")
+                .inspector("王五")
+                .build());
+
+        inspectionRecordRepository.save(InspectionRecord.builder()
+                .batchNo(INSP_B_REWORK_BATCH_NO)
+                .result("REWORK")
+                .reportUrl("https://example.com/reports/demo-rework.pdf")
+                .inspector("王五")
+                .build());
+    }
+
+    private void seedLegacyLogistics() {
+        logisticsRecordRepository.save(LogisticsRecord.builder()
+                .batchNo(INSP_A_GRADE_A_BATCH_NO)
+                .fromLocation("甘肃-岷县仓")
+                .toLocation("兰州中转仓")
+                .trackingNo("LEGACY-TRACK-0001")
+                .location("甘肃-岷县仓")
+                .status("已出库")
+                .updateTime("2026-02-07 09:10")
+                .build());
+
+        logisticsRecordRepository.save(LogisticsRecord.builder()
+                .batchNo(INSP_A_GRADE_A_BATCH_NO)
+                .fromLocation("甘肃-岷县仓")
+                .toLocation("兰州中转仓")
+                .trackingNo("LEGACY-TRACK-0001")
+                .location("兰州中转仓")
+                .status("到站")
+                .updateTime("2026-02-07 18:30")
+                .build());
+    }
+
+    private void seedShipmentsAndEvents() {
+        // Two shipments for the same leaf batch, to demo split logistics.
+        Shipment s1 = shipmentService.create(createShipmentRequest(
+                INSP_A_GRADE_A_BATCH_NO,
+                "经销商A（成都）",
+                "顺丰",
+                "SF1234567890",
+                "演示：第一票发运"
+        ));
+
+        Shipment s2 = shipmentService.create(createShipmentRequest(
+                INSP_A_GRADE_A_BATCH_NO,
+                "经销商B（上海）",
+                "中通",
+                "ZT0987654321",
+                "演示：第二票发运"
+        ));
+
+        List<CreateShipmentEventRequest> s1Events = new ArrayList<>();
+        s1Events.add(createEvent(LocalDateTime.now().minusDays(1).withHour(9).withMinute(0), "甘肃-岷县仓", "IN_TRANSIT", "已揽收"));
+        s1Events.add(createEvent(LocalDateTime.now().minusDays(1).withHour(15).withMinute(30), "兰州中转仓", "IN_TRANSIT", "到达中转仓"));
+        s1Events.add(createEvent(LocalDateTime.now().withHour(10).withMinute(20), "成都分拨中心", "DELIVERED", "签收完成"));
+        addEventsIfNone(s1.getShipmentNo(), s1Events);
+
+        List<CreateShipmentEventRequest> s2Events = new ArrayList<>();
+        s2Events.add(createEvent(LocalDateTime.now().minusDays(1).withHour(8).withMinute(40), "甘肃-岷县仓", "IN_TRANSIT", "已揽收"));
+        s2Events.add(createEvent(LocalDateTime.now().withHour(11).withMinute(50), "上海虹桥转运中心", "DELIVERED", "签收完成"));
+        addEventsIfNone(s2.getShipmentNo(), s2Events);
+    }
+
+    private CreateShipmentRequest createShipmentRequest(String batchNo, String distributorName, String carrier, String trackingNo, String remarks) {
+        CreateShipmentRequest r = new CreateShipmentRequest();
+        r.setBatchNo(batchNo);
+        r.setDistributorName(distributorName);
+        r.setCarrier(carrier);
+        r.setTrackingNo(trackingNo);
+        r.setRemarks(remarks);
+        return r;
+    }
+
+    private CreateShipmentEventRequest createEvent(LocalDateTime time, String location, String status, String details) {
+        CreateShipmentEventRequest r = new CreateShipmentEventRequest();
+        r.setEventTime(time);
+        r.setLocation(location);
+        r.setStatus(status);
+        r.setDetails(details);
+        return r;
+    }
+
+    private void addEventsIfNone(String shipmentNo, List<CreateShipmentEventRequest> events) {
+        if (!shipmentEventRepository.findAllByShipmentNoOrderByEventTimeAsc(shipmentNo).isEmpty()) {
+            return;
+        }
+        for (CreateShipmentEventRequest e : events) {
+            shipmentService.addEvent(shipmentNo, e);
+        }
+    }
+
+    private void seedBlockchain() {
+        // Only create one record per batchNo for demo readability.
+        blockchainService.recordOnChain(ROOT_BATCH_NO, "seed:root");
+        blockchainService.recordOnChain(INSP_A_GRADE_A_BATCH_NO, "seed:leaf");
+    }
+}
