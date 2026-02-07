@@ -1,1 +1,83 @@
 /* pages/planting/index.wxss */
+.stat-row {
+  display: flex;
+  gap: 20rpx;
+}
+
+.stat-item {
+  flex: 1;
+  padding: 20rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 16rpx;
+  background: #fff;
+}
+
+.stat-value {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.stat-label {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: var(--text-sub);
+}
+
+.meta {
+  margin-top: 18rpx;
+  font-size: 22rpx;
+  color: var(--text-sub);
+}
+
+.empty {
+  margin-top: 20rpx;
+  font-size: 24rpx;
+  color: var(--text-sub);
+  text-align: center;
+}
+
+.list {
+  margin-top: 20rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 16rpx;
+  background: #fff;
+}
+
+.list-item:active {
+  background: #f0f0f0;
+}
+
+.list-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.list-sub {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: var(--text-sub);
+}
+
+.list-meta {
+  margin-top: 8rpx;
+  font-size: 20rpx;
+  color: #999;
+}
+
+.list-action {
+  font-size: 24rpx;
+  color: var(--accent-color);
+  font-weight: 600;
+}

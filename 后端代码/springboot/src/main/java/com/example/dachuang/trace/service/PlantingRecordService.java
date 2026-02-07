@@ -33,6 +33,8 @@ public class PlantingRecordService {
         existing.setOperation(record.getOperation());
         existing.setDetails(record.getDetails());
         existing.setOperator(record.getOperator());
+        existing.setImageUrl(record.getImageUrl());
+        existing.setAudioUrl(record.getAudioUrl());
         return plantingRecordRepository.save(existing);
     }
 
