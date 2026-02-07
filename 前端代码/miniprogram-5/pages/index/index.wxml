@@ -1,138 +1,57 @@
-<scroll-view class="scrollarea" scroll-y>
-  <view class="container">
-    <view class="header">
-      <view class="title">后端联调面板</view>
-      <view class="sub">Base URL：{{baseUrl}}</view>
-      <view class="sub">Health：{{healthStatus}}</view>
-      <button class="btn" bindtap="checkHealth">健康检查</button>
-    </view>
-
-    <view class="section">
-      <view class="section-title">登录 / JWT</view>
-      <input class="input" placeholder="输入 code（可手动）" value="{{loginCode}}" bindinput="onLoginCodeInput" />
-      <view class="row">
-        <button class="btn" bindtap="loginWithCode">登录（code）</button>
-        <button class="btn" bindtap="loginWithWx">登录（wx.login）</button>
+<view class="page-container">
+  <view class="dashboard-header">
+    <view class="title">智汇本草</view>
+    <view class="desc">中药材全过程溯源管理系统</view>
+    <view class="status-bar">
+      <view class="status-item">
+        <text class="dot {{healthStatus === 'UP' ? 'online' : 'offline'}}"></text>
+        系统状态: {{healthStatus}}
       </view>
-      <view class="sub">Token：{{token}}</view>
-    </view>
-
-    <view class="section">
-      <view class="section-title">批次 Batch</view>
-      <input class="input" placeholder="ID（更新/删除用）" value="{{batchForm.id}}" data-field="id" bindinput="onBatchInput" />
-      <input class="input" placeholder="batchNo" value="{{batchForm.batchNo}}" data-field="batchNo" bindinput="onBatchInput" />
-      <input class="input" placeholder="minCode（可选，后端可自动生成）" value="{{batchForm.minCode}}" data-field="minCode" bindinput="onBatchInput" />
-      <input class="input" placeholder="name" value="{{batchForm.name}}" data-field="name" bindinput="onBatchInput" />
-      <input class="input" placeholder="category" value="{{batchForm.category}}" data-field="category" bindinput="onBatchInput" />
-      <input class="input" placeholder="origin" value="{{batchForm.origin}}" data-field="origin" bindinput="onBatchInput" />
-      <input class="input" placeholder="status" value="{{batchForm.status}}" data-field="status" bindinput="onBatchInput" />
-      <input class="input" placeholder="description" value="{{batchForm.description}}" data-field="description" bindinput="onBatchInput" />
-      <view class="row">
-        <button class="btn" bindtap="createBatch">新增</button>
-        <button class="btn" bindtap="updateBatch">更新</button>
-        <button class="btn" bindtap="deleteBatch">删除</button>
+      <view class="status-item">
+        <text class="dot {{token ? 'online' : 'offline'}}"></text>
+        身份认证: {{token ? '已登录' : '未登录'}}
       </view>
-      <input class="input" placeholder="按 batchNo 查询" value="{{batchQueryNo}}" bindinput="onBatchQueryNoInput" />
-      <view class="row">
-        <button class="btn" bindtap="getBatchByNo">查单个</button>
-        <button class="btn" bindtap="listBatches">查全部</button>
-      </view>
-    </view>
-
-    <view class="section">
-      <view class="section-title">溯源查询 Trace</view>
-      <input class="input" placeholder="batchNo" value="{{traceBatchNo}}" bindinput="onTraceBatchNoInput" />
-      <button class="btn" bindtap="queryTrace">查询溯源</button>
-    </view>
-
-    <view class="section">
-      <view class="section-title">种植记录 Planting</view>
-      <input class="input" placeholder="ID（更新/删除用）" value="{{plantingForm.id}}" data-field="id" bindinput="onPlantingInput" />
-      <input class="input" placeholder="batchNo" value="{{plantingForm.batchNo}}" data-field="batchNo" bindinput="onPlantingInput" />
-      <input class="input" placeholder="fieldName" value="{{plantingForm.fieldName}}" data-field="fieldName" bindinput="onPlantingInput" />
-      <input class="input" placeholder="operation" value="{{plantingForm.operation}}" data-field="operation" bindinput="onPlantingInput" />
-      <input class="input" placeholder="details" value="{{plantingForm.details}}" data-field="details" bindinput="onPlantingInput" />
-      <input class="input" placeholder="operator" value="{{plantingForm.operator}}" data-field="operator" bindinput="onPlantingInput" />
-      <view class="row">
-        <button class="btn" bindtap="createPlanting">新增</button>
-        <button class="btn" bindtap="updatePlanting">更新</button>
-        <button class="btn" bindtap="deletePlanting">删除</button>
-        <button class="btn" bindtap="listPlanting">按 batchNo 查询</button>
-      </view>
-    </view>
-
-    <view class="section">
-      <view class="section-title">加工记录 Processing</view>
-      <input class="input" placeholder="ID（更新/删除用）" value="{{processingForm.id}}" data-field="id" bindinput="onProcessingInput" />
-      <input class="input" placeholder="batchNo" value="{{processingForm.batchNo}}" data-field="batchNo" bindinput="onProcessingInput" />
-      <input class="input" placeholder="processType" value="{{processingForm.processType}}" data-field="processType" bindinput="onProcessingInput" />
-      <input class="input" placeholder="factory" value="{{processingForm.factory}}" data-field="factory" bindinput="onProcessingInput" />
-      <input class="input" placeholder="details" value="{{processingForm.details}}" data-field="details" bindinput="onProcessingInput" />
-      <input class="input" placeholder="operator" value="{{processingForm.operator}}" data-field="operator" bindinput="onProcessingInput" />
-      <view class="row">
-        <button class="btn" bindtap="createProcessing">新增</button>
-        <button class="btn" bindtap="updateProcessing">更新</button>
-        <button class="btn" bindtap="deleteProcessing">删除</button>
-        <button class="btn" bindtap="listProcessing">按 batchNo 查询</button>
-      </view>
-    </view>
-
-    <view class="section">
-      <view class="section-title">物流记录 Logistics</view>
-      <input class="input" placeholder="ID（更新/删除用）" value="{{logisticsForm.id}}" data-field="id" bindinput="onLogisticsInput" />
-      <input class="input" placeholder="batchNo" value="{{logisticsForm.batchNo}}" data-field="batchNo" bindinput="onLogisticsInput" />
-      <input class="input" placeholder="fromLocation" value="{{logisticsForm.fromLocation}}" data-field="fromLocation" bindinput="onLogisticsInput" />
-      <input class="input" placeholder="toLocation" value="{{logisticsForm.toLocation}}" data-field="toLocation" bindinput="onLogisticsInput" />
-      <input class="input" placeholder="trackingNo" value="{{logisticsForm.trackingNo}}" data-field="trackingNo" bindinput="onLogisticsInput" />
-      <input class="input" placeholder="status" value="{{logisticsForm.status}}" data-field="status" bindinput="onLogisticsInput" />
-      <input class="input" placeholder="location" value="{{logisticsForm.location}}" data-field="location" bindinput="onLogisticsInput" />
-      <input class="input" placeholder="updateTime" value="{{logisticsForm.updateTime}}" data-field="updateTime" bindinput="onLogisticsInput" />
-      <view class="row">
-        <button class="btn" bindtap="createLogistics">新增</button>
-        <button class="btn" bindtap="updateLogistics">更新</button>
-        <button class="btn" bindtap="deleteLogistics">删除</button>
-        <button class="btn" bindtap="listLogistics">按 batchNo 查询</button>
-      </view>
-    </view>
-
-    <view class="section">
-      <view class="section-title">质检记录 Inspection</view>
-      <input class="input" placeholder="ID（更新/删除用）" value="{{inspectionForm.id}}" data-field="id" bindinput="onInspectionInput" />
-      <input class="input" placeholder="batchNo" value="{{inspectionForm.batchNo}}" data-field="batchNo" bindinput="onInspectionInput" />
-      <input class="input" placeholder="result" value="{{inspectionForm.result}}" data-field="result" bindinput="onInspectionInput" />
-      <input class="input" placeholder="reportUrl" value="{{inspectionForm.reportUrl}}" data-field="reportUrl" bindinput="onInspectionInput" />
-      <input class="input" placeholder="inspector" value="{{inspectionForm.inspector}}" data-field="inspector" bindinput="onInspectionInput" />
-      <view class="row">
-        <button class="btn" bindtap="createInspection">新增</button>
-        <button class="btn" bindtap="updateInspection">更新</button>
-        <button class="btn" bindtap="deleteInspection">删除</button>
-        <button class="btn" bindtap="listInspection">按 batchNo 查询</button>
-      </view>
-    </view>
-
-    <view class="section">
-      <view class="section-title">双码 Code</view>
-      <input class="input" placeholder="batchNo" value="{{codeBatchNo}}" bindinput="onCodeBatchNoInput" />
-      <view class="row">
-        <button class="btn" bindtap="generateCode">生成双码</button>
-      </view>
-      <input class="input" placeholder="隐形码" value="{{invisibleCode}}" bindinput="onInvisibleCodeInput" />
-      <button class="btn" bindtap="verifyCode">核验隐形码</button>
-    </view>
-
-    <view class="section">
-      <view class="section-title">区块链 Blockchain</view>
-      <input class="input" placeholder="batchNo" value="{{blockchainBatchNo}}" data-field="blockchainBatchNo" bindinput="onBlockchainInput" />
-      <input class="input" placeholder="data（可选）" value="{{blockchainData}}" data-field="blockchainData" bindinput="onBlockchainInput" />
-      <view class="row">
-        <button class="btn" bindtap="recordBlockchain">上链</button>
-        <button class="btn" bindtap="getBlockchain">查询</button>
-      </view>
-    </view>
-
-    <view class="section">
-      <view class="section-title">输出</view>
-      <text class="output">{{lastResult}}</text>
     </view>
   </view>
-</scroll-view>
+  <view class="card setup-card">
+    <view class="section-title">环境配置</view>
+    <input class="input" placeholder="后端地址 (Base URL)" value="{{baseUrl}}" bindinput="onBaseUrlInput" />
+    <view class="btn-group">
+      <button class="btn btn-primary" bindtap="checkHealth">刷新状态</button>
+      <button class="btn btn-outline" bindtap="goLogin">账号登录</button>
+    </view>
+  </view>
+  <view class="menu-grid">
+    <view class="menu-item" bindtap="navTo" data-url="/pages/batch/index">
+      <view class="menu-icon">📦</view>
+      <view class="menu-label">批次管理</view>
+    </view>
+    <view class="menu-item" bindtap="navTo" data-url="/pages/planting/index">
+      <view class="menu-icon">🌱</view>
+      <view class="menu-label">种植录入</view>
+    </view>
+    <view class="menu-item" bindtap="navTo" data-url="/pages/processing/index">
+      <view class="menu-icon">🏭</view>
+      <view class="menu-label">加工登记</view>
+    </view>
+    <view class="menu-item" bindtap="navTo" data-url="/pages/logistics/index">
+      <view class="menu-icon">🚚</view>
+      <view class="menu-label">物流追踪</view>
+    </view>
+    <view class="menu-item" bindtap="navTo" data-url="/pages/inspection/index">
+      <view class="menu-icon">📋</view>
+      <view class="menu-label">质检中心</view>
+    </view>
+    <view class="menu-item" bindtap="navTo" data-url="/pages/security/index">
+      <view class="menu-icon">🛡️</view>
+      <view class="menu-label">安全防伪</view>
+    </view>
+    <view class="menu-item" bindtap="navTo" data-url="/pages/logs/logs">
+      <view class="menu-icon">📑</view>
+      <view class="menu-label">操作日志</view>
+    </view>
+  </view>
+  <view class="footer">
+    <text>© 2026 大创比赛 - 云智本草团队</text>
+  </view>
+</view>

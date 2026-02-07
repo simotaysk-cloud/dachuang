@@ -1,0 +1,19 @@
+<view class="login-container">
+    <view class="login-header">
+        <image class="logo" src="/assets/logo.png" mode="aspectFit" />
+        <view class="title">智汇本草</view>
+        <view class="subtitle">让中药溯源更简单、更安全</view>
+    </view>
+    <view class="login-card">
+        <view class="role-hint">商户/生产者登录</view>
+        <input class="input" placeholder="输入用户名" data-field="username" bindinput="onInput" />
+        <input class="input" placeholder="输入密码" password data-field="password" bindinput="onInput" />
+        <button class="login-btn" bindtap="handleLogin">
+            <view class="btn-content">
+                <text>立即登录</text>
+            </view>
+        </button>
+        <view class="agreement">登录即代表您同意《用户服务协议》</view>
+    </view>
+    <view class="version">Version 1.0.2</view>
+</view>

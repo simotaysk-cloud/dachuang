@@ -1,4 +1,5 @@
 {
-  "usingComponents": {
-  }
+  "navigationBarTitleText": "管理后台",
+  "navigationBarBackgroundColor": "#2c3e50",
+  "navigationBarTextStyle": "white"
 }

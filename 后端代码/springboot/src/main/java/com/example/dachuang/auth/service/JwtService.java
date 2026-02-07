@@ -23,9 +23,9 @@ public class JwtService {
     @Value("${jwt.expiration:86400000}") // 24 hours
     private Long expiration;
 
-    public String generateToken(String openid) {
+    public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, openid);
+        return createToken(claims, username);
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
@@ -39,12 +39,12 @@ public class JwtService {
                 .compact();
     }
 
-    public Boolean validateToken(String token, String openid) {
-        final String extractedOpenid = extractOpenid(token);
-        return (extractedOpenid.equals(openid) && !isTokenExpired(token));
+    public Boolean validateToken(String token, String username) {
+        final String extractedUsername = extractUsername(token);
+        return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
 
-    public String extractOpenid(String token) {
+    public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 

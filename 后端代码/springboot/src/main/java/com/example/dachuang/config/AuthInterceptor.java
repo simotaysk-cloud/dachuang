@@ -27,8 +27,8 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         String token = authHeader.substring(7);
         try {
-            String openid = jwtService.extractOpenid(token);
-            request.setAttribute("openid", openid);
+            String username = jwtService.extractUsername(token);
+            request.setAttribute("username", username);
         } catch (Exception e) {
             throw new BusinessException(401, "Invalid token");
         }

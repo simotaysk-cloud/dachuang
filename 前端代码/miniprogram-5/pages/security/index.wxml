@@ -1,0 +1,28 @@
+<view class="page-container">
+    <view class="header">
+        <view class="title">安全与防伪</view>
+        <view class="desc">核验双码防伪信息与区块链不可篡改存证</view>
+    </view>
+    <view class="card">
+        <view class="section-title">双码管理</view>
+        <input class="input" placeholder="输入批次号 (batchNo)" value="{{batchNo}}" bindinput="onBatchInput" />
+        <button class="btn btn-primary" bindtap="generate">生成防伪双码</button>
+        <view style="margin-top:40rpx">
+            <input class="input" placeholder="输入要核验的隐形码" value="{{invisibleCode}}" bindinput="onCodeInput" />
+            <button class="btn btn-outline" bindtap="verify">核验码合法性</button>
+        </view>
+    </view>
+    <view class="card">
+        <view class="section-title">区块链存证</view>
+        <input class="input" placeholder="额外存证数据 (可选)" value="{{bcData}}" bindinput="onBCDataInput" />
+        <view class="btn-group">
+            <button class="btn btn-primary" bindtap="recordBC">触发数据上链</button>
+            <button class="btn btn-outline" bindtap="queryBC">读取链上特征</button>
+        </view>
+    </view>
+    <view class="result-area" wx:if="{{result}}">
+        <scroll-view scroll-y class="result-scroll">
+            <text class="result-text">{{result}}</text>
+        </scroll-view>
+    </view>
+</view>

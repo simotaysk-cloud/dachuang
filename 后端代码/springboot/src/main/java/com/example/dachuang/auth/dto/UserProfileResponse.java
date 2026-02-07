@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class UserProfileResponse {
-    private String openid;
+    private String username;
     private String nickname;
     private String avatarUrl;
     private String role;

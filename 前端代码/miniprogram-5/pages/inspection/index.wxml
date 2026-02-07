@@ -1,0 +1,30 @@
+<view class="page-container">
+    <view class="header">
+        <view class="title">质检中心</view>
+        <view class="desc">发布与管理药材的质量检测报告</view>
+    </view>
+    <view class="card">
+        <view class="section-title">发布报告</view>
+        <input class="input" placeholder="记录ID（编辑用）" value="{{form.id}}" data-field="id" bindinput="onInput" />
+        <input class="input" placeholder="对应批次号 (batchNo)" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />
+        <input class="input" placeholder="检测结果 (合格/不合格)" value="{{form.result}}" data-field="result" bindinput="onInput" />
+        <input class="input" placeholder="报告链接 (reportUrl)" value="{{form.reportUrl}}" data-field="reportUrl" bindinput="onInput" />
+        <input class="input" placeholder="质检员 (inspector)" value="{{form.inspector}}" data-field="inspector" bindinput="onInput" />
+        <view class="btn-group">
+            <button class="btn btn-primary" bindtap="save">发布报告</button>
+            <button class="btn btn-warn" bindtap="remove">撤回报告</button>
+        </view>
+    </view>
+    <view class="card">
+        <view class="section-title">全量查询</view>
+        <view class="search-bar">
+            <input class="input-inline" placeholder="输入 batchNo" value="{{queryNo}}" bindinput="onQueryInput" />
+            <button class="btn-small" bindtap="query">查询</button>
+        </view>
+    </view>
+    <view class="result-area" wx:if="{{result}}">
+        <scroll-view scroll-y class="result-scroll">
+            <text class="result-text">{{result}}</text>
+        </scroll-view>
+    </view>
+</view>
