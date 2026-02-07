@@ -15,4 +15,5 @@ public class TraceResponse {
     private List<ProcessingRecord> processingRecords;
     private List<LogisticsRecord> logisticsRecords;
     private List<InspectionRecord> inspectionRecords;
+    private List<ShipmentWithEvents> shipmentsWithEvents;
 }

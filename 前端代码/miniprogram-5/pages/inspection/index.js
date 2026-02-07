@@ -2,6 +2,15 @@ const api = require('../../utils/api')
 
 Page({
     data: {
+        deriveForm: {
+            parentBatchNo: '',
+            childBatchNo: '',
+            result: '',
+            reportUrl: '',
+            inspector: '',
+            details: ''
+        },
+
         form: {
             id: '',
             batchNo: '',
@@ -22,8 +31,23 @@ Page({
         this.setData({ queryNo: e.detail.value })
     },
 
+    onDeriveInput(e) {
+        const { field } = e.currentTarget.dataset
+        this.setData({ [`deriveForm.${field}`]: e.detail.value })
+    },
+
     setResult(data) {
         this.setData({ result: JSON.stringify(data, null, 2) })
+    },
+
+    async derive() {
+        try {
+            const res = await api.request('/api/v1/inspection/derive', 'POST', this.data.deriveForm)
+            this.setResult(res)
+            wx.showToast({ title: '派生成功' })
+        } catch (err) {
+            this.setResult(err)
+        }
     },
 
     async save() {
@@ -36,6 +60,17 @@ Page({
             }
             this.setResult(res)
             wx.showToast({ title: '保存成功' })
+        } catch (err) {
+            this.setResult(err)
+        }
+    },
+
+    async remove() {
+        if (!this.data.form.id) return wx.showToast({ title: '请输入记录ID', icon: 'none' })
+        try {
+            const res = await api.request(`/api/v1/inspection/${this.data.form.id}`, 'DELETE')
+            this.setResult(res)
+            wx.showToast({ title: '删除成功' })
         } catch (err) {
             this.setResult(err)
         }
