@@ -101,7 +101,8 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .nickname(username)
                 .name(name)
                 .phone(phone)
-                .openid(null)
+                // Some existing dev schemas have `openid` as NOT NULL; keep it always populated.
+                .openid("mock_openid_" + username)
                 .build();
         userRepository.save(u);
     }
