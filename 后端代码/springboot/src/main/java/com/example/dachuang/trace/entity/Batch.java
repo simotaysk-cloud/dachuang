@@ -40,12 +40,12 @@ public class Batch extends BaseEntity {
     @Column(length = 16)
     private String unit; // 单位 (kg, g, ton, etc.)
 
-    @Column(unique = true, length = 32)
+    @Column(name = "gs1_lot_no", unique = true, length = 32)
     private String gs1LotNo; // GS1 AI(10) Lot/Batch (<= 20 chars, unique in our system)
 
-    @Column(unique = true, length = 128)
+    @Column(name = "gs1_code", unique = true, length = 128)
     private String gs1Code; // GS1-128 HRI: (01)...(10)...(310x)...
 
-    @Column(nullable = false)
+    @Column(name = "gs1_locked", nullable = false)
     private boolean gs1Locked; // after printing/applying, prevent changes to GS1-related fields
 }

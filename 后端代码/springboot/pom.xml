@@ -84,12 +84,6 @@
             <version>2.3.0</version>
         </dependency>
 
-        <!-- Flyway (schema migrations) -->
-        <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
-        </dependency>
-
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
