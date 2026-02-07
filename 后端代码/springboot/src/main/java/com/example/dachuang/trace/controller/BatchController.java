@@ -41,6 +41,11 @@ public class BatchController {
         return Result.success(batchService.deriveBatch(parentBatchNo, childBatchNo, "PROCESSING", processType, details));
     }
 
+    @PostMapping("/{batchNo}/lock-gs1")
+    public Result<Batch> lockGs1(@PathVariable String batchNo) {
+        return Result.success(batchService.lockGs1ByBatchNo(batchNo));
+    }
+
     @GetMapping("/{parentBatchNo}/children")
     public Result<List<BatchLineage>> children(@PathVariable String parentBatchNo) {
         return Result.success(batchService.getChildren(parentBatchNo));

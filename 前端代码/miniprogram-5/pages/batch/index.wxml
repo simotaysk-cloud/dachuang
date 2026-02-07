@@ -28,6 +28,7 @@
             <input class="input-inline" placeholder="输入 batchNo" value="{{queryNo}}" bindinput="onQueryInput" />
             <button class="btn-small" bindtap="query">查单个</button>
         </view>
+        <button class="btn btn-warn" bindtap="lockGs1">锁定GS1（贴标后）</button>
         <button class="btn btn-outline" bindtap="listAll">获取全部批次列表</button>
     </view>
     <view class="result-area" wx:if="{{result}}">

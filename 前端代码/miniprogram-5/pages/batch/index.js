@@ -81,6 +81,17 @@ Page({
         }
     },
 
+    async lockGs1() {
+        if (!this.data.queryNo) return wx.showToast({ title: '请输入 batchNo', icon: 'none' })
+        try {
+            const res = await api.request(`/api/v1/batches/${this.data.queryNo}/lock-gs1`, 'POST')
+            this.setResult(res)
+            wx.showToast({ title: '已锁定GS1' })
+        } catch (err) {
+            this.setResult(err)
+        }
+    },
+
     async listAll() {
         try {
             const res = await api.request('/api/v1/batches')
