@@ -1,6 +1,8 @@
 package com.example.dachuang.trace.service;
 
 import com.example.dachuang.common.exception.BusinessException;
+import com.example.dachuang.auth.entity.User;
+import com.example.dachuang.auth.repository.UserRepository;
 import com.example.dachuang.trace.entity.Batch;
 import com.example.dachuang.trace.entity.BatchLineage;
 import com.example.dachuang.trace.repository.BatchRepository;
@@ -10,6 +12,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
@@ -20,8 +24,10 @@ public class BatchService {
     private final BatchRepository batchRepository;
     private final BatchLineageRepository batchLineageRepository;
     private final Gs1Service gs1Service;
+    private final UserRepository userRepository;
 
     private static final SecureRandom RANDOM = new SecureRandom();
+    private static final DateTimeFormatter DAY_FMT = DateTimeFormatter.BASIC_ISO_DATE; // yyyyMMdd
 
     public List<Batch> getAllBatches() {
         return batchRepository.findAll();
@@ -33,9 +39,37 @@ public class BatchService {
     }
 
     public Batch createBatch(Batch batch) {
+        // Backwards-compatible path (used by dev seeders). Treat as ADMIN/system.
+        return createBatch(batch, "admin", "ADMIN");
+    }
+
+    public Batch createBatch(Batch batch, String username, String role) {
+        if (batch == null) {
+            throw new BusinessException(400, "Invalid batch payload");
+        }
+
+        // Ownership: default to the authenticated user.
+        if (batch.getOwnerUserId() == null) {
+            User u = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new BusinessException(401, "User not found"));
+            batch.setOwnerUserId(u.getId());
+        }
+
+        // Batch number: farmers typically don't type it; backend generates a unique one.
+        String requestedNo = (batch.getBatchNo() == null) ? "" : batch.getBatchNo().trim();
+        if (!"ADMIN".equalsIgnoreCase(role)) {
+            requestedNo = ""; // ignore client-provided batchNo for non-admin
+        }
+        if (requestedNo.isBlank()) {
+            batch.setBatchNo(generateBatchNo(username));
+        } else {
+            batch.setBatchNo(requestedNo);
+        }
+
         if (batchRepository.findByBatchNo(batch.getBatchNo()).isPresent()) {
             throw new BusinessException(400, "Batch number already exists");
         }
+
         // 生成隐形码（如果未提供）
         if (batch.getMinCode() == null || batch.getMinCode().isBlank()) {
             batch.setMinCode(java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 16));
@@ -64,6 +98,7 @@ public class BatchService {
         Batch child = batchRepository.findByBatchNo(outputNo).orElse(null);
         if (child == null) {
             Batch b = Batch.builder()
+                    .ownerUserId(parent.getOwnerUserId())
                     .batchNo(outputNo)
                     .minCode(null) // auto-generate
                     .name(parent.getName())
@@ -126,6 +161,30 @@ public class BatchService {
             }
         }
         throw new BusinessException(500, "Failed to generate derived batch number");
+    }
+
+    private String generateBatchNo(String username) {
+        String baseUser = (username == null) ? "user" : username.trim();
+        if (baseUser.isBlank()) {
+            baseUser = "user";
+        }
+        baseUser = baseUser.toUpperCase(Locale.ROOT).replaceAll("[^A-Z0-9]+", "");
+        if (baseUser.length() > 10) {
+            baseUser = baseUser.substring(0, 10);
+        }
+
+        String day = LocalDate.now().format(DAY_FMT);
+        String prefix = "B-" + baseUser + "-" + day;
+
+        for (int i = 0; i < 50; i++) {
+            String rand = Integer.toString(RANDOM.nextInt(36 * 36 * 36 * 36), 36);
+            rand = String.format("%4s", rand).replace(' ', '0').toUpperCase(Locale.ROOT);
+            String candidate = prefix + "-" + rand;
+            if (batchRepository.findByBatchNo(candidate).isEmpty()) {
+                return candidate;
+            }
+        }
+        throw new BusinessException(500, "Failed to generate batch number");
     }
 
     public Batch updateBatch(Long id, Batch batchDetails) {

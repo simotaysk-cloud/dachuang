@@ -16,6 +16,9 @@ import lombok.*;
 @Table(name = "batches")
 public class Batch extends BaseEntity {
 
+    @Column(name = "owner_user_id")
+    private Long ownerUserId; // 所属用户ID（批次创建/归属）
+
     @Column(unique = true, nullable = false, length = 64)
     private String batchNo; // 批次号（业务主键）
 
