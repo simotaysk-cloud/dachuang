@@ -39,27 +39,27 @@
         <view class="menu-icon">种</view>
         <view class="menu-label">种植录入</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/processing/index">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/processing/index" wx:if="{{role !== 'FARMER'}}">
         <view class="menu-icon">加</view>
         <view class="menu-label">加工登记</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/logistics/index">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/logistics/index" wx:if="{{role !== 'FARMER'}}">
         <view class="menu-icon">物</view>
         <view class="menu-label">物流追踪</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/inspection/index">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/inspection/index" wx:if="{{role !== 'FARMER'}}">
         <view class="menu-icon">检</view>
         <view class="menu-label">质检中心</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/security/index">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/security/index" wx:if="{{role !== 'FARMER'}}">
         <view class="menu-icon">防</view>
         <view class="menu-label">安全防伪</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/trace/index">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/trace/index" wx:if="{{role !== 'FARMER'}}">
         <view class="menu-icon">溯</view>
         <view class="menu-label">溯源查询</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/logs/logs">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/logs/logs" wx:if="{{role !== 'FARMER'}}">
         <view class="menu-icon">志</view>
         <view class="menu-label">操作日志</view>
       </view>

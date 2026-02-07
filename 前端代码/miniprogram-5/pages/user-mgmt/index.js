@@ -18,6 +18,10 @@ Page({
     },
 
     onLoad() {
+        if (api.role !== 'ADMIN') {
+            wx.showToast({ title: '无权限（仅管理员可用）', icon: 'none' })
+            return wx.redirectTo({ url: '/pages/index/index' })
+        }
         this.loadUsers()
     },
 
