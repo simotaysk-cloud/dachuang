@@ -2,6 +2,8 @@ package com.example.dachuang.blockchain;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import com.example.dachuang.trace.service.BatchService;
 import java.util.UUID;
 
 @Service
@@ -9,16 +11,28 @@ import java.util.UUID;
 public class BlockchainService {
 
     private final BlockchainRecordRepository blockchainRecordRepository;
+    private final BatchService batchService;
 
     public String recordOnChain(String batchNo, String data) {
+        // Enforce referential integrity at the application layer too (DB has FK).
+        batchService.getBatchByNo(batchNo);
+
         // Mocking blockchain transaction
         String txHash = "0x" + UUID.randomUUID().toString().replace("-", "");
 
-        BlockchainRecord record = BlockchainRecord.builder()
-                .batchNo(batchNo)
-                .txHash(txHash)
-                .dataHash("sha256:" + UUID.randomUUID().toString().substring(0, 8))
-                .build();
+        String dataHash = "sha256:" + UUID.randomUUID().toString().substring(0, 8);
+
+        BlockchainRecord record = blockchainRecordRepository.findByBatchNo(batchNo).orElse(null);
+        if (record == null) {
+            record = BlockchainRecord.builder()
+                    .batchNo(batchNo)
+                    .txHash(txHash)
+                    .dataHash(dataHash)
+                    .build();
+        } else {
+            record.setTxHash(txHash);
+            record.setDataHash(dataHash);
+        }
 
         blockchainRecordRepository.save(record);
         return txHash;

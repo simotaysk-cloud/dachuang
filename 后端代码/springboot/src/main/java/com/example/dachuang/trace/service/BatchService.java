@@ -6,6 +6,7 @@ import com.example.dachuang.trace.entity.BatchLineage;
 import com.example.dachuang.trace.repository.BatchRepository;
 import com.example.dachuang.trace.repository.BatchLineageRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -46,9 +47,6 @@ public class BatchService {
         }
         if (batch.getGs1Code() == null || batch.getGs1Code().isBlank()) {
             batch.setGs1Code(gs1Service.generateGs1HRI(batch.getGs1LotNo(), batch.getQuantity(), batch.getUnit()));
-        }
-        if (batch.getGs1Locked() == null) {
-            batch.setGs1Locked(false);
         }
 
         return batchRepository.save(batch);
@@ -140,14 +138,10 @@ public class BatchService {
         batch.setStatus(batchDetails.getStatus());
         batch.setDescription(batchDetails.getDescription());
 
-        if (batch.getGs1Locked() == null) {
-            batch.setGs1Locked(false);
-        }
-
-        boolean locked = Boolean.TRUE.equals(batch.getGs1Locked());
+        boolean locked = batch.isGs1Locked();
         if (locked) {
             boolean quantityChanged = batchDetails.getQuantity() != null
-                    && (batch.getQuantity() == null || Double.compare(batchDetails.getQuantity(), batch.getQuantity()) != 0);
+                    && (batch.getQuantity() == null || batchDetails.getQuantity().compareTo(batch.getQuantity()) != 0);
             boolean unitChanged = batchDetails.getUnit() != null
                     && (batch.getUnit() == null || !batchDetails.getUnit().equals(batch.getUnit()));
             if (quantityChanged || unitChanged) {
@@ -197,6 +191,10 @@ public class BatchService {
     }
 
     public void deleteBatch(Long id) {
-        batchRepository.deleteById(id);
+        try {
+            batchRepository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException(400, "Batch is referenced by other records; cannot delete in demo mode");
+        }
     }
 }

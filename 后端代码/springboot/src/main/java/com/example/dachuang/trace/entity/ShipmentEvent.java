@@ -24,13 +24,18 @@ import java.time.LocalDateTime;
 )
 public class ShipmentEvent extends BaseEntity {
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 64)
     @NotBlank(message = "shipmentNo cannot be blank")
     private String shipmentNo;
 
+    @Column(nullable = false)
     private LocalDateTime eventTime;
+
+    @Column(nullable = false, length = 128)
     @NotBlank(message = "location cannot be blank")
     private String location;
+
+    @Column(nullable = false, length = 32)
     @NotBlank(message = "status cannot be blank")
     private String status;
 

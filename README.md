@@ -28,9 +28,16 @@
    ```sql
    CREATE DATABASE dachuang CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
    ```
+   或使用演示环境一键重建脚本（会 DROP 并重建数据库；适用于演示数据环境）：
+   ```bash
+   cd 后端代码/springboot
+   bash scripts/reset_demo_db.sh
+   ```
+   > 如果你之前使用过旧版本（JPA 自动建表）生成过表结构，建议直接使用上述脚本重建库，避免 Flyway 与旧表结构冲突。
 3. **配置修改**：修改 `后端代码/springboot/src/main/resources/application-dev.yml` 中的数据库账号密码：
    - 默认账号: `dachuang`
    - 默认密码: `Dachuang123!` (请根据实际情况调整)
+   > 说明：当前数据库表结构由 **Flyway** 管理，后端启动时会自动执行迁移；JPA 仅做 `validate` 校验。
 4. **运行服务**：
    ```bash
    cd 后端代码/springboot

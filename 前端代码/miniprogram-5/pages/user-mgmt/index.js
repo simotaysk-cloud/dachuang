@@ -27,6 +27,12 @@ Page({
             this.setData({ users: res?.data || [] })
         } catch (error) {
             console.error(error)
+            const code = error?.data?.code
+            if (code === 403) {
+                wx.showToast({ title: '无权限（仅管理员可用）', icon: 'none' })
+                return
+            }
+            wx.showToast({ title: error?.data?.message || '加载失败', icon: 'none' })
         }
     },
 
@@ -110,6 +116,12 @@ Page({
             this.loadUsers()
         } catch (error) {
             console.error(error)
+            const code = error?.data?.code
+            if (code === 403) {
+                wx.showToast({ title: '无权限（仅管理员可用）', icon: 'none' })
+                return
+            }
+            wx.showToast({ title: error?.data?.message || '操作失败', icon: 'none' })
         }
     },
 

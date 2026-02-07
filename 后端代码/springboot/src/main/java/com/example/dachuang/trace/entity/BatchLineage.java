@@ -22,15 +22,17 @@ import lombok.*;
 )
 public class BatchLineage extends BaseEntity {
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 64)
     @NotBlank(message = "parentBatchNo cannot be blank")
     private String parentBatchNo;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 64)
     @NotBlank(message = "childBatchNo cannot be blank")
     private String childBatchNo;
 
+    @Column(length = 32)
     private String stage; // e.g. PROCESSING
+    @Column(length = 64)
     private String processType; // optional detail of divergence reason
 
     @Column(length = 1000)
