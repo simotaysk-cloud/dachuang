@@ -169,6 +169,9 @@ public class BatchService {
             baseUser = "user";
         }
         baseUser = baseUser.toUpperCase(Locale.ROOT).replaceAll("[^A-Z0-9]+", "");
+        if (baseUser.isBlank()) {
+            baseUser = "USER";
+        }
         if (baseUser.length() > 10) {
             baseUser = baseUser.substring(0, 10);
         }
