@@ -1,16 +1,38 @@
 const api = require('../../utils/api')
 
+const REMEMBER_CREDS_KEY = 'loginRememberCreds'
+const SAVED_USERNAME_KEY = 'loginSavedUsername'
+const SAVED_PASSWORD_KEY = 'loginSavedPassword'
+
 Page({
     data: {
         baseUrl: api.baseUrl,
         username: '',
-        password: ''
+        password: '',
+        rememberCreds: false
+    },
+
+    onLoad() {
+        const rememberCreds = !!wx.getStorageSync(REMEMBER_CREDS_KEY)
+        const username = rememberCreds ? (wx.getStorageSync(SAVED_USERNAME_KEY) || '') : ''
+        const password = rememberCreds ? (wx.getStorageSync(SAVED_PASSWORD_KEY) || '') : ''
+        this.setData({ rememberCreds, username, password })
     },
 
     onInput(e) {
         const { field } = e.currentTarget.dataset
         const value = (e.detail.value || '').trim()
         this.setData({ [field]: value })
+    },
+
+    onRememberChange(e) {
+        const rememberCreds = !!e.detail.value
+        this.setData({ rememberCreds })
+        wx.setStorageSync(REMEMBER_CREDS_KEY, rememberCreds)
+        if (!rememberCreds) {
+            wx.removeStorageSync(SAVED_USERNAME_KEY)
+            wx.removeStorageSync(SAVED_PASSWORD_KEY)
+        }
     },
 
     onBaseUrlInput(e) {
@@ -48,6 +70,10 @@ Page({
             wx.hideLoading()
 
             if (loginRes?.data?.token) {
+                if (this.data.rememberCreds) {
+                    wx.setStorageSync(SAVED_USERNAME_KEY, username)
+                    wx.setStorageSync(SAVED_PASSWORD_KEY, password)
+                }
                 this.redirectByRole(loginRes.data.role)
             }
         } catch (err) {
