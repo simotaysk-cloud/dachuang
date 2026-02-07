@@ -1,6 +1,13 @@
 {
   "pages": [
+    "pages/login/index",
     "pages/index/index",
+    "pages/batch/index",
+    "pages/planting/index",
+    "pages/processing/index",
+    "pages/logistics/index",
+    "pages/inspection/index",
+    "pages/security/index",
     "pages/logs/logs"
   ],
   "window": {

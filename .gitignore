@@ -1,0 +1,16 @@
+.DS_Store
+.vscode/
+
+# Java / Maven
+**/target/
+*.iml
+
+# Node / frontend
+node_modules/
+dist/
+.cache/
+
+# WeChat DevTools
+miniprogram_npm/
+project.private.config.json
+

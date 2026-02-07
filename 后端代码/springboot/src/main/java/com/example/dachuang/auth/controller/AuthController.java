@@ -21,15 +21,15 @@ public class AuthController {
 
     private final WxAuthService wxAuthService;
 
-    @PostMapping("/wx-login")
+    @PostMapping("/login")
     public Result<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
-        AuthResponse response = wxAuthService.login(request.getCode());
+        AuthResponse response = wxAuthService.login(request.getUsername(), request.getPassword());
         return Result.success(response);
     }
 
     @GetMapping("/me")
     public Result<UserProfileResponse> me(HttpServletRequest request) {
-        String openid = (String) request.getAttribute("openid");
-        return Result.success(wxAuthService.getProfile(openid));
+        String username = (String) request.getAttribute("username");
+        return Result.success(wxAuthService.getProfile(username));
     }
 }

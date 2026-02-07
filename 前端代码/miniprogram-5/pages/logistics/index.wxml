@@ -1,0 +1,33 @@
+<view class="page-container">
+    <view class="header">
+        <view class="title">物流追踪</view>
+        <view class="desc">更新药材的运输状态与实时位置</view>
+    </view>
+    <view class="card">
+        <view class="section-title">位置更新</view>
+        <input class="input" placeholder="记录ID（编辑用）" value="{{form.id}}" data-field="id" bindinput="onInput" />
+        <input class="input" placeholder="对应批次号 (batchNo)" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />
+        <input class="input" placeholder="起点 (fromLocation)" value="{{form.fromLocation}}" data-field="fromLocation" bindinput="onInput" />
+        <input class="input" placeholder="终点 (toLocation)" value="{{form.toLocation}}" data-field="toLocation" bindinput="onInput" />
+        <input class="input" placeholder="物流单号 (trackingNo)" value="{{form.trackingNo}}" data-field="trackingNo" bindinput="onInput" />
+        <input class="input" placeholder="当前位置 (location)" value="{{form.location}}" data-field="location" bindinput="onInput" />
+        <input class="input" placeholder="状态 (status)" value="{{form.status}}" data-field="status" bindinput="onInput" />
+        <input class="input" placeholder="更新时间 (updateTime)" value="{{form.updateTime}}" data-field="updateTime" bindinput="onInput" />
+        <view class="btn-group">
+            <button class="btn btn-primary" bindtap="save">保存更新</button>
+            <button class="btn btn-warn" bindtap="remove">删除记录</button>
+        </view>
+    </view>
+    <view class="card">
+        <view class="section-title">轨迹查询</view>
+        <view class="search-bar">
+            <input class="input-inline" placeholder="输入 batchNo" value="{{queryNo}}" bindinput="onQueryInput" />
+            <button class="btn-small" bindtap="query">查询</button>
+        </view>
+    </view>
+    <view class="result-area" wx:if="{{result}}">
+        <scroll-view scroll-y class="result-scroll">
+            <text class="result-text">{{result}}</text>
+        </scroll-view>
+    </view>
+</view>

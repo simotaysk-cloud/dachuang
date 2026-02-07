@@ -10,9 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -28,33 +25,29 @@ public class WxAuthService {
     @Value("${wx.secret:mock-secret}")
     private String secret;
 
-    public AuthResponse login(String code) {
-        // In real scenario, call:
-        // https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code
-        // For now, we mock the openid based on the code
-        String openid = "mock_openid_" + code;
+    public AuthResponse login(String username, String password) {
+        // Find user by username
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessException(401, "Username or password incorrect"));
 
-        Optional<User> userOptional = userRepository.findByOpenid(openid);
-        if (userOptional.isEmpty()) {
-            User newUser = User.builder()
-                    .openid(openid)
-                    .role("USER")
-                    .build();
-            userRepository.save(newUser);
+        // Simple password check (In production, use BCrypt.checkPassword)
+        if (!user.getPassword().equals(password)) {
+            throw new BusinessException(401, "Username or password incorrect");
         }
 
-        String token = jwtService.generateToken(openid);
+        String token = jwtService.generateToken(user.getUsername());
         return AuthResponse.builder()
                 .token(token)
-                .openid(openid)
+                .username(user.getUsername())
+                .role(user.getRole())
                 .build();
     }
 
-    public UserProfileResponse getProfile(String openid) {
-        User user = userRepository.findByOpenid(openid)
+    public UserProfileResponse getProfile(String username) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new BusinessException(404, "User not found"));
         return UserProfileResponse.builder()
-                .openid(user.getOpenid())
+                .username(user.getUsername())
                 .nickname(user.getNickname())
                 .avatarUrl(user.getAvatarUrl())
                 .role(user.getRole())

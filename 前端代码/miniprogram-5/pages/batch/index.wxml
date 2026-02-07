@@ -1,0 +1,35 @@
+<view class="page-container">
+    <view class="header">
+        <view class="title">批次管理</view>
+        <view class="desc">管理所有中药材的溯源身份批次</view>
+    </view>
+    <view class="card">
+        <view class="section-title">新增/编辑批次</view>
+        <input class="input" placeholder="批次ID（编辑用）" value="{{form.id}}" data-field="id" bindinput="onInput" />
+        <input class="input" placeholder="批次号 (batchNo)" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />
+        <input class="input" placeholder="隐形码（为空则自动生成）" value="{{form.minCode}}" data-field="minCode" bindinput="onInput" />
+        <input class="input" placeholder="名称 (name)" value="{{form.name}}" data-field="name" bindinput="onInput" />
+        <input class="input" placeholder="类别 (category)" value="{{form.category}}" data-field="category" bindinput="onInput" />
+        <input class="input" placeholder="产地 (origin)" value="{{form.origin}}" data-field="origin" bindinput="onInput" />
+        <input class="input" placeholder="状态 (status)" value="{{form.status}}" data-field="status" bindinput="onInput" />
+        <textarea class="textarea" placeholder="备注信息" value="{{form.description}}" data-field="description" bindinput="onInput" />
+        <view class="btn-group">
+            <button class="btn btn-primary" bindtap="save">保存批次</button>
+            <button class="btn btn-warn" bindtap="remove">删除批次</button>
+        </view>
+    </view>
+    <view class="card">
+        <view class="section-title">查询批次</view>
+        <view class="search-bar">
+            <input class="input-inline" placeholder="输入 batchNo" value="{{queryNo}}" bindinput="onQueryInput" />
+            <button class="btn-small" bindtap="query">查单个</button>
+        </view>
+        <button class="btn btn-outline" bindtap="listAll">获取全部批次列表</button>
+    </view>
+    <view class="result-area" wx:if="{{result}}">
+        <view class="section-title">操作结果</view>
+        <scroll-view scroll-y class="result-scroll">
+            <text class="result-text">{{result}}</text>
+        </scroll-view>
+    </view>
+</view>
