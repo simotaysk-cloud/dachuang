@@ -38,4 +38,6 @@ public class Batch extends BaseEntity {
 
     @Column(unique = true)
     private String gs1Code; // GS1-128 HRI: (01)...(10)...(310x)...
+
+    private Boolean gs1Locked; // after printing/applying, prevent changes to GS1-related fields
 }

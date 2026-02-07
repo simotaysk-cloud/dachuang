@@ -47,6 +47,9 @@ public class BatchService {
         if (batch.getGs1Code() == null || batch.getGs1Code().isBlank()) {
             batch.setGs1Code(gs1Service.generateGs1HRI(batch.getGs1LotNo(), batch.getQuantity(), batch.getUnit()));
         }
+        if (batch.getGs1Locked() == null) {
+            batch.setGs1Locked(false);
+        }
 
         return batchRepository.save(batch);
     }
@@ -137,15 +140,36 @@ public class BatchService {
         batch.setStatus(batchDetails.getStatus());
         batch.setDescription(batchDetails.getDescription());
 
-        batch.setQuantity(batchDetails.getQuantity());
-        batch.setUnit(batchDetails.getUnit());
-
-        // Refresh GS1 HRI when quantity/unit changes, but keep lotNo stable once created.
-        if (batch.getGs1LotNo() == null || batch.getGs1LotNo().isBlank()) {
-            batch.setGs1LotNo(generateGs1LotNo(batch.getBatchNo()));
+        if (batch.getGs1Locked() == null) {
+            batch.setGs1Locked(false);
         }
-        batch.setGs1Code(gs1Service.generateGs1HRI(batch.getGs1LotNo(), batch.getQuantity(), batch.getUnit()));
 
+        boolean locked = Boolean.TRUE.equals(batch.getGs1Locked());
+        if (locked) {
+            boolean quantityChanged = batchDetails.getQuantity() != null
+                    && (batch.getQuantity() == null || Double.compare(batchDetails.getQuantity(), batch.getQuantity()) != 0);
+            boolean unitChanged = batchDetails.getUnit() != null
+                    && (batch.getUnit() == null || !batchDetails.getUnit().equals(batch.getUnit()));
+            if (quantityChanged || unitChanged) {
+                throw new BusinessException(400, "GS1 is locked; cannot change quantity/unit after labeling");
+            }
+        } else {
+            batch.setQuantity(batchDetails.getQuantity());
+            batch.setUnit(batchDetails.getUnit());
+
+            // Refresh GS1 HRI when quantity/unit changes, but keep lotNo stable once created.
+            if (batch.getGs1LotNo() == null || batch.getGs1LotNo().isBlank()) {
+                batch.setGs1LotNo(generateGs1LotNo(batch.getBatchNo()));
+            }
+            batch.setGs1Code(gs1Service.generateGs1HRI(batch.getGs1LotNo(), batch.getQuantity(), batch.getUnit()));
+        }
+
+        return batchRepository.save(batch);
+    }
+
+    public Batch lockGs1ByBatchNo(String batchNo) {
+        Batch batch = getBatchByNo(batchNo);
+        batch.setGs1Locked(true);
         return batchRepository.save(batch);
     }
 
