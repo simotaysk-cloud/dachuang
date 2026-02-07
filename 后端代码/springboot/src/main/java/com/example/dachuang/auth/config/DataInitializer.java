@@ -4,6 +4,7 @@ import com.example.dachuang.auth.entity.User;
 import com.example.dachuang.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final com.example.dachuang.trace.repository.BatchRepository batchRepository;
     private final com.example.dachuang.trace.repository.PlantingRecordRepository plantingRecordRepository;
     private final com.example.dachuang.trace.repository.ProcessingRecordRepository processingRecordRepository;
@@ -39,7 +41,7 @@ public class DataInitializer implements CommandLineRunner {
         if (user == null) {
             userRepository.save(User.builder()
                     .username(username)
-                    .password(password)
+                    .password(passwordEncoder.encode(password))
                     .role(role)
                     .nickname(nickname)
                     .openid(openid)
@@ -48,7 +50,7 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         // Ensure fields for login and NOT NULL constraints.
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password));
         user.setRole(role);
         if (user.getNickname() == null || user.getNickname().isBlank()) {
             user.setNickname(nickname);

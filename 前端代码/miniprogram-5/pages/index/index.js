@@ -4,7 +4,8 @@ Page({
   data: {
     baseUrl: api.baseUrl,
     healthStatus: 'UNKNOWN',
-    token: api.token
+    token: api.token,
+    role: api.role
   },
 
   onLoad() {
@@ -13,7 +14,7 @@ Page({
 
   onShow() {
     // 每次回来刷新 token 状态
-    this.setData({ token: api.token })
+    this.setData({ token: api.token, role: api.role })
   },
 
   onBaseUrlInput(e) {

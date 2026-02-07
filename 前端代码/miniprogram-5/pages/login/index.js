@@ -1,6 +1,7 @@
 const api = require('../../utils/api')
 
-const REMEMBER_CREDS_KEY = 'loginRememberCreds'
+const REMEMBER_USERNAME_KEY = 'loginRememberUsername'
+const REMEMBER_PASSWORD_KEY = 'loginRememberPassword'
 const SAVED_USERNAME_KEY = 'loginSavedUsername'
 const SAVED_PASSWORD_KEY = 'loginSavedPassword'
 
@@ -9,14 +10,16 @@ Page({
         baseUrl: api.baseUrl,
         username: '',
         password: '',
-        rememberCreds: false
+        rememberUsername: false,
+        rememberPassword: false
     },
 
     onLoad() {
-        const rememberCreds = !!wx.getStorageSync(REMEMBER_CREDS_KEY)
-        const username = rememberCreds ? (wx.getStorageSync(SAVED_USERNAME_KEY) || '') : ''
-        const password = rememberCreds ? (wx.getStorageSync(SAVED_PASSWORD_KEY) || '') : ''
-        this.setData({ rememberCreds, username, password })
+        const rememberUsername = !!wx.getStorageSync(REMEMBER_USERNAME_KEY)
+        const rememberPassword = !!wx.getStorageSync(REMEMBER_PASSWORD_KEY)
+        const username = rememberUsername ? (wx.getStorageSync(SAVED_USERNAME_KEY) || '') : ''
+        const password = (rememberUsername && rememberPassword) ? (wx.getStorageSync(SAVED_PASSWORD_KEY) || '') : ''
+        this.setData({ rememberUsername, rememberPassword: rememberUsername && rememberPassword, username, password })
     },
 
     onInput(e) {
@@ -25,12 +28,28 @@ Page({
         this.setData({ [field]: value })
     },
 
-    onRememberChange(e) {
-        const rememberCreds = !!e.detail.value
-        this.setData({ rememberCreds })
-        wx.setStorageSync(REMEMBER_CREDS_KEY, rememberCreds)
-        if (!rememberCreds) {
+    onRememberUsernameChange(e) {
+        const rememberUsername = !!e.detail.value
+        // If user disables remembering username, also disable remembering password.
+        this.setData({ rememberUsername, rememberPassword: rememberUsername ? this.data.rememberPassword : false })
+        wx.setStorageSync(REMEMBER_USERNAME_KEY, rememberUsername)
+        if (!rememberUsername) {
             wx.removeStorageSync(SAVED_USERNAME_KEY)
+            wx.setStorageSync(REMEMBER_PASSWORD_KEY, false)
+            wx.removeStorageSync(SAVED_PASSWORD_KEY)
+        }
+    },
+
+    onRememberPasswordChange(e) {
+        const rememberPassword = !!e.detail.value
+        // Remembering password implies remembering username.
+        if (rememberPassword && !this.data.rememberUsername) {
+            this.setData({ rememberUsername: true })
+            wx.setStorageSync(REMEMBER_USERNAME_KEY, true)
+        }
+        this.setData({ rememberPassword })
+        wx.setStorageSync(REMEMBER_PASSWORD_KEY, rememberPassword)
+        if (!rememberPassword) {
             wx.removeStorageSync(SAVED_PASSWORD_KEY)
         }
     },
@@ -70,8 +89,10 @@ Page({
             wx.hideLoading()
 
             if (loginRes?.data?.token) {
-                if (this.data.rememberCreds) {
+                if (this.data.rememberUsername) {
                     wx.setStorageSync(SAVED_USERNAME_KEY, username)
+                }
+                if (this.data.rememberPassword) {
                     wx.setStorageSync(SAVED_PASSWORD_KEY, password)
                 }
                 this.redirectByRole(loginRes.data.role)
