@@ -15,5 +15,18 @@
         <view class="meta" style="text-align:center;">登录即代表您同意《用户服务协议》</view>
     </view>
 
+    <view class="card">
+        <view class="section-title">环境配置</view>
+        <view class="field-label">后端地址（Base URL）</view>
+        <input class="input" placeholder="例如：http://192.168.1.10:8081" value="{{baseUrl}}" bindinput="onBaseUrlInput" />
+        <view class="meta">
+            真机预览时 `127.0.0.1` 指向手机自身；且需要在小程序后台配置 request 合法域名（建议使用 https 域名）。
+        </view>
+        <view class="btn-group" style="margin-top: 10rpx;">
+            <button class="btn btn-outline" bindtap="goIndex">返回首页</button>
+            <button class="btn btn-primary" bindtap="checkHealth">测试连通</button>
+        </view>
+    </view>
+
     <view class="login-footer meta">Version 1.0.2</view>
 </view>

@@ -32,15 +32,28 @@ const api = {
                 data,
                 header: headers,
                 success: (res) => {
+                    const payload = res.data
+                    const error = { statusCode: res.statusCode, data: payload }
+
+                    // Backend always returns HTTP 200 with business `code`.
                     if (res.statusCode >= 200 && res.statusCode < 300) {
-                        resolve(res.data)
-                    } else {
-                        wx.showToast({
-                            title: res.data?.message || '请求失败',
-                            icon: 'none'
-                        })
-                        reject(res.data)
+                        if (payload && typeof payload === 'object' && 'code' in payload && payload.code !== 200) {
+                            wx.showToast({
+                                title: payload?.message || '请求失败',
+                                icon: 'none'
+                            })
+                            reject(error)
+                            return
+                        }
+                        resolve(payload)
+                        return
                     }
+
+                    wx.showToast({
+                        title: payload?.message || '请求失败',
+                        icon: 'none'
+                    })
+                    reject(error)
                 },
                 fail: (err) => {
                     wx.showToast({
