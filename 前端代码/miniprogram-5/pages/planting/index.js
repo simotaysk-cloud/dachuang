@@ -23,6 +23,8 @@ Page({
         selectedOperation: '',
         customOperation: '',
         showOptional: false,
+        queryKey: '',
+        allRecords: [],
         records: [],
         loading: false,
         showForm: false,
@@ -93,18 +95,21 @@ Page({
             this.setData({ loading: true })
             const batchNo = this.data.currentBatch?.batchNo
             if (!batchNo) {
-                this.setData({ loading: false, records: [] })
+                this.setData({ loading: false, allRecords: [], records: [] })
                 return
             }
 
             const res = await api.request(`/api/v1/planting?batchNo=${encodeURIComponent(batchNo)}`)
             const list = Array.isArray(res?.data) ? res.data : []
-            const records = list.map((item) => ({
+            const allRecords = list.map((item) => ({
                 ...item,
                 createdAtText: item?.createdAt ? String(item.createdAt).replace('T', ' ') : '',
                 updatedAtText: item?.updatedAt ? String(item.updatedAt).replace('T', ' ') : ''
             }))
+
+            const records = this.applyQuery(allRecords, this.data.queryKey)
             this.setData({
+                allRecords,
                 records,
                 lastUpdatedAt: new Date().toLocaleString(),
                 loading: false
@@ -112,6 +117,53 @@ Page({
         } catch (err) {
             this.setData({ loading: false })
         }
+    },
+
+    onQueryInput(e) {
+        this.setData({ queryKey: e.detail.value })
+    },
+
+    async query() {
+        const batchNo = this.data.currentBatch?.batchNo
+        if (!batchNo) {
+            wx.showToast({ title: '请先选择批次', icon: 'none' })
+            return
+        }
+
+        // Keep behavior consistent with other modules: "查询" always based on latest list.
+        if (!this.data.lastUpdatedAt) {
+            await this.refresh()
+            return
+        }
+
+        const records = this.applyQuery(this.data.allRecords || [], this.data.queryKey)
+        this.setData({ records })
+        if (this.data.queryKey && records.length === 0) {
+            wx.showToast({ title: '未找到记录', icon: 'none' })
+        }
+    },
+
+    applyQuery(allRecords, queryKey) {
+        const list = Array.isArray(allRecords) ? allRecords : []
+        const q = (queryKey || '').trim()
+        if (!q) return list
+
+        const qLower = q.toLowerCase()
+        return list.filter((r) => {
+            const idText = r?.id == null ? '' : String(r.id)
+            const fieldName = (r?.fieldName || '').toLowerCase()
+            const operation = (r?.operation || '').toLowerCase()
+            const operator = (r?.operator || '').toLowerCase()
+            const details = (r?.details || '').toLowerCase()
+            return (
+                idText === q ||
+                idText.includes(q) ||
+                fieldName.includes(qLower) ||
+                operation.includes(qLower) ||
+                operator.includes(qLower) ||
+                details.includes(qLower)
+            )
+        })
     },
 
     startCreate() {
