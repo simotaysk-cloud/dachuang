@@ -68,6 +68,16 @@ const api = {
     // Health
     checkHealth() {
         return this.request('/api/v1/health')
+    },
+
+    // Profile
+    getMe() {
+        return this.request('/api/v1/auth/me')
+    },
+
+    // Batches
+    listBatches() {
+        return this.request('/api/v1/batches')
     }
 }
 

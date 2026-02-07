@@ -3,6 +3,23 @@
         <view class="title">种植录入</view>
         <view class="desc">录入药材在田间的日常操作与生长情况</view>
     </view>
+
+    <view class="card">
+        <view class="section-title">当前批次</view>
+        <picker mode="selector" range="{{batches}}" range-key="batchNo" value="{{batchIndex}}" bindchange="onBatchChange">
+            <view class="picker-row">
+                <view class="picker-label">批次号</view>
+                <view class="picker-value">{{currentBatch ? currentBatch.batchNo : '暂无批次（请先创建批次）'}}</view>
+            </view>
+        </picker>
+        <view class="batch-meta" wx:if="{{currentBatch}}">
+            <view class="batch-line">名称：{{currentBatch.name || '-'}}</view>
+            <view class="batch-line">产地：{{currentBatch.origin || '-'}}</view>
+            <view class="batch-line">状态：{{currentBatch.status || '-'}}</view>
+            <view class="batch-line" wx:if="{{currentBatch.gs1Code}}">GS1：{{currentBatch.gs1Code}}</view>
+        </view>
+    </view>
+
     <view class="card">
         <view class="section-title">记录列表</view>
         <view class="stat-row">
@@ -17,10 +34,6 @@
         </view>
         <view class="meta" wx:if="{{lastUpdatedAt}}">
             最近刷新: {{lastUpdatedAt}}
-        </view>
-        <view class="search-bar">
-            <input class="input-inline" placeholder="按 batchNo 筛选（可空）" value="{{filterBatchNo}}" bindinput="onFilterInput" />
-            <button class="btn-small" bindtap="refresh">刷新</button>
         </view>
         <view class="btn-group">
             <button class="btn btn-primary" bindtap="startCreate">新建记录</button>
@@ -49,18 +62,32 @@
 
     <view class="card" wx:if="{{showForm}}">
         <view class="section-title">新建/编辑</view>
-        <input class="input" placeholder="记录ID（编辑用）" value="{{form.id}}" data-field="id" bindinput="onInput" />
-        <input class="input" placeholder="对应批次号 (batchNo)" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />
+        <view class="readonly-row" wx:if="{{form.id}}">
+            <view class="readonly-label">记录ID</view>
+            <view class="readonly-value">#{{form.id}}</view>
+        </view>
+        <view class="readonly-row">
+            <view class="readonly-label">批次号</view>
+            <view class="readonly-value">{{form.batchNo}}</view>
+        </view>
         <input class="input" placeholder="地块名称 (fieldName)" value="{{form.fieldName}}" data-field="fieldName" bindinput="onInput" />
-        <input class="input" placeholder="操作类型 (施肥、灌溉、采收...)" value="{{form.operation}}" data-field="operation" bindinput="onInput" />
-        <input class="input" placeholder="操作人 (operator)" value="{{form.operator}}" data-field="operator" bindinput="onInput" />
-        <view class="section-title" style="margin-top:20rpx">多媒体附件</view>
-        <input class="input" placeholder="图片链接 (imageUrl)" value="{{form.imageUrl}}" data-field="imageUrl" bindinput="onInput" />
-        <input class="input" placeholder="语音链接 (audioUrl)" value="{{form.audioUrl}}" data-field="audioUrl" bindinput="onInput" />
+        <view class="sub-title">操作类型</view>
+        <view class="chip-row">
+            <view class="chip {{selectedOperation === item ? 'chip-active' : ''}}" wx:for="{{operationOptions}}" wx:key="*this" data-value="{{item}}" bindtap="selectOperation">
+                {{item}}
+            </view>
+        </view>
+        <input class="input" wx:if="{{selectedOperation === '其他'}}" placeholder="请输入自定义操作类型" value="{{customOperation}}" bindinput="onCustomOperationInput" />
+        <input class="input" placeholder="操作人 (operator，可改)" value="{{form.operator}}" data-field="operator" bindinput="onInput" />
         <textarea class="textarea" placeholder="详细描述 (details)" value="{{form.details}}" data-field="details" bindinput="onInput" />
+        <button class="btn btn-outline" bindtap="toggleOptional">更多选项（附件）</button>
+        <view wx:if="{{showOptional}}" style="margin-top:20rpx">
+            <input class="input" placeholder="图片链接 (imageUrl，可选)" value="{{form.imageUrl}}" data-field="imageUrl" bindinput="onInput" />
+            <input class="input" placeholder="语音链接 (audioUrl，可选)" value="{{form.audioUrl}}" data-field="audioUrl" bindinput="onInput" />
+        </view>
         <view class="btn-group">
             <button class="btn btn-primary" bindtap="save">保存</button>
-            <button class="btn btn-warn" bindtap="remove">删除</button>
+            <button class="btn btn-warn" wx:if="{{form.id}}" bindtap="remove">删除</button>
         </view>
         <button class="btn btn-outline" style="margin-top:20rpx" bindtap="cancelEdit">收起</button>
     </view>
