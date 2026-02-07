@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface InspectionRecordRepository extends JpaRepository<InspectionRecord, Long> {
     List<InspectionRecord> findAllByBatchNo(String batchNo);
+
+    List<InspectionRecord> findAllByBatchNoIn(List<String> batchNos);
 }

@@ -4,6 +4,20 @@
         <view class="desc">发布与管理药材的质量检测报告</view>
     </view>
     <view class="card">
+        <view class="section-title">质检分级/返工（分叉）</view>
+        <input class="input" placeholder="上游批次号 (parentBatchNo)" value="{{deriveForm.parentBatchNo}}" data-field="parentBatchNo" bindinput="onDeriveInput" />
+        <input class="input" placeholder="派生批次号 (childBatchNo，可空自动生成)" value="{{deriveForm.childBatchNo}}" data-field="childBatchNo" bindinput="onDeriveInput" />
+        <input class="input" placeholder="结论/等级 (result，如 GRADE_A/REWORK/SCRAP)" value="{{deriveForm.result}}" data-field="result" bindinput="onDeriveInput" />
+        <input class="input" placeholder="报告链接 (reportUrl)" value="{{deriveForm.reportUrl}}" data-field="reportUrl" bindinput="onDeriveInput" />
+        <input class="input" placeholder="质检员 (inspector)" value="{{deriveForm.inspector}}" data-field="inspector" bindinput="onDeriveInput" />
+        <textarea class="textarea" placeholder="备注 (details)" value="{{deriveForm.details}}" data-field="details" bindinput="onDeriveInput" />
+        <view class="btn-group">
+            <button class="btn btn-primary" bindtap="derive">派生并发布</button>
+            <button class="btn btn-outline" bindtap="query">查询记录</button>
+        </view>
+    </view>
+
+    <view class="card">
         <view class="section-title">发布报告</view>
         <input class="input" placeholder="记录ID（编辑用）" value="{{form.id}}" data-field="id" bindinput="onInput" />
         <input class="input" placeholder="对应批次号 (batchNo)" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />

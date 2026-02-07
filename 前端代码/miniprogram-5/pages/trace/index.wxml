@@ -9,6 +9,9 @@
             <input class="input-inline" placeholder="输入批次号 (batchNo)" value="{{batchNo}}" bindinput="onInput" />
             <button class="btn-small" bindtap="query">查询档案</button>
         </view>
+        <view style="margin-top:20rpx;font-size:22rpx;color:var(--text-sub);">
+            提示：如果同一批次拆成多票发运，溯源结果会返回多条发运单及各自轨迹（`shipmentsWithEvents`）。
+        </view>
     </view>
     <view class="result-area" wx:if="{{result}}">
         <view class="section-title">溯源报告预览</view>

@@ -1,6 +1,7 @@
 package com.example.dachuang.trace.service;
 
 import com.example.dachuang.trace.dto.TraceResponse;
+import com.example.dachuang.trace.dto.ShipmentWithEvents;
 import com.example.dachuang.trace.entity.Batch;
 import com.example.dachuang.trace.entity.BatchLineage;
 import com.example.dachuang.trace.repository.*;
@@ -20,6 +21,8 @@ public class TraceService {
     private final ProcessingRecordRepository processingRecordRepository;
     private final LogisticsRecordRepository logisticsRecordRepository;
     private final InspectionRecordRepository inspectionRecordRepository;
+    private final ShipmentRepository shipmentRepository;
+    private final ShipmentEventRepository shipmentEventRepository;
 
     public TraceResponse getFullTraceByBatchNo(String batchNo) {
         List<Batch> lineageBatches = new ArrayList<>();
@@ -43,6 +46,13 @@ public class TraceService {
         String rootBatchNo = lineageBatches.get(0).getBatchNo();
         List<String> batchNosInChain = lineageBatches.stream().map(Batch::getBatchNo).toList();
 
+        List<ShipmentWithEvents> shipmentsWithEvents = shipmentRepository.findAllByBatchNo(batch.getBatchNo()).stream()
+                .map(shipment -> ShipmentWithEvents.builder()
+                        .shipment(shipment)
+                        .events(shipmentEventRepository.findAllByShipmentNoOrderByEventTimeAsc(shipment.getShipmentNo()))
+                        .build())
+                .toList();
+
         return TraceResponse.builder()
                 .batch(batch)
                 .lineageBatches(lineageBatches)
@@ -50,7 +60,8 @@ public class TraceService {
                 .plantingRecords(plantingRecordRepository.findAllByBatchNo(rootBatchNo))
                 .processingRecords(processingRecordRepository.findAllByBatchNoIn(batchNosInChain))
                 .logisticsRecords(logisticsRecordRepository.findAllByBatchNo(batchNo))
-                .inspectionRecords(inspectionRecordRepository.findAllByBatchNo(batchNo))
+                .inspectionRecords(inspectionRecordRepository.findAllByBatchNoIn(batchNosInChain))
+                .shipmentsWithEvents(shipmentsWithEvents)
                 .build();
     }
 }
