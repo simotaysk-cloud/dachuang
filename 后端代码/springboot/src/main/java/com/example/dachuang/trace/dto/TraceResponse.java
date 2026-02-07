@@ -9,6 +9,8 @@ import java.util.List;
 @Builder
 public class TraceResponse {
     private Batch batch;
+    private List<Batch> lineageBatches; // root -> current
+    private List<BatchLineage> lineageEdges; // root -> current
     private List<PlantingRecord> plantingRecords;
     private List<ProcessingRecord> processingRecords;
     private List<LogisticsRecord> logisticsRecords;

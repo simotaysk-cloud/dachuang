@@ -2,6 +2,7 @@ package com.example.dachuang.trace.controller;
 
 import com.example.dachuang.common.api.Result;
 import com.example.dachuang.trace.entity.Batch;
+import com.example.dachuang.trace.entity.BatchLineage;
 import com.example.dachuang.trace.service.BatchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,21 @@ public class BatchController {
     @PostMapping
     public Result<Batch> create(@RequestBody Batch batch) {
         return Result.success(batchService.createBatch(batch));
+    }
+
+    @PostMapping("/{parentBatchNo}/derive")
+    public Result<Batch> derive(
+            @PathVariable String parentBatchNo,
+            @RequestParam(required = false) String childBatchNo,
+            @RequestParam(required = false) String processType,
+            @RequestParam(required = false) String details
+    ) {
+        return Result.success(batchService.deriveBatch(parentBatchNo, childBatchNo, "PROCESSING", processType, details));
+    }
+
+    @GetMapping("/{parentBatchNo}/children")
+    public Result<List<BatchLineage>> children(@PathVariable String parentBatchNo) {
+        return Result.success(batchService.getChildren(parentBatchNo));
     }
 
     @PutMapping("/{id}")

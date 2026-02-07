@@ -16,8 +16,11 @@ public class ProcessingRecordController {
     private final ProcessingRecordService processingRecordService;
 
     @GetMapping
-    public Result<List<ProcessingRecord>> list(@RequestParam(required = false) String batchNo) {
-        return Result.success(processingRecordService.list(batchNo));
+    public Result<List<ProcessingRecord>> list(
+            @RequestParam(required = false) String batchNo,
+            @RequestParam(required = false) String parentBatchNo
+    ) {
+        return Result.success(processingRecordService.list(batchNo, parentBatchNo));
     }
 
     @PostMapping

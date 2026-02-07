@@ -4,6 +4,7 @@ Page({
     data: {
         form: {
             id: '',
+            parentBatchNo: '',
             batchNo: '',
             processType: '',
             factory: '',
@@ -12,6 +13,7 @@ Page({
             imageUrl: ''
         },
         queryNo: '',
+        parentQueryNo: '',
         result: ''
     },
 
@@ -22,6 +24,10 @@ Page({
 
     onQueryInput(e) {
         this.setData({ queryNo: e.detail.value })
+    },
+
+    onParentQueryInput(e) {
+        this.setData({ parentQueryNo: e.detail.value })
     },
 
     setResult(data) {
@@ -43,10 +49,31 @@ Page({
         }
     },
 
+    async remove() {
+        if (!this.data.form.id) return wx.showToast({ title: '请输入记录ID', icon: 'none' })
+        try {
+            const res = await api.request(`/api/v1/processing/${this.data.form.id}`, 'DELETE')
+            this.setResult(res)
+            wx.showToast({ title: '删除成功' })
+        } catch (err) {
+            this.setResult(err)
+        }
+    },
+
     async query() {
         if (!this.data.queryNo) return wx.showToast({ title: '请输入 batchNo', icon: 'none' })
         try {
             const res = await api.request(`/api/v1/processing?batchNo=${this.data.queryNo}`)
+            this.setResult(res)
+        } catch (err) {
+            this.setResult(err)
+        }
+    },
+
+    async queryByParent() {
+        if (!this.data.parentQueryNo) return wx.showToast({ title: '请输入 parentBatchNo', icon: 'none' })
+        try {
+            const res = await api.request(`/api/v1/processing?parentBatchNo=${this.data.parentQueryNo}`)
             this.setResult(res)
         } catch (err) {
             this.setResult(err)

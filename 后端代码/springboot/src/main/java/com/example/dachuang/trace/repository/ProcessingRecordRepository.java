@@ -6,4 +6,8 @@ import java.util.List;
 
 public interface ProcessingRecordRepository extends JpaRepository<ProcessingRecord, Long> {
     List<ProcessingRecord> findAllByBatchNo(String batchNo);
+
+    List<ProcessingRecord> findAllByParentBatchNo(String parentBatchNo);
+
+    List<ProcessingRecord> findAllByBatchNoIn(List<String> batchNos);
 }
