@@ -8,7 +8,7 @@ function getDefaultBaseUrl() {
         // ignore
     }
     // Real device preview cannot access 127.0.0.1 on PC; use LAN IP (can be overridden in login page).
-    return 'http://192.168.31.157:8081'
+    return 'http://192.168.0.251:8081'
 }
 
 const api = {
