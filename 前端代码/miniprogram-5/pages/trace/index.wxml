@@ -1,22 +1,65 @@
 <view class="page-container">
     <view class="header">
-        <view class="title">溯源大厅</view>
-        <view class="desc">一键查询药材的全生命周期溯源档案</view>
+        <view class="title">智汇溯源</view>
+        <view class="desc">智慧赋能，让每一株草本皆有迹可循</view>
     </view>
-    <view class="card">
-        <view class="section-title">快速查验</view>
+
+    <!-- Search Section -->
+    <view class="card search-card">
         <view class="search-bar">
-            <input class="input-inline" placeholder="输入批次号 (batchNo)" value="{{batchNo}}" bindinput="onInput" />
-            <button class="btn-small" bindtap="query">查询档案</button>
-        </view>
-        <view style="margin-top:20rpx;font-size:22rpx;color:var(--text-sub);">
-            提示：如果同一批次拆成多票发运，溯源结果会返回多条发运单及各自轨迹（`shipmentsWithEvents`）。
+            <input class="input-inline" placeholder="请输入防伪码或批次号" value="{{batchNo}}" bindinput="onInput" />
+            <view class="scan-btn" bindtap="query">
+                <text>查询</text>
+            </view>
         </view>
     </view>
-    <view class="result-area" wx:if="{{result}}">
-        <view class="section-title">溯源报告预览</view>
-        <scroll-view scroll-y class="result-scroll">
-            <text class="result-text">{{result}}</text>
-        </scroll-view>
+
+    <!-- Report Section -->
+    <view wx:if="{{report}}" class="report-content">
+        <!-- Product Card -->
+        <view class="card product-card">
+            <view class="product-info">
+                <view class="product-name">{{report.batch.name}}</view>
+                <view class="product-tags">
+                    <text class="tag">{{report.batch.category}}</text>
+                    <text class="tag highlight">区块链存证已生效</text>
+                </view>
+            </view>
+            <view class="gs1-info">
+                <view class="label">GS1 追溯码 (AI 01+10)</view>
+                <view class="code">{{report.gs1 || '生成中...'}}</view>
+            </view>
+
+        </view>
+
+        <!-- Timeline Section -->
+        <view class="timeline-container">
+            <view class="timeline-item {{item.isHighlight ? 'highlight' : ''}}" wx:for="{{report.timeline}}" wx:key="index">
+                <view class="item-left">
+                    <view class="time-main">{{item.tag}}</view>
+                    <view class="time-sub">{{item.time}}</view>
+                </view>
+                <view class="item-dot">
+                    <text class="dot-icon">{{item.icon}}</text>
+                </view>
+                <view class="item-content card">
+                    <view class="content-title">{{item.title}}</view>
+                    <view class="content-detail">{{item.details}}</view>
+                </view>
+            </view>
+        </view>
+
+        <!-- Footer Seal -->
+        <view class="report-footer">
+            <view class="seal">智汇本草 · 安全保全</view>
+            <view class="timestamp">报告生成日期：2026-02-08</view>
+        </view>
+    </view>
+
+    <!-- Empty State -->
+    <view class="empty-state" wx:if="{{!report && !loading}}">
+        <image class="empty-img" src="/images/trace-hero.png" mode="aspectFit" />
+        <view class="tips">输入包装上的批次号，开启溯源之旅</view>
     </view>
 </view>
+

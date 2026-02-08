@@ -8,6 +8,7 @@
     "pages/logistics/index",
     "pages/inspection/index",
     "pages/security/index",
+    "pages/trace/index",
     "pages/logs/logs",
     "pages/user-mgmt/index"
   ],

@@ -14,4 +14,6 @@ dist/
 
 # WeChat DevTools
 miniprogram_npm/
-project.private.config.json
+# Environmental tools
+tools/
+*.zip
