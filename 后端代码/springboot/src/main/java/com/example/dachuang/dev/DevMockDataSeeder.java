@@ -161,8 +161,9 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .operation("播种")
                 .details("春季播种，土壤湿度正常。")
                 .operator("张三")
-                .imageUrl("")
-                .audioUrl("")
+                .latitude(34.123456)
+                .longitude(104.123456)
+                .imageUrl("https://example.com/mock/seed.jpg")
                 .build());
 
         plantingRecordRepository.save(PlantingRecord.builder()
@@ -171,8 +172,9 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .operation("施肥")
                 .details("使用有机肥 50kg。")
                 .operator("张三")
-                .imageUrl("")
-                .audioUrl("")
+                .latitude(34.123489)
+                .longitude(104.123499)
+                .imageUrl("https://example.com/mock/fertilize.jpg")
                 .build());
 
         plantingRecordRepository.save(PlantingRecord.builder()
@@ -181,8 +183,9 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .operation("灌溉")
                 .details("滴灌 2 小时，天气晴。")
                 .operator("张三")
-                .imageUrl("")
-                .audioUrl("")
+                .latitude(34.123501)
+                .longitude(104.123512)
+                .imageUrl("https://example.com/mock/irrigation.jpg")
                 .build());
     }
 

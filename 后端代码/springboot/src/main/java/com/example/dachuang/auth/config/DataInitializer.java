@@ -98,6 +98,9 @@ public class DataInitializer implements CommandLineRunner {
                     .details("选用优质人参种子，密度适中")
                     .operator("李农户")
                     .fieldName("一号示范田")
+                    .latitude(43.123456)
+                    .longitude(127.123456)
+                    .imageUrl("https://example.com/mock/planting_seed.jpg")
                     .build());
 
             plantingRecordRepository.save(com.example.dachuang.trace.entity.PlantingRecord.builder()
@@ -106,6 +109,9 @@ public class DataInitializer implements CommandLineRunner {
                     .details("使用有机肥料，无农药")
                     .operator("李农户")
                     .fieldName("一号示范田")
+                    .latitude(43.123489)
+                    .longitude(127.123499)
+                    .imageUrl("https://example.com/mock/planting_fertilize.jpg")
                     .build());
 
             log.info("Mock Planting Data Created: {}", plantingBatchNo);

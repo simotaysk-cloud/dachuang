@@ -82,6 +82,13 @@
         <textarea class="textarea" placeholder="可选：用量、天气、备注等" value="{{form.details}}" data-field="details" bindinput="onInput" />
         <button class="btn btn-outline" bindtap="toggleOptional">更多选项（附件）</button>
         <view wx:if="{{showOptional}}" style="margin-top:20rpx">
+            <view class="field-label">定位（关键操作必填）</view>
+            <view class="btn-group">
+                <button class="btn btn-outline" bindtap="fetchLocation">获取定位</button>
+            </view>
+            <view class="meta" wx:if="{{form.latitude && form.longitude}}">
+                已获取：{{form.latitude}}, {{form.longitude}}
+            </view>
             <view class="field-label">图片链接（可选）</view>
             <input class="input" placeholder="https://..." value="{{form.imageUrl}}" data-field="imageUrl" bindinput="onInput" />
             <view class="field-label">语音链接（可选）</view>
