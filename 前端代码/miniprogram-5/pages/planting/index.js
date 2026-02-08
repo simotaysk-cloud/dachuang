@@ -2,6 +2,7 @@ const api = require('../../utils/api')
 
 const LAST_BATCH_KEY = 'lastPlantingBatchNo'
 const OPERATION_OPTIONS = ['施肥', '灌溉', '除草', '病虫害防治', '采收', '其他']
+const KEY_OPERATIONS = ['施肥', '灌溉', '除草', '病虫害防治', '采收', '播种']
 
 Page({
     data: {
@@ -13,7 +14,9 @@ Page({
             operator: '',
             details: '',
             imageUrl: '',
-            audioUrl: ''
+            audioUrl: '',
+            latitude: null,
+            longitude: null
         },
         profile: null,
         batches: [],
@@ -182,7 +185,9 @@ Page({
                 operator,
                 details: '',
                 imageUrl: '',
-                audioUrl: ''
+                audioUrl: '',
+                latitude: null,
+                longitude: null
             }
         })
     },
@@ -206,7 +211,9 @@ Page({
                 operator: record.operator || '',
                 details: record.details || '',
                 imageUrl: record.imageUrl || '',
-                audioUrl: record.audioUrl || ''
+                audioUrl: record.audioUrl || '',
+                latitude: record.latitude ?? null,
+                longitude: record.longitude ?? null
             }
         })
     },
@@ -235,6 +242,11 @@ Page({
             customOperation: '',
             'form.operation': value
         })
+
+        // Key operations require evidence; open the attachment section by default.
+        if (KEY_OPERATIONS.includes(value)) {
+            this.setData({ showOptional: true })
+        }
     },
 
     onCustomOperationInput(e) {
@@ -243,6 +255,32 @@ Page({
             customOperation: v,
             'form.operation': v
         })
+    },
+
+    async fetchLocation() {
+        try {
+            const pos = await new Promise((resolve, reject) => {
+                wx.getLocation({
+                    type: 'wgs84',
+                    success: resolve,
+                    fail: reject
+                })
+            })
+            const latitude = typeof pos?.latitude === 'number' ? pos.latitude : null
+            const longitude = typeof pos?.longitude === 'number' ? pos.longitude : null
+            if (latitude == null || longitude == null) {
+                wx.showToast({ title: '定位失败', icon: 'none' })
+                return false
+            }
+            this.setData({
+                'form.latitude': latitude,
+                'form.longitude': longitude
+            })
+            return true
+        } catch (err) {
+            wx.showToast({ title: '请授权定位后重试', icon: 'none' })
+            return false
+        }
     },
 
     async save() {
@@ -260,6 +298,21 @@ Page({
                 return
             }
 
+            const op = (this.data.form.operation || '').trim()
+            const isKeyOp = KEY_OPERATIONS.includes(op)
+            if (isKeyOp) {
+                const hasEvidence = !!((this.data.form.imageUrl || '').trim() || (this.data.form.audioUrl || '').trim())
+                if (!hasEvidence) {
+                    this.setData({ showOptional: true })
+                    wx.showToast({ title: '关键操作需上传图片或语音', icon: 'none' })
+                    return
+                }
+                if (this.data.form.latitude == null || this.data.form.longitude == null) {
+                    const ok = await this.fetchLocation()
+                    if (!ok) return
+                }
+            }
+
             let res
             if (this.data.form.id) {
                 res = await api.request(`/api/v1/planting/${this.data.form.id}`, 'PUT', this.data.form)
@@ -268,11 +321,9 @@ Page({
                 delete payload.id
                 res = await api.request('/api/v1/planting', 'POST', payload)
             }
-            if (res?.code === 0) {
-                wx.showToast({ title: '保存成功' })
-                this.setData({ showForm: false })
-                await this.refresh()
-            }
+            wx.showToast({ title: '保存成功' })
+            this.setData({ showForm: false })
+            await this.refresh()
         } catch (err) {
         }
     },
@@ -294,11 +345,9 @@ Page({
 
         try {
             const res = await api.request(`/api/v1/planting/${this.data.form.id}`, 'DELETE')
-            if (res?.code === 0) {
-                wx.showToast({ title: '删除成功' })
-                this.setData({ showForm: false })
-                await this.refresh()
-            }
+            wx.showToast({ title: '删除成功' })
+            this.setData({ showForm: false })
+            await this.refresh()
         } catch (err) {
         }
     }

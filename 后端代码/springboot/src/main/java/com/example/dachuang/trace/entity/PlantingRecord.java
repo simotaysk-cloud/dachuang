@@ -37,4 +37,7 @@ public class PlantingRecord extends BaseEntity {
     private String imageUrl; // 现场照片
     @Column(length = 255)
     private String audioUrl; // 语音录入
+
+    private Double latitude; // 定位纬度
+    private Double longitude; // 定位经度
 }
