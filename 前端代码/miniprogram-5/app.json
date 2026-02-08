@@ -23,6 +23,9 @@
   "permission": {
     "scope.userLocation": {
       "desc": "用于记录农事操作定位，提高溯源真实性"
+    },
+    "scope.record": {
+      "desc": "用于录制农事操作语音留痕，提高溯源真实性"
     }
   }
 }

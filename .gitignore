@@ -4,6 +4,8 @@
 # Java / Maven
 **/target/
 *.iml
+**/uploads/
+后端代码/springboot/backend_*.log
 
 # Node / frontend
 node_modules/
@@ -13,4 +15,3 @@ dist/
 # WeChat DevTools
 miniprogram_npm/
 project.private.config.json
-

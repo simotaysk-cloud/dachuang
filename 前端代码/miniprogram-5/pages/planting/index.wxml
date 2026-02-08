@@ -83,16 +83,30 @@
         <button class="btn btn-outline" bindtap="toggleOptional">更多选项（附件）</button>
         <view wx:if="{{showOptional}}" style="margin-top:20rpx">
             <view class="field-label">定位（关键操作必填）</view>
-            <view class="btn-group">
-                <button class="btn btn-outline" bindtap="fetchLocation">获取定位</button>
-            </view>
             <view class="meta" wx:if="{{form.latitude && form.longitude}}">
                 已获取：{{form.latitude}}, {{form.longitude}}
             </view>
-            <view class="field-label">图片链接（可选）</view>
-            <input class="input" placeholder="https://..." value="{{form.imageUrl}}" data-field="imageUrl" bindinput="onInput" />
-            <view class="field-label">语音链接（可选）</view>
-            <input class="input" placeholder="https://..." value="{{form.audioUrl}}" data-field="audioUrl" bindinput="onInput" />
+            <view class="field-label">图片（可选）</view>
+            <view class="btn-group">
+                <button class="btn btn-outline" bindtap="chooseImage">选择图片</button>
+                <button class="btn btn-outline" wx:if="{{imageFilePath || form.imageUrl}}" bindtap="previewImage">预览</button>
+                <button class="btn btn-warn" wx:if="{{imageFilePath || form.imageUrl}}" bindtap="clearImage">清除</button>
+            </view>
+            <view class="meta" wx:if="{{imageFilePath}}">已选择：本地图片</view>
+            <view class="meta" wx:if="{{!imageFilePath && form.imageUrl}}">已保存：{{form.imageUrl}}</view>
+
+            <view class="field-label" style="margin-top:20rpx;">语音（可选）</view>
+            <view class="btn-group">
+                <button class="btn btn-outline" bindtap="chooseAudio">选择音频</button>
+                <button class="btn btn-outline" wx:if="{{!recording}}" bindtap="startRecord">开始录音</button>
+                <button class="btn btn-warn" wx:if="{{recording}}" bindtap="stopRecord">停止录音</button>
+                <button class="btn btn-warn" wx:if="{{audioFilePath || form.audioUrl}}" bindtap="clearAudio">清除</button>
+            </view>
+            <view class="meta" wx:if="{{recording}}">录音中...</view>
+            <view class="meta" wx:if="{{audioFilePath}}">已录音：本地音频</view>
+            <view class="meta" wx:if="{{!audioFilePath && form.audioUrl}}">已保存：{{form.audioUrl}}</view>
+
+            <view class="meta" wx:if="{{uploading}}" style="color:#999;">附件上传中...</view>
         </view>
         <view class="btn-group">
             <button class="btn btn-primary" bindtap="save">保存</button>
