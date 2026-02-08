@@ -13,6 +13,7 @@ function getDefaultBaseUrl() {
 
 const api = {
     baseUrl: wx.getStorageSync('baseUrl') || getDefaultBaseUrl(),
+
     token: wx.getStorageSync('token') || '',
     role: wx.getStorageSync('role') || '',
 
