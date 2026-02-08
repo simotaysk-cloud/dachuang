@@ -123,16 +123,9 @@ Page({
     },
 
     redirectByRole(role) {
-        let url = '/pages/index/index' // Default for ADMIN or others
-
-        if (role === 'FARMER') {
-            url = '/pages/planting/index'
-        } else if (role === 'FACTORY') {
-            url = '/pages/processing/index'
-        } else if (role === 'REGULATOR') {
-            url = '/pages/inspection/index'
-        }
-
+        // Keep navigation consistent across roles.
+        // FARMER needs access to both "批次管理" and "种植录入", so landing on index is required.
+        const url = '/pages/index/index'
         wx.reLaunch({ url })
     }
 })
