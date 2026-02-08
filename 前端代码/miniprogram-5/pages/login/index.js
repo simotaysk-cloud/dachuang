@@ -57,7 +57,10 @@ Page({
     onBaseUrlInput(e) {
         const url = (e.detail.value || '').trim()
         this.setData({ baseUrl: url })
-        api.setBaseUrl(url)
+        // Avoid breaking all requests while user is typing an incomplete URL.
+        if (/^https?:\/\//.test(url)) {
+            api.setBaseUrl(url)
+        }
     },
 
     goIndex() {

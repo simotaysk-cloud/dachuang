@@ -4,6 +4,14 @@ const LAST_BATCH_KEY = 'lastPlantingBatchNo'
 const OPERATION_OPTIONS = ['施肥', '灌溉', '除草', '病虫害防治', '采收', '其他']
 const KEY_OPERATIONS = ['施肥', '灌溉', '除草', '病虫害防治', '采收', '播种']
 
+function resolveUrlMaybe(url) {
+    const u = String(url || '').trim()
+    if (!u) return ''
+    if (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('wxfile://')) return u
+    if (u.startsWith('/')) return `${api.baseUrl}${u}`
+    return u
+}
+
 Page({
     data: {
         form: {
@@ -18,6 +26,11 @@ Page({
             latitude: null,
             longitude: null
         },
+        // local attachments (picked/recorded on device)
+        imageFilePath: '',
+        audioFilePath: '',
+        recording: false,
+        uploading: false,
         profile: null,
         batches: [],
         batchIndex: -1,
@@ -177,6 +190,10 @@ Page({
             showOptional: false,
             selectedOperation: '',
             customOperation: '',
+            imageFilePath: '',
+            audioFilePath: '',
+            recording: false,
+            uploading: false,
             form: {
                 id: '',
                 batchNo,
@@ -203,6 +220,10 @@ Page({
             showOptional: false,
             selectedOperation: matched,
             customOperation: matched === '其他' ? operation : '',
+            imageFilePath: '',
+            audioFilePath: '',
+            recording: false,
+            uploading: false,
             form: {
                 id: record.id ? String(record.id) : '',
                 batchNo: record.batchNo || '',
@@ -246,6 +267,8 @@ Page({
         // Key operations require evidence; open the attachment section by default.
         if (KEY_OPERATIONS.includes(value)) {
             this.setData({ showOptional: true })
+            // Auto-fetch location so user doesn't need to click.
+            this.fetchLocation()
         }
     },
 
@@ -283,6 +306,117 @@ Page({
         }
     },
 
+    async chooseImage() {
+        try {
+            const res = await new Promise((resolve, reject) => {
+                wx.chooseMedia({
+                    count: 1,
+                    mediaType: ['image'],
+                    sourceType: ['camera', 'album'],
+                    success: resolve,
+                    fail: reject
+                })
+            })
+            const filePath = res?.tempFiles?.[0]?.tempFilePath || ''
+            if (!filePath) return
+            this.setData({ imageFilePath: filePath, 'form.imageUrl': '' })
+        } catch (err) {
+            // ignore
+        }
+    },
+
+    async previewImage() {
+        const p = this.data.imageFilePath
+        const url = p || resolveUrlMaybe(this.data.form.imageUrl)
+        if (!url) return
+        wx.previewImage({ urls: [url] })
+    },
+
+    clearImage() {
+        this.setData({ imageFilePath: '', 'form.imageUrl': '' })
+    },
+
+    async chooseAudio() {
+        try {
+            const res = await new Promise((resolve, reject) => {
+                wx.chooseMessageFile({
+                    count: 1,
+                    type: 'file',
+                    extension: ['mp3', 'm4a', 'wav', 'aac'],
+                    success: resolve,
+                    fail: reject
+                })
+            })
+            const filePath = res?.tempFiles?.[0]?.path || ''
+            if (!filePath) return
+            this.setData({ audioFilePath: filePath, 'form.audioUrl': '' })
+        } catch (err) {
+            // ignore
+        }
+    },
+
+    startRecord() {
+        if (this.data.recording) return
+        const rm = wx.getRecorderManager()
+        this._recorder = rm
+        if (!this._recorderInited) {
+            this._recorderInited = true
+            rm.onStop((res) => {
+                const filePath = res?.tempFilePath || ''
+                if (filePath) {
+                    this.setData({ audioFilePath: filePath, 'form.audioUrl': '' })
+                }
+                this.setData({ recording: false })
+            })
+            rm.onError(() => {
+                this.setData({ recording: false })
+                wx.showToast({ title: '录音失败', icon: 'none' })
+            })
+        }
+        this.setData({ recording: true })
+        rm.start({ format: 'mp3', duration: 60 * 1000 })
+    },
+
+    stopRecord() {
+        if (!this.data.recording) return
+        try {
+            this._recorder && this._recorder.stop()
+        } catch (e) {
+            this.setData({ recording: false })
+        }
+    },
+
+    clearAudio() {
+        this.setData({ audioFilePath: '', 'form.audioUrl': '' })
+    },
+
+    async uploadAttachmentsIfNeeded() {
+        const imageFilePath = this.data.imageFilePath
+        const audioFilePath = this.data.audioFilePath
+        if (!imageFilePath && !audioFilePath) return
+
+        this.setData({ uploading: true })
+        try {
+            if (imageFilePath) {
+                const up = await api.uploadFile(imageFilePath)
+                const url = up?.data?.url ? String(up.data.url) : ''
+                if (url) {
+                    // Store relative URL in DB; preview uses baseUrl at runtime.
+                    this.setData({ 'form.imageUrl': url, imageFilePath: '' })
+                }
+            }
+            if (audioFilePath) {
+                const up = await api.uploadFile(audioFilePath)
+                const url = up?.data?.url ? String(up.data.url) : ''
+                if (url) {
+                    this.setData({ 'form.audioUrl': url, audioFilePath: '' })
+                }
+            }
+        } finally {
+            this.setData({ uploading: false })
+        }
+    },
+
     async save() {
         try {
             if (!this.data.form.batchNo) {
@@ -301,6 +435,9 @@ Page({
             const op = (this.data.form.operation || '').trim()
             const isKeyOp = KEY_OPERATIONS.includes(op)
             if (isKeyOp) {
+                // If user picked/recorded attachments, upload first and use returned URL as evidence.
+                await this.uploadAttachmentsIfNeeded()
+
                 const hasEvidence = !!((this.data.form.imageUrl || '').trim() || (this.data.form.audioUrl || '').trim())
                 if (!hasEvidence) {
                     this.setData({ showOptional: true })
@@ -325,6 +462,9 @@ Page({
             this.setData({ showForm: false })
             await this.refresh()
         } catch (err) {
+            const backendMsg = err?.data?.message || err?.data?.msg || ''
+            const rawMsg = backendMsg || err?.message || err?.errMsg || ''
+            wx.showToast({ title: backendMsg || (rawMsg ? String(rawMsg) : '保存失败'), icon: 'none' })
         }
     },
 

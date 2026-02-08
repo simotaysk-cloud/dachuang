@@ -1,7 +1,18 @@
-const DEFAULT_BASE_URL = 'http://127.0.0.1:8081'
+function getDefaultBaseUrl() {
+    try {
+        const info = wx.getSystemInfoSync()
+        if (info && info.platform === 'devtools') {
+            return 'http://127.0.0.1:8081'
+        }
+    } catch (e) {
+        // ignore
+    }
+    // Real device preview cannot access 127.0.0.1 on PC; use LAN IP (can be overridden in login page).
+    return 'http://192.168.31.157:8081'
+}
 
 const api = {
-    baseUrl: wx.getStorageSync('baseUrl') || DEFAULT_BASE_URL,
+    baseUrl: wx.getStorageSync('baseUrl') || getDefaultBaseUrl(),
     token: wx.getStorageSync('token') || '',
     role: wx.getStorageSync('role') || '',
 
@@ -91,6 +102,45 @@ const api = {
     // Batches
     listBatches() {
         return this.request('/api/v1/batches')
+    },
+
+    uploadFile(filePath) {
+        return new Promise((resolve, reject) => {
+            const header = {}
+            if (this.token) {
+                header.Authorization = `Bearer ${this.token}`
+            }
+            wx.uploadFile({
+                url: `${this.baseUrl}/api/v1/files/upload`,
+                filePath,
+                name: 'file',
+                header,
+                success: (res) => {
+                    let payload = null
+                    try {
+                        payload = JSON.parse(res.data)
+                    } catch (e) {
+                        payload = null
+                    }
+                    const error = { statusCode: res.statusCode, data: payload }
+                    if (res.statusCode >= 200 && res.statusCode < 300) {
+                        if (payload && typeof payload === 'object' && 'code' in payload && payload.code !== 200) {
+                            wx.showToast({ title: payload?.message || '上传失败', icon: 'none' })
+                            reject(error)
+                            return
+                        }
+                        resolve(payload)
+                        return
+                    }
+                    wx.showToast({ title: payload?.message || '上传失败', icon: 'none' })
+                    reject(error)
+                },
+                fail: (err) => {
+                    wx.showToast({ title: '上传失败', icon: 'none' })
+                    reject(err)
+                }
+            })
+        })
     }
 }
 
