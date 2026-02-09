@@ -9,7 +9,7 @@ function getDefaultBaseUrl() {
     }
     // Real device preview cannot access 127.0.0.1 on PC; use LAN IP (can be overridden in login page).
     // Real device preview cannot access 127.0.0.1 on PC; use LAN IP (can be overridden in login page).
-    return 'http://192.168.31.157:8091'
+    return 'http://192.168.0.251:8091'
 }
 
 function normalizeRole(role) {
@@ -21,7 +21,8 @@ function normalizeBaseUrl(url) {
     if (!u) return u
     // Upgrade legacy defaults to the new dev port (8091) to avoid the 8081 port conflict.
     if (u === 'http://127.0.0.1:8081') return 'http://127.0.0.1:8091'
-    if (u === 'http://192.168.31.157:8081') return 'http://192.168.31.157:8091'
+    if (u === 'http://192.168.0.251:8081') return 'http://192.168.0.251:8091'
+    if (u.includes('192.168.31.157')) return u.replace('192.168.31.157', '192.168.0.251')
     return u
 }
 
@@ -51,12 +52,13 @@ const api = {
         wx.setStorageSync('role', r)
     },
 
-    request(path, method = 'GET', data = undefined) {
+    request(path, method = 'GET', data = undefined, options = {}) {
         return new Promise((resolve, reject) => {
             const headers = { 'Content-Type': 'application/json' }
             if (this.token) {
                 headers.Authorization = `Bearer ${this.token}`
             }
+            const quiet = options.quiet || false
             wx.request({
                 url: `${this.baseUrl}${path}`,
                 method,
@@ -70,10 +72,12 @@ const api = {
                     if (res.statusCode >= 200 && res.statusCode < 300) {
                         if (payload && typeof payload === 'object' && 'code' in payload && payload.code !== 200) {
                             console.error('API Business Error:', payload.code, payload.message)
-                            wx.showToast({
-                                title: payload?.message || '请求失败',
-                                icon: 'none'
-                            })
+                            if (!quiet) {
+                                wx.showToast({
+                                    title: payload?.message || '请求失败',
+                                    icon: 'none'
+                                })
+                            }
                             reject(error)
                             return
                         }
@@ -81,17 +85,21 @@ const api = {
                         return
                     }
 
-                    wx.showToast({
-                        title: payload?.message || '请求失败',
-                        icon: 'none'
-                    })
+                    if (!quiet) {
+                        wx.showToast({
+                            title: payload?.message || '请求失败',
+                            icon: 'none'
+                        })
+                    }
                     reject(error)
                 },
                 fail: (err) => {
-                    wx.showToast({
-                        title: '网络错误',
-                        icon: 'none'
-                    })
+                    if (!quiet) {
+                        wx.showToast({
+                            title: '网络错误',
+                            icon: 'none'
+                        })
+                    }
                     reject(err)
                 }
             })
@@ -99,8 +107,8 @@ const api = {
     },
 
     // Auth
-    async login(username, password) {
-        const res = await this.request('/api/v1/auth/login', 'POST', { username, password })
+    async login(username, password, options = {}) {
+        const res = await this.request('/api/v1/auth/login', 'POST', { username, password }, options)
         if (res?.data?.token) {
             this.setToken(res.data.token)
         }
@@ -111,8 +119,8 @@ const api = {
     },
 
     // Health
-    checkHealth() {
-        return this.request('/api/v1/health')
+    checkHealth(options = {}) {
+        return this.request('/api/v1/health', 'GET', undefined, options)
     },
 
     // Profile

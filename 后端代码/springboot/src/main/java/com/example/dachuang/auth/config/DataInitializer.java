@@ -99,6 +99,7 @@ public class DataInitializer implements CommandLineRunner {
                                         .details("选用优质人参种子，密度适中")
                                         .operator("李农户")
                                         .fieldName("一号示范田")
+                                        .operationTime(LocalDateTime.now().minusDays(30))
                                         .imageUrl("https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?q=80&w=400&auto=format&fit=crop")
                                         .build());
 
@@ -108,6 +109,7 @@ public class DataInitializer implements CommandLineRunner {
                                         .details("使用有机肥料，无农药")
                                         .operator("李农户")
                                         .fieldName("一号示范田")
+                                        .operationTime(LocalDateTime.now().minusDays(20))
                                         .imageUrl("https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?q=80&w=400&auto=format&fit=crop")
                                         .build());
 
@@ -249,6 +251,7 @@ public class DataInitializer implements CommandLineRunner {
                                         .details("深耕30cm，施入基肥")
                                         .operator("王农户")
                                         .fieldName("文山二号山地")
+                                        .operationTime(LocalDateTime.now().minusDays(60))
                                         .imageUrl("https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=400&auto=format&fit=crop")
                                         .build());
 
@@ -258,6 +261,7 @@ public class DataInitializer implements CommandLineRunner {
                                         .details("雨后移栽，成活率高")
                                         .operator("王农户")
                                         .fieldName("文山二号山地")
+                                        .operationTime(LocalDateTime.now().minusDays(45))
                                         .imageUrl("https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?q=80&w=400&auto=format&fit=crop")
                                         .build());
 

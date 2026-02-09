@@ -92,7 +92,8 @@ public class BatchService {
 
         Batch saved = batchRepository.save(batch);
 
-        // Optional: auto-anchor to blockchain in background (disabled by default to avoid unexpected gas cost).
+        // Optional: auto-anchor to blockchain in background (disabled by default to
+        // avoid unexpected gas cost).
         if (autoAnchorOnBatchCreate) {
             blockchainService.autoAnchor(saved.getBatchNo(), "Initial batch creation: " + saved.getName());
         }
@@ -119,7 +120,13 @@ public class BatchService {
                     .category(parent.getCategory())
                     .origin(parent.getOrigin())
                     .status(parent.getStatus())
+                    .quantity(parent.getQuantity())
+                    .unit(parent.getUnit())
                     .description(parent.getDescription())
+                    .imageUrl(parent.getImageUrl())
+                    .usageAdvice(parent.getUsageAdvice())
+                    .contraindications(parent.getContraindications())
+                    .commonPairings(parent.getCommonPairings())
                     .build();
             child = createBatch(b);
         }
@@ -208,11 +215,24 @@ public class BatchService {
         Batch batch = batchRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(404, "Batch not found"));
 
-        batch.setName(batchDetails.getName());
-        batch.setCategory(batchDetails.getCategory());
-        batch.setOrigin(batchDetails.getOrigin());
-        batch.setStatus(batchDetails.getStatus());
-        batch.setDescription(batchDetails.getDescription());
+        if (batchDetails.getName() != null)
+            batch.setName(batchDetails.getName());
+        if (batchDetails.getCategory() != null)
+            batch.setCategory(batchDetails.getCategory());
+        if (batchDetails.getOrigin() != null)
+            batch.setOrigin(batchDetails.getOrigin());
+        if (batchDetails.getStatus() != null)
+            batch.setStatus(batchDetails.getStatus());
+        if (batchDetails.getDescription() != null)
+            batch.setDescription(batchDetails.getDescription());
+        if (batchDetails.getImageUrl() != null)
+            batch.setImageUrl(batchDetails.getImageUrl());
+        if (batchDetails.getUsageAdvice() != null)
+            batch.setUsageAdvice(batchDetails.getUsageAdvice());
+        if (batchDetails.getContraindications() != null)
+            batch.setContraindications(batchDetails.getContraindications());
+        if (batchDetails.getCommonPairings() != null)
+            batch.setCommonPairings(batchDetails.getCommonPairings());
 
         boolean locked = batch.isGs1Locked();
         if (locked) {
@@ -224,8 +244,10 @@ public class BatchService {
                 throw new BusinessException(400, "GS1 is locked; cannot change quantity/unit after labeling");
             }
         } else {
-            batch.setQuantity(batchDetails.getQuantity());
-            batch.setUnit(batchDetails.getUnit());
+            if (batchDetails.getQuantity() != null)
+                batch.setQuantity(batchDetails.getQuantity());
+            if (batchDetails.getUnit() != null)
+                batch.setUnit(batchDetails.getUnit());
 
             // Refresh GS1 HRI when quantity/unit changes, but keep lotNo stable once
             // created.

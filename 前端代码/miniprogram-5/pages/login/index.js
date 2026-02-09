@@ -71,7 +71,7 @@ Page({
     async checkHealth() {
         try {
             wx.showLoading({ title: '检测中...' })
-            const res = await api.checkHealth()
+            const res = await api.checkHealth({ quiet: true })
             wx.hideLoading()
             wx.showToast({ title: res?.data?.status ? `健康: ${res.data.status}` : '后端可用', icon: 'none' })
         } catch (err) {
@@ -89,7 +89,8 @@ Page({
 
         try {
             wx.showLoading({ title: '登录中...' })
-            const loginRes = await api.login(username, password)
+            // Use quiet: true to handle UI notifications manually and avoid showLoading/hideLoading mismatch warnings.
+            const loginRes = await api.login(username, password, { quiet: true })
             wx.hideLoading()
 
             if (loginRes?.data?.token) {
