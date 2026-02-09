@@ -18,6 +18,9 @@ Page({
         selectedOperation: '',
         customOperation: '',
         operationTimeText: '保存后自动记录',
+        manualTime: false,
+        operationDate: '',
+        operationClock: '',
         // local attachments (picked/recorded on device)
         imageFilePath: '',
         audioFilePath: '',
@@ -42,6 +45,24 @@ Page({
         this.init(options || {})
     },
 
+    getNowParts() {
+        const d = new Date()
+        const pad = (n) => String(n).padStart(2, '0')
+        const date = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+        const clock = `${pad(d.getHours())}:${pad(d.getMinutes())}`
+        return { date, clock }
+    },
+
+    updateOperationTimeFromParts(date, clock) {
+        const d = (date || '').trim()
+        const c = (clock || '').trim()
+        if (!d || !c) return
+        this.setData({
+            operationTimeText: `${d} ${c}:00`,
+            'form.operationTime': `${d}T${c}:00`
+        })
+    },
+
     async init(options) {
         try {
             const id = options.id ? String(options.id) : ''
@@ -56,10 +77,19 @@ Page({
                 const record = res?.data || {}
                 const op = record.operation || ''
                 const matched = OPERATION_OPTIONS.includes(op) ? op : (op ? '其他' : '')
+                const nowParts = this.getNowParts()
+                const opTimeRaw = record?.operationTime ? String(record.operationTime) : ''
+                const opTimeText = opTimeRaw ? opTimeRaw.replace('T', ' ') : '保存后自动记录'
+                const opTimeParts = opTimeRaw ? opTimeRaw.replace(' ', 'T').split('T') : []
+                const date = opTimeParts[0] || nowParts.date
+                const clock = (opTimeParts[1] || nowParts.clock).slice(0, 5)
                 this.setData({
                     selectedOperation: matched,
                     customOperation: matched === '其他' ? op : '',
-                    operationTimeText: record?.operationTime ? String(record.operationTime).replace('T', ' ') : '保存后自动记录',
+                    operationTimeText: opTimeText,
+                    manualTime: !!opTimeRaw,
+                    operationDate: date,
+                    operationClock: clock,
                     form: {
                         id: record.id ? String(record.id) : '',
                         batchNo: record.batchNo || '',
@@ -71,7 +101,7 @@ Page({
                         audioUrl: record.audioUrl || '',
                         latitude: record.latitude ?? null,
                         longitude: record.longitude ?? null,
-                        operationTime: record.operationTime || ''
+                        operationTime: opTimeRaw || ''
                     }
                 })
                 // Auto-get location if missing for key ops (no manual click).
@@ -87,6 +117,7 @@ Page({
                 return
             }
 
+            const now = this.getNowParts()
             this.setData({
                 selectedOperation: '',
                 customOperation: '',
@@ -95,6 +126,9 @@ Page({
                 recording: false,
                 uploading: false,
                 operationTimeText: '保存后自动记录',
+                manualTime: false,
+                operationDate: now.date,
+                operationClock: now.clock,
                 form: {
                     id: '',
                     batchNo,
@@ -114,6 +148,33 @@ Page({
         } catch (err) {
             wx.showToast({ title: '加载失败', icon: 'none' })
         }
+    },
+
+    onManualTimeChange(e) {
+        const v = !!e.detail.value
+        this.setData({ manualTime: v })
+        if (!v) {
+            this.setData({ operationTimeText: '保存后自动记录', 'form.operationTime': '' })
+            return
+        }
+        // Enable manual time: default to now (can be changed by picker).
+        const now = this.getNowParts()
+        const date = this.data.operationDate || now.date
+        const clock = this.data.operationClock || now.clock
+        this.setData({ operationDate: date, operationClock: clock })
+        this.updateOperationTimeFromParts(date, clock)
+    },
+
+    onOperationDateChange(e) {
+        const date = e.detail.value
+        this.setData({ operationDate: date })
+        if (this.data.manualTime) this.updateOperationTimeFromParts(date, this.data.operationClock)
+    },
+
+    onOperationClockChange(e) {
+        const clock = e.detail.value
+        this.setData({ operationClock: clock })
+        if (this.data.manualTime) this.updateOperationTimeFromParts(this.data.operationDate, clock)
     },
 
     onInput(e) {
@@ -341,13 +402,12 @@ Page({
 
             if (this.data.form.id) {
                 const payload = { ...this.data.form }
-                // server owns operationTime; do not allow client changes
-                delete payload.operationTime
+                if (!payload.operationTime) delete payload.operationTime
                 await api.request(`/api/v1/planting/${this.data.form.id}`, 'PUT', payload)
             } else {
                 const payload = { ...this.data.form }
                 delete payload.id
-                delete payload.operationTime
+                if (!payload.operationTime) delete payload.operationTime
                 await api.request('/api/v1/planting', 'POST', payload)
             }
 
