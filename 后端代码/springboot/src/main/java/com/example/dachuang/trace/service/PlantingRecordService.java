@@ -61,8 +61,10 @@ public class PlantingRecordService {
         existing.setAudioUrl(record.getAudioUrl());
         existing.setLatitude(record.getLatitude());
         existing.setLongitude(record.getLongitude());
-        // Keep operationTime stable once recorded; if legacy data is missing, fill it.
-        if (existing.getOperationTime() == null) {
+        // Optional: allow manual set; if absent, keep existing; if legacy data missing, fill.
+        if (record.getOperationTime() != null) {
+            existing.setOperationTime(record.getOperationTime());
+        } else if (existing.getOperationTime() == null) {
             existing.setOperationTime(LocalDateTime.now());
         }
         return plantingRecordRepository.save(existing);

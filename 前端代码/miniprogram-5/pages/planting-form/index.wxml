@@ -10,10 +10,28 @@
             <view class="readonly-label">记录ID</view>
             <view class="readonly-value">#{{form.id}}</view>
         </view>
-        <view class="readonly-row">
-            <view class="readonly-label">操作时间</view>
-            <view class="readonly-value">{{operationTimeText}}</view>
+        <view class="section-title">操作时间</view>
+        <view class="picker-row" style="margin-bottom: 16rpx;">
+            <view class="picker-label">手动设置</view>
+            <switch checked="{{manualTime}}" bindchange="onManualTimeChange" />
         </view>
+        <view class="meta" wx:if="{{!manualTime}}" style="margin-bottom: 16rpx;">不手动设置时：保存时记录当前时间</view>
+        <view wx:if="{{manualTime}}">
+            <picker mode="date" value="{{operationDate}}" bindchange="onOperationDateChange">
+                <view class="picker-row" style="margin-bottom: 16rpx;">
+                    <view class="picker-label">日期</view>
+                    <view class="picker-value">{{operationDate}}</view>
+                </view>
+            </picker>
+            <picker mode="time" value="{{operationClock}}" bindchange="onOperationClockChange">
+                <view class="picker-row" style="margin-bottom: 16rpx;">
+                    <view class="picker-label">时间</view>
+                    <view class="picker-value">{{operationClock}}</view>
+                </view>
+            </picker>
+            <view class="meta">当前选择：{{operationTimeText}}</view>
+        </view>
+
         <view class="readonly-row">
             <view class="readonly-label">批次号</view>
             <view class="readonly-value">{{form.batchNo}}</view>
