@@ -21,6 +21,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 import java.util.Collections;
 import java.util.HexFormat;
 import java.util.List;
@@ -53,12 +54,13 @@ public class EvmBlockchainClient {
     public boolean isConfigured() {
         return rpcUrl != null && !rpcUrl.isBlank()
                 && privateKey != null && !privateKey.isBlank()
-                && contractAddress != null && WalletUtils.isValidAddress(contractAddress);
+                && contractAddress != null && WalletUtils.isValidAddress(contractAddress)
+                && isValidPrivateKey(privateKey);
     }
 
     public AnchorResult anchor(String batchNo, String data) {
         if (!isConfigured()) {
-            throw new BusinessException(500, "EVM blockchain is not configured (rpc-url/private-key/contract-address)");
+            throw new BusinessException(500, "EVM blockchain is not configured (rpc-url/private-key/contract-address). EVM_PRIVATE_KEY must be a 32-byte hex private key, not a wallet address.");
         }
         if (batchNo == null || batchNo.isBlank()) {
             throw new BusinessException(400, "batchNo is required");
@@ -68,7 +70,7 @@ public class EvmBlockchainClient {
         String dataHashHex = "sha256:" + HexFormat.of().formatHex(hashBytes);
 
         Web3j web3j = Web3j.build(new HttpService(rpcUrl));
-        Credentials credentials = Credentials.create(privateKey.trim());
+        Credentials credentials = Credentials.create(normalizePrivateKey(privateKey));
         TransactionManager tm = new RawTransactionManager(web3j, credentials, chainId);
 
         BigInteger gasPrice = resolveGasPrice(web3j);
@@ -112,6 +114,28 @@ public class EvmBlockchainClient {
         } catch (Exception e) {
             return BigInteger.valueOf(1_000_000_000L);
         }
+    }
+
+    private static boolean isValidPrivateKey(String pk) {
+        try {
+            normalizePrivateKey(pk);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static String normalizePrivateKey(String pk) {
+        String s = (pk == null) ? "" : pk.trim();
+        if (s.startsWith("0x") || s.startsWith("0X")) {
+            s = s.substring(2);
+        }
+        s = s.toLowerCase(Locale.ROOT);
+        // A private key is 32 bytes => 64 hex chars.
+        if (s.length() != 64 || !s.matches("^[0-9a-f]{64}$")) {
+            throw new IllegalArgumentException("invalid private key");
+        }
+        return s;
     }
 
     private static byte[] sha256Bytes(String data) {
