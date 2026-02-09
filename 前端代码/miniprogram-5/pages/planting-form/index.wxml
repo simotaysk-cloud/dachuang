@@ -11,6 +11,10 @@
             <view class="readonly-value">#{{form.id}}</view>
         </view>
         <view class="readonly-row">
+            <view class="readonly-label">操作时间</view>
+            <view class="readonly-value">{{operationTimeText}}</view>
+        </view>
+        <view class="readonly-row">
             <view class="readonly-label">批次号</view>
             <view class="readonly-value">{{form.batchNo}}</view>
         </view>
@@ -43,8 +47,8 @@
         <view class="meta" wx:if="{{form.latitude && form.longitude}}">
             已获取：{{form.latitude}}, {{form.longitude}}
         </view>
-        <view class="btn-group" style="margin-bottom: 20rpx;">
-            <button class="btn btn-outline" bindtap="fetchLocation">重新获取定位</button>
+        <view class="meta" wx:if="{{!form.latitude || !form.longitude}}" style="margin-bottom: 20rpx;">
+            定位会自动获取（如果失败请检查定位权限）
         </view>
 
         <view class="field-label">图片（可选）</view>
@@ -79,4 +83,3 @@
         <button class="btn btn-outline" style="margin-top:20rpx" bindtap="cancel">返回</button>
     </view>
 </view>
-

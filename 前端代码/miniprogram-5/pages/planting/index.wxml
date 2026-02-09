@@ -45,8 +45,8 @@
                     <view class="list-sub">
                         批次: {{item.batchNo || '-'}} · 地块: {{item.fieldName || '-'}} · 操作人: {{item.operator || '-'}}
                     </view>
-                    <view class="list-meta" wx:if="{{item.createdAtText}}">
-                        创建: {{item.createdAtText}}
+                    <view class="list-meta" wx:if="{{item.operationTimeText}}">
+                        操作时间: {{item.operationTimeText}}
                     </view>
                 </view>
                 <view class="list-action">编辑</view>

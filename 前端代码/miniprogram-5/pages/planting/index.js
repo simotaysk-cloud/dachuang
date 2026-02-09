@@ -90,7 +90,8 @@ Page({
             const allRecords = list.map((item) => ({
                 ...item,
                 createdAtText: item?.createdAt ? String(item.createdAt).replace('T', ' ') : '',
-                updatedAtText: item?.updatedAt ? String(item.updatedAt).replace('T', ' ') : ''
+                updatedAtText: item?.updatedAt ? String(item.updatedAt).replace('T', ' ') : '',
+                operationTimeText: item?.operationTime ? String(item.operationTime).replace('T', ' ') : ''
             }))
 
             const records = this.applyQuery(allRecords, this.data.queryKey)

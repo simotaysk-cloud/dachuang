@@ -6,6 +6,7 @@ import com.example.dachuang.trace.repository.PlantingRecordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -39,6 +40,9 @@ public class PlantingRecordService {
 
     public PlantingRecord create(PlantingRecord record) {
         batchService.getBatchByNo(record.getBatchNo());
+        if (record.getOperationTime() == null) {
+            record.setOperationTime(LocalDateTime.now());
+        }
         validateEvidenceAndGeo(record);
         return plantingRecordRepository.save(record);
     }
@@ -57,6 +61,10 @@ public class PlantingRecordService {
         existing.setAudioUrl(record.getAudioUrl());
         existing.setLatitude(record.getLatitude());
         existing.setLongitude(record.getLongitude());
+        // Keep operationTime stable once recorded; if legacy data is missing, fill it.
+        if (existing.getOperationTime() == null) {
+            existing.setOperationTime(LocalDateTime.now());
+        }
         return plantingRecordRepository.save(existing);
     }
 

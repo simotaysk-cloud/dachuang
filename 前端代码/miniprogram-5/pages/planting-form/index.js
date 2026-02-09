@@ -17,6 +17,7 @@ Page({
         operationOptions: OPERATION_OPTIONS,
         selectedOperation: '',
         customOperation: '',
+        operationTimeText: '保存后自动记录',
         // local attachments (picked/recorded on device)
         imageFilePath: '',
         audioFilePath: '',
@@ -32,7 +33,8 @@ Page({
             imageUrl: '',
             audioUrl: '',
             latitude: null,
-            longitude: null
+            longitude: null,
+            operationTime: ''
         }
     },
 
@@ -57,6 +59,7 @@ Page({
                 this.setData({
                     selectedOperation: matched,
                     customOperation: matched === '其他' ? op : '',
+                    operationTimeText: record?.operationTime ? String(record.operationTime).replace('T', ' ') : '保存后自动记录',
                     form: {
                         id: record.id ? String(record.id) : '',
                         batchNo: record.batchNo || '',
@@ -67,9 +70,14 @@ Page({
                         imageUrl: record.imageUrl || '',
                         audioUrl: record.audioUrl || '',
                         latitude: record.latitude ?? null,
-                        longitude: record.longitude ?? null
+                        longitude: record.longitude ?? null,
+                        operationTime: record.operationTime || ''
                     }
                 })
+                // Auto-get location if missing for key ops (no manual click).
+                if (KEY_OPERATIONS.includes(op) && (record.latitude == null || record.longitude == null)) {
+                    this.fetchLocation()
+                }
                 return
             }
 
@@ -86,6 +94,7 @@ Page({
                 audioFilePath: '',
                 recording: false,
                 uploading: false,
+                operationTimeText: '保存后自动记录',
                 form: {
                     id: '',
                     batchNo,
@@ -96,9 +105,12 @@ Page({
                     imageUrl: '',
                     audioUrl: '',
                     latitude: null,
-                    longitude: null
+                    longitude: null,
+                    operationTime: ''
                 }
             })
+            // Auto-get location as soon as user enters the page.
+            this.fetchLocation()
         } catch (err) {
             wx.showToast({ title: '加载失败', icon: 'none' })
         }
@@ -162,7 +174,25 @@ Page({
             })
             return true
         } catch (err) {
-            wx.showToast({ title: '请授权定位后重试', icon: 'none' })
+            // If user previously denied permission, guide to settings.
+            try {
+                const setting = await new Promise((resolve) => wx.getSetting({ success: resolve, fail: () => resolve(null) }))
+                const authed = setting?.authSetting?.['scope.userLocation']
+                if (authed === false) {
+                    wx.showModal({
+                        title: '需要定位权限',
+                        content: '关键操作需自动获取定位，请在设置中开启定位权限。',
+                        confirmText: '去设置',
+                        success: (r) => {
+                            if (r.confirm) wx.openSetting({})
+                        }
+                    })
+                    return false
+                }
+            } catch (e) {
+                // ignore
+            }
+            wx.showToast({ title: '定位失败（请授权定位）', icon: 'none' })
             return false
         }
     },
@@ -310,10 +340,14 @@ Page({
             }
 
             if (this.data.form.id) {
-                await api.request(`/api/v1/planting/${this.data.form.id}`, 'PUT', this.data.form)
+                const payload = { ...this.data.form }
+                // server owns operationTime; do not allow client changes
+                delete payload.operationTime
+                await api.request(`/api/v1/planting/${this.data.form.id}`, 'PUT', payload)
             } else {
                 const payload = { ...this.data.form }
                 delete payload.id
+                delete payload.operationTime
                 await api.request('/api/v1/planting', 'POST', payload)
             }
 
@@ -356,4 +390,3 @@ Page({
         wx.navigateBack()
     }
 })
-
