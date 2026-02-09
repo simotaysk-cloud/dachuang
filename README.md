@@ -104,6 +104,16 @@ export EVM_EXPLORER_TX_URL="https://sepolia.etherscan.io/tx/"
 
 然后启动后端即可。
 
+也可以用 `.env` 方式（避免把私钥写进配置或发到聊天里）：
+
+1. 复制示例：`后端代码/springboot/.env.example` -> `后端代码/springboot/.env`
+2. 填入 `EVM_RPC_URL / EVM_PRIVATE_KEY / EVM_CONTRACT_ADDRESS`
+3. 启动：
+```bash
+cd 后端代码/springboot
+bash scripts/run-evm-dev.sh
+```
+
 ### 3) 小程序演示入口
 
 小程序的“防伪&区块链”页面可以：
