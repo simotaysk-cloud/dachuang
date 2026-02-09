@@ -8,5 +8,7 @@ import java.util.Optional;
 public interface BatchRepository extends JpaRepository<Batch, Long> {
     Optional<Batch> findByBatchNo(String batchNo);
 
+    Optional<Batch> findByMinCode(String minCode);
+
     boolean existsByGs1LotNo(String gs1LotNo);
 }
