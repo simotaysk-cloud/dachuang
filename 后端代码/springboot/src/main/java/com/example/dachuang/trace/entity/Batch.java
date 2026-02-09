@@ -37,6 +37,18 @@ public class Batch extends BaseEntity {
     @Column(length = 1000)
     private String description;
 
+    @Column(length = 255)
+    private String imageUrl; // 药材主图
+
+    @Column(length = 1000)
+    private String usageAdvice; // 服用建议
+
+    @Column(length = 1000)
+    private String contraindications; // 禁忌
+
+    @Column(length = 1000)
+    private String commonPairings; // 常见配伍
+
     // Inventory & GS1
     @Column(precision = 19, scale = 6)
     private BigDecimal quantity; // 数量

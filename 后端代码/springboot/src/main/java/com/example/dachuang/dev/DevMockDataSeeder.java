@@ -113,7 +113,8 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .nickname(username)
                 .name(name)
                 .phone(phone)
-                // Some existing dev schemas have `openid` as NOT NULL; keep it always populated.
+                // Some existing dev schemas have `openid` as NOT NULL; keep it always
+                // populated.
                 .openid("mock_openid_" + username)
                 .build();
         userRepository.save(u);
@@ -139,15 +140,18 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .build();
         batchService.createBatch(root);
 
-        // Create deterministic processing branches using deriveBatch (so lineage exists).
+        // Create deterministic processing branches using deriveBatch (so lineage
+        // exists).
         batchService.deriveBatch(ROOT_BATCH_NO, PROC_A_BATCH_NO, "PROCESSING", "SLICE", "切片工艺分支");
         batchService.deriveBatch(ROOT_BATCH_NO, PROC_B_BATCH_NO, "PROCESSING", "DRY", "晒干工艺分支");
 
-        // Pre-create inspection branches (derive stage INSPECTION). Records added in seedInspectionBranching.
+        // Pre-create inspection branches (derive stage INSPECTION). Records added in
+        // seedInspectionBranching.
         batchService.deriveBatch(PROC_A_BATCH_NO, INSP_A_GRADE_A_BATCH_NO, "INSPECTION", "GRADE_A", "分级为 A");
         batchService.deriveBatch(PROC_B_BATCH_NO, INSP_B_REWORK_BATCH_NO, "INSPECTION", "REWORK", "返工处理");
 
-        // Sanity: make sure lineage rows exist (deriveBatch should create them; this is just a guard).
+        // Sanity: make sure lineage rows exist (deriveBatch should create them; this is
+        // just a guard).
         List<BatchLineage> edges = batchLineageRepository.findAllByParentBatchNo(ROOT_BATCH_NO);
         if (edges.isEmpty()) {
             log.warn("No lineage edges found for root batch. Check BatchService.deriveBatch().");
@@ -155,8 +159,7 @@ public class DevMockDataSeeder implements CommandLineRunner {
     }
 
     private void seedPlantingRecords() {
-        // `planting_records.operation_time` is NOT NULL (DB-level). Seed explicit timestamps to keep startup stable.
-        LocalDateTime t0 = LocalDateTime.now().minusDays(30).withHour(9).withMinute(10).withSecond(0).withNano(0);
+        LocalDateTime baseTime = LocalDateTime.now().minusDays(10);
 
         plantingRecordRepository.save(PlantingRecord.builder()
                 .batchNo(ROOT_BATCH_NO)
@@ -167,8 +170,9 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .latitude(34.123456)
                 .longitude(104.123456)
                 .imageUrl("https://example.com/mock/seed.jpg")
-                .operationTime(t0)
                 .build());
+        jdbcTemplate.update("update planting_records set created_at = ? where batch_no = ? and operation = ?",
+                baseTime, ROOT_BATCH_NO, "播种");
 
         plantingRecordRepository.save(PlantingRecord.builder()
                 .batchNo(ROOT_BATCH_NO)
@@ -179,8 +183,9 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .latitude(34.123489)
                 .longitude(104.123499)
                 .imageUrl("https://example.com/mock/fertilize.jpg")
-                .operationTime(t0.plusDays(7))
                 .build());
+        jdbcTemplate.update("update planting_records set created_at = ? where batch_no = ? and operation = ?",
+                baseTime.plusDays(2), ROOT_BATCH_NO, "施肥");
 
         plantingRecordRepository.save(PlantingRecord.builder()
                 .batchNo(ROOT_BATCH_NO)
@@ -191,11 +196,14 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .latitude(34.123501)
                 .longitude(104.123512)
                 .imageUrl("https://example.com/mock/irrigation.jpg")
-                .operationTime(t0.plusDays(12))
                 .build());
+        jdbcTemplate.update("update planting_records set created_at = ? where batch_no = ? and operation = ?",
+                baseTime.plusDays(4), ROOT_BATCH_NO, "灌溉");
     }
 
     private void seedProcessingRecords() {
+        LocalDateTime baseTime = LocalDateTime.now().minusDays(5);
+
         // Record for branch A
         processingRecordRepository.save(ProcessingRecord.builder()
                 .batchNo(PROC_A_BATCH_NO)
@@ -206,6 +214,8 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .operator("李四")
                 .imageUrl("")
                 .build());
+        jdbcTemplate.update("update processing_records set created_at = ? where batch_no = ?",
+                baseTime, PROC_A_BATCH_NO);
 
         // Record for branch B
         processingRecordRepository.save(ProcessingRecord.builder()
@@ -217,15 +227,21 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .operator("李四")
                 .imageUrl("")
                 .build());
+        jdbcTemplate.update("update processing_records set created_at = ? where batch_no = ?",
+                baseTime, PROC_B_BATCH_NO);
     }
 
     private void seedInspectionBranching() {
+        LocalDateTime baseTime = LocalDateTime.now().minusDays(3);
+
         inspectionRecordRepository.save(InspectionRecord.builder()
                 .batchNo(INSP_A_GRADE_A_BATCH_NO)
                 .result("GRADE_A")
                 .reportUrl("https://example.com/reports/demo-grade-a.pdf")
                 .inspector("王五")
                 .build());
+        jdbcTemplate.update("update inspection_records set created_at = ? where batch_no = ?",
+                baseTime, INSP_A_GRADE_A_BATCH_NO);
 
         inspectionRecordRepository.save(InspectionRecord.builder()
                 .batchNo(INSP_B_REWORK_BATCH_NO)
@@ -233,6 +249,8 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .reportUrl("https://example.com/reports/demo-rework.pdf")
                 .inspector("王五")
                 .build());
+        jdbcTemplate.update("update inspection_records set created_at = ? where batch_no = ?",
+                baseTime, INSP_B_REWORK_BATCH_NO);
     }
 
     private void seedLegacyLogistics() {
@@ -264,43 +282,42 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 "经销商A（成都）",
                 "顺丰",
                 "SF1234567890",
-                "演示：第一票发运"
-        ));
+                "演示：第一票发运"));
 
         Shipment s2 = shipmentService.create(createShipmentRequest(
                 INSP_A_GRADE_A_BATCH_NO,
                 "经销商B（上海）",
                 "中通",
                 "ZT0987654321",
-                "演示：第二票发运"
-        ));
+                "演示：第二票发运"));
 
         List<CreateShipmentEventRequest> s1Events = new ArrayList<>();
-        s1Events.add(createEvent(LocalDateTime.now().minusDays(1).withHour(9).withMinute(0), "甘肃-岷县仓", "IN_TRANSIT", "已揽收"));
-        s1Events.add(createEvent(LocalDateTime.now().minusDays(1).withHour(15).withMinute(30), "兰州中转仓", "IN_TRANSIT", "到达中转仓"));
-        s1Events.add(createEvent(LocalDateTime.now().withHour(10).withMinute(20), "成都分拨中心", "DELIVERED", "签收完成"));
+        s1Events.add(createEvent(LocalDateTime.now().minusHours(12), "甘肃-岷县仓", "IN_TRANSIT", "已揽收"));
+        s1Events.add(createEvent(LocalDateTime.now().minusHours(6), "兰州中转仓", "IN_TRANSIT", "到达中转仓"));
+        s1Events.add(createEvent(LocalDateTime.now().minusMinutes(30), "成都分拨中心", "DELIVERED", "签收完成"));
         addEventsIfNone(s1.getShipmentNo(), s1Events);
 
         List<CreateShipmentEventRequest> s2Events = new ArrayList<>();
-        s2Events.add(createEvent(LocalDateTime.now().minusDays(1).withHour(8).withMinute(40), "甘肃-岷县仓", "IN_TRANSIT", "已揽收"));
-        s2Events.add(createEvent(LocalDateTime.now().withHour(11).withMinute(50), "上海虹桥转运中心", "DELIVERED", "签收完成"));
+        s2Events.add(createEvent(LocalDateTime.now().minusHours(24), "甘肃-岷县仓", "IN_TRANSIT", "已揽收"));
+        s2Events.add(createEvent(LocalDateTime.now().minusHours(2), "上海虹桥转运中心", "DELIVERED", "签收完成"));
         addEventsIfNone(s2.getShipmentNo(), s2Events);
 
-        // One shipment for the REWORK branch, to show that different leaf batches can have different downstream flow.
+        // One shipment for the REWORK branch, to show that different leaf batches can
+        // have different downstream flow.
         Shipment s3 = shipmentService.create(createShipmentRequest(
                 INSP_B_REWORK_BATCH_NO,
                 "返工处理点（工厂复检）",
                 "自有车队",
                 "TRUCK-0001",
-                "演示：返工批次流转"
-        ));
+                "演示：返工批次流转"));
         List<CreateShipmentEventRequest> s3Events = new ArrayList<>();
         s3Events.add(createEvent(LocalDateTime.now().minusHours(6), "兰州中转仓", "IN_TRANSIT", "转运发车"));
         s3Events.add(createEvent(LocalDateTime.now().minusHours(2), "演示工厂-复检区", "DELIVERED", "到达复检区"));
         addEventsIfNone(s3.getShipmentNo(), s3Events);
     }
 
-    private CreateShipmentRequest createShipmentRequest(String batchNo, String distributorName, String carrier, String trackingNo, String remarks) {
+    private CreateShipmentRequest createShipmentRequest(String batchNo, String distributorName, String carrier,
+            String trackingNo, String remarks) {
         CreateShipmentRequest r = new CreateShipmentRequest();
         r.setBatchNo(batchNo);
         r.setDistributorName(distributorName);
@@ -349,7 +366,8 @@ public class DevMockDataSeeder implements CommandLineRunner {
         jdbcTemplate.update("delete from processing_records where batch_no like 'DEMO-%'");
         jdbcTemplate.update("delete from planting_records where batch_no like 'DEMO-%'");
 
-        jdbcTemplate.update("delete from batch_lineages where parent_batch_no like 'DEMO-%' or child_batch_no like 'DEMO-%'");
+        jdbcTemplate.update(
+                "delete from batch_lineages where parent_batch_no like 'DEMO-%' or child_batch_no like 'DEMO-%'");
         jdbcTemplate.update("delete from blockchain_records where batch_no like 'DEMO-%'");
         jdbcTemplate.update("delete from batches where batch_no like 'DEMO-%'");
 

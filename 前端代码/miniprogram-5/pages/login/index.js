@@ -15,6 +15,7 @@ Page({
     },
 
     onLoad() {
+        api.init()
         const rememberUsername = !!wx.getStorageSync(REMEMBER_USERNAME_KEY)
         const rememberPassword = !!wx.getStorageSync(REMEMBER_PASSWORD_KEY)
         const username = rememberUsername ? (wx.getStorageSync(SAVED_USERNAME_KEY) || '') : ''

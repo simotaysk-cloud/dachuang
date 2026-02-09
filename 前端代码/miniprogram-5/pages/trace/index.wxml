@@ -1,46 +1,97 @@
 <view class="page-container">
-    <view class="header">
-        <view class="title">智汇溯源</view>
-        <view class="desc">智慧赋能，让每一株草本皆有迹可循</view>
-    </view>
-
-    <!-- Search Section -->
-    <view class="card search-card">
-        <view class="search-bar">
-            <input class="input-inline" placeholder="请输入防伪码或批次号" value="{{batchNo}}" bindinput="onInput" />
-            <view class="scan-btn" bindtap="query">
-                <text>查询</text>
+    <!-- Hero Header -->
+    <view class="hero-section" style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7)), url({{report.batch.imageUrl || 'https://images.unsplash.com/photo-1611241893603-3c359704e0ee?q=80&w=800&auto=format&fit=crop'}})">
+        <view class="hero-content">
+            <view class="product-badge">
+                <text class="badge-icon">🛡️</text>
+                <text>区块链全程溯源</text>
+            </view>
+            <view class="hero-name">{{report.batch.name || '智汇溯源'}}</view>
+            <view class="hero-tags">
+                <text class="hero-tag">{{report.batch.category}}</text>
+                <text class="hero-tag">道地药材</text>
             </view>
         </view>
     </view>
 
-    <!-- Report Section -->
-    <view wx:if="{{report}}" class="report-content">
-        <!-- Product Card -->
-        <view class="card product-card">
-            <view class="product-info">
-                <view class="product-name">{{report.batch.name}}</view>
-                <view class="product-tags">
-                    <text class="tag">{{report.batch.category}}</text>
-                    <text class="tag highlight">区块链存证已生效</text>
+    <!-- Query Section (Floating) - Hidden for scanned view to keep it focused -->
+    <view wx:if="{{!isScanned}}" class="search-floating {{report ? 'has-report' : ''}}">
+        <view class="search-bar">
+            <input class="input-inline" placeholder="输入批次号查询溯源档案" value="{{batchNo}}" bindinput="onInput" />
+            <view class="query-btn" bindtap="query">
+                <text>回溯</text>
+            </view>
+        </view>
+    </view>
+
+    <view wx:if="{{report}}" class="content-body animated fadeIn">
+        
+        <!-- Summary Card -->
+        <view class="card summary-card">
+            <view class="section-title">
+                <text class="title-text">产品概览</text>
+                <text class="origin-tag">产自：{{report.batch.origin}}</text>
+            </view>
+            <view class="summary-desc">{{report.batch.description}}</view>
+            <view class="gs1-box">
+                <view class="gs1-label">GS1 追溯识别码</view>
+                <view class="gs1-code">{{report.gs1}}</view>
+            </view>
+        </view>
+
+        <!-- Medicinal Encyclopedia Section -->
+        <view class="section-header">
+            <view class="header-line"></view>
+            <text class="header-text">药材百科</text>
+            <view class="header-line"></view>
+        </view>
+
+        <view class="card wiki-card">
+            <view class="wiki-section">
+                <view class="wiki-title">
+                    <text class="wiki-icon">🍵</text>
+                    <text>服用建议</text>
+                </view>
+                <view class="wiki-content">{{report.batch.usageAdvice || '暂无服用建议'}}</view>
+            </view>
+
+            <view class="wiki-section">
+                <view class="wiki-title warning">
+                    <text class="wiki-icon">⚠️</text>
+                    <text>禁忌说明</text>
+                </view>
+                <view class="wiki-content">{{report.batch.contraindications || '暂无禁忌说明'}}</view>
+            </view>
+
+            <view class="wiki-section">
+                <view class="wiki-title pairing">
+                    <text class="wiki-icon">🧪</text>
+                    <text>常见配伍</text>
+                </view>
+                <view class="wiki-content">
+                    <view class="pairing-item" wx:for="{{report.pairings}}" wx:key="index">
+                        {{item}}
+                    </view>
+                    <view wx:if="{{!report.pairings || report.pairings.length === 0}}">暂无相关配伍推荐</view>
                 </view>
             </view>
-            <view class="gs1-info">
-                <view class="label">GS1 追溯码 (AI 01+10)</view>
-                <view class="code">{{report.gs1 || '生成中...'}}</view>
-            </view>
-
         </view>
 
-        <!-- Timeline Section -->
+        <!-- Traceability Timeline Section -->
+        <view class="section-header">
+            <view class="header-line"></view>
+            <text class="header-text">生命周期回溯</text>
+            <view class="header-line"></view>
+        </view>
+
         <view class="timeline-container">
             <view class="timeline-item {{item.isHighlight ? 'highlight' : ''}}" wx:for="{{report.timeline}}" wx:key="index">
                 <view class="item-left">
                     <view class="time-main">{{item.tag}}</view>
-                    <view class="time-sub">{{item.time}}</view>
+                    <view class="time-sub">{{item.timeDisplay}}</view>
                 </view>
                 <view class="item-dot">
-                    <text class="dot-icon">{{item.icon}}</text>
+                    <view class="dot-inner">{{item.icon}}</view>
                 </view>
                 <view class="item-content card">
                     <view class="content-title">{{item.title}}</view>
@@ -49,17 +100,20 @@
             </view>
         </view>
 
-        <!-- Footer Seal -->
-        <view class="report-footer">
-            <view class="seal">智汇本草 · 安全保全</view>
-            <view class="timestamp">报告生成日期：2026-02-08</view>
+        <!-- Safety Footer -->
+        <view class="safety-footer">
+            <view class="seal-logo">智汇 · 本草</view>
+            <view class="safety-tips">本报告由区块链溯源系统底层支撑，保障数据真实不可篡改</view>
+            <view class="report-id">报告唯一标识：{{report.batch.batchNo}}</view>
         </view>
     </view>
 
-    <!-- Empty State -->
-    <view class="empty-state" wx:if="{{!report && !loading}}">
-        <image class="empty-img" src="/images/trace-hero.png" mode="aspectFit" />
-        <view class="tips">输入包装上的批次号，开启溯源之旅</view>
+    <!-- Initial State -->
+    <view class="initial-state" wx:if="{{!report && !loading}}">
+        <view class="hero-placeholder">
+            <view class="placeholder-icon">🌱</view>
+        </view>
+        <view class="placeholder-text">每一株草本，都有它的故事</view>
     </view>
 </view>
 
