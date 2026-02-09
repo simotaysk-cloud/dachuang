@@ -21,6 +21,20 @@ Page({
         loading: false
     },
 
+    scrollToForm() {
+        setTimeout(() => {
+            const q = wx.createSelectorQuery()
+            q.select('#batchFormCard').boundingClientRect()
+            q.selectViewport().scrollOffset()
+            q.exec((res) => {
+                const rect = res && res[0]
+                const viewport = res && res[1]
+                if (!rect || !viewport) return
+                wx.pageScrollTo({ scrollTop: rect.top + viewport.scrollTop - 12, duration: 260 })
+            })
+        }, 80)
+    },
+
     onLoad() {
         this.listAll()
     },
@@ -76,6 +90,9 @@ Page({
                 description: '',
                 gs1Locked: false
             }
+        }, () => {
+            wx.showToast({ title: '已进入新建', icon: 'none' })
+            this.scrollToForm()
         })
     },
 
@@ -84,6 +101,8 @@ Page({
         this.setData({
             showForm: true,
             form: { ...item } // clone
+        }, () => {
+            this.scrollToForm()
         })
     },
 

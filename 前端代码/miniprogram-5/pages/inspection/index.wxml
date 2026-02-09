@@ -30,7 +30,7 @@
         <view class="empty" wx:if="{{(!records || records.length === 0) && !loading}}">暂无记录</view>
     </view>
     <!-- 表单 -->
-    <view class="card" wx:if="{{showForm}}">
+    <view class="card" wx:if="{{showForm}}" id="inspectionFormCard">
         <view class="section-title">报告/派生</view>
         <view class="sub-title" style="margin-bottom:20rpx;">模式选择</view>
         <view class="chip-row">

@@ -54,7 +54,7 @@
         </view>
     </view>
 
-    <view class="card" wx:if="{{showForm}}">
+    <view class="card" wx:if="{{showForm}}" id="plantingFormCard">
         <view class="section-title">新建/编辑</view>
         <view class="readonly-row" wx:if="{{form.id}}">
             <view class="readonly-label">记录ID</view>

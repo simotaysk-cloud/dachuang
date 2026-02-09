@@ -47,6 +47,24 @@ Page({
         lastUpdatedAt: ''
     },
 
+    scrollToForm() {
+        // The form card is below the list; scroll so users get immediate feedback.
+        setTimeout(() => {
+            const q = wx.createSelectorQuery()
+            q.select('#plantingFormCard').boundingClientRect()
+            q.selectViewport().scrollOffset()
+            q.exec((res) => {
+                const rect = res && res[0]
+                const viewport = res && res[1]
+                if (!rect || !viewport) return
+                wx.pageScrollTo({
+                    scrollTop: rect.top + viewport.scrollTop - 12,
+                    duration: 260
+                })
+            })
+        }, 80)
+    },
+
     onInput(e) {
         const { field } = e.currentTarget.dataset
         this.setData({ [`form.${field}`]: e.detail.value })
@@ -206,6 +224,9 @@ Page({
                 latitude: null,
                 longitude: null
             }
+        }, () => {
+            wx.showToast({ title: '已进入新建', icon: 'none' })
+            this.scrollToForm()
         })
     },
 
@@ -236,6 +257,8 @@ Page({
                 latitude: record.latitude ?? null,
                 longitude: record.longitude ?? null
             }
+        }, () => {
+            this.scrollToForm()
         })
     },
 

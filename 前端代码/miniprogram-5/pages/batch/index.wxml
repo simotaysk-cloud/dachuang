@@ -38,7 +38,7 @@
         <view class="empty" wx:if="{{(!batches || batches.length === 0) && !loading}}">暂无批次数据</view>
     </view>
     <!-- 编辑/新增表单 (弹窗或折叠卡片) -->
-    <view class="card" wx:if="{{showForm}}">
+    <view class="card" wx:if="{{showForm}}" id="batchFormCard">
         <view class="section-title">{{form.id ? '编辑批次' : '新建批次'}}</view>
         <view class="readonly-row" wx:if="{{form.id}}">
             <view class="readonly-label">内部ID</view>

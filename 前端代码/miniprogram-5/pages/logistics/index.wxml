@@ -33,7 +33,7 @@
         </view>
     </view>
     <!-- 发运单表单 -->
-    <view class="card" wx:if="{{showShipmentForm}}">
+    <view class="card" wx:if="{{showShipmentForm}}" id="shipmentFormCard">
         <view class="section-title">新建发运单</view>
         <view class="field-label">成品批次号</view>
         <input class="input" placeholder="输入批次号" value="{{shipmentForm.batchNo}}" data-field="batchNo" bindinput="onShipmentInput" />
