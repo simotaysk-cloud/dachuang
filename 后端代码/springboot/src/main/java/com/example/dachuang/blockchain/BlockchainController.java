@@ -21,8 +21,13 @@ public class BlockchainController {
             throw new BusinessException(400, "batchNo is required");
         }
         String data = body.getOrDefault("data", "");
-        String txHash = blockchainService.recordOnChain(batchNo, data);
-        return Result.success(Map.of("txHash", txHash));
+        BlockchainService.RecordResult r = blockchainService.recordOnChain(batchNo, data);
+        return Result.success(Map.of(
+                "mode", r.mode(),
+                "txHash", r.txHash(),
+                "txUrl", r.txUrl(),
+                "dataHash", r.dataHash()
+        ));
     }
 
     @GetMapping("/{batchNo}")
