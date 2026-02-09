@@ -54,5 +54,16 @@ Page({
             const res = await api.request(`/api/v1/blockchain/${this.data.batchNo}`)
             this.setResult(res)
         } catch (err) { this.setResult(err) }
+    },
+
+    async verifyBC() {
+        if (!this.data.batchNo) return wx.showToast({ title: '请输入 batchNo', icon: 'none' })
+        try {
+            const res = await api.request('/api/v1/blockchain/verify', 'POST', {
+                batchNo: this.data.batchNo,
+                data: this.data.bcData
+            })
+            this.setResult(res)
+        } catch (err) { this.setResult(err) }
     }
 })

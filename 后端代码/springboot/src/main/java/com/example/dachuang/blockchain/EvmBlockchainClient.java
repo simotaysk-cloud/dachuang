@@ -5,13 +5,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.web3j.abi.FunctionEncoder;
+import org.web3j.abi.FunctionReturnDecoder;
 import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.Utf8String;
+import org.web3j.abi.datatypes.Type;
 import org.web3j.abi.datatypes.generated.Bytes32;
+import org.web3j.abi.TypeReference;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.request.Transaction;
 import org.web3j.protocol.core.methods.response.EthGasPrice;
+import org.web3j.protocol.core.methods.response.EthCall;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.RawTransactionManager;
@@ -50,6 +56,10 @@ public class EvmBlockchainClient {
 
     @Value("${app.blockchain.evm.explorer-tx-url:}")
     private String explorerTxUrl;
+
+    public String getContractAddress() {
+        return contractAddress;
+    }
 
     public boolean isConfigured() {
         return rpcUrl != null && !rpcUrl.isBlank()
@@ -93,6 +103,50 @@ public class EvmBlockchainClient {
             return new AnchorResult(txHash, txUrl, dataHashHex);
         } catch (Exception e) {
             throw new BusinessException(502, "EVM tx failed");
+        } finally {
+            try {
+                web3j.shutdown();
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    public String readAnchoredHashHex(String batchNo) {
+        if (!isConfigured()) {
+            throw new BusinessException(500, "EVM blockchain is not configured (rpc-url/private-key/contract-address)");
+        }
+        if (batchNo == null || batchNo.isBlank()) {
+            throw new BusinessException(400, "batchNo is required");
+        }
+
+        Web3j web3j = Web3j.build(new HttpService(rpcUrl));
+        Credentials credentials = Credentials.create(normalizePrivateKey(privateKey));
+        try {
+            // The minimal demo contract exposes: mapping(string => bytes32) public hashes;
+            Function fn = new Function(
+                    "hashes",
+                    List.of(new Utf8String(batchNo)),
+                    List.of(new TypeReference<Bytes32>() {
+                    })
+            );
+            String data = FunctionEncoder.encode(fn);
+            EthCall call = web3j.ethCall(
+                    Transaction.createEthCallTransaction(credentials.getAddress(), contractAddress, data),
+                    DefaultBlockParameterName.LATEST
+            ).send();
+            String value = call.getValue();
+            if (value == null || value.equals("0x")) {
+                return "";
+            }
+            List<Type> out = FunctionReturnDecoder.decode(value, fn.getOutputParameters());
+            if (out == null || out.isEmpty()) {
+                return "";
+            }
+            Bytes32 b = (Bytes32) out.get(0);
+            byte[] bytes = b.getValue();
+            return "sha256:" + HexFormat.of().formatHex(bytes);
+        } catch (Exception e) {
+            throw new BusinessException(502, "EVM read failed (contract ABI mismatch or RPC error)");
         } finally {
             try {
                 web3j.shutdown();

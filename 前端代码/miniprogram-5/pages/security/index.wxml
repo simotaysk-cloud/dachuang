@@ -19,6 +19,9 @@
             <button class="btn btn-primary" bindtap="recordBC">触发数据上链</button>
             <button class="btn btn-outline" bindtap="queryBC">读取链上特征</button>
         </view>
+        <view class="btn-group" style="margin-top: 20rpx;">
+            <button class="btn btn-outline" bindtap="verifyBC">验证上链（对比哈希）</button>
+        </view>
     </view>
     <view class="result-area" wx:if="{{result}}">
         <scroll-view scroll-y class="result-scroll">
