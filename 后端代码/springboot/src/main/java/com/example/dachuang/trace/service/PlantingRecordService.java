@@ -6,6 +6,7 @@ import com.example.dachuang.trace.repository.PlantingRecordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -32,8 +33,16 @@ public class PlantingRecordService {
         return plantingRecordRepository.findAllByBatchNo(batchNo);
     }
 
+    public PlantingRecord getById(Long id) {
+        return plantingRecordRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(404, "Planting record not found"));
+    }
+
     public PlantingRecord create(PlantingRecord record) {
         batchService.getBatchByNo(record.getBatchNo());
+        if (record.getOperationTime() == null) {
+            record.setOperationTime(LocalDateTime.now());
+        }
         validateEvidenceAndGeo(record);
         return plantingRecordRepository.save(record);
     }
@@ -52,6 +61,12 @@ public class PlantingRecordService {
         existing.setAudioUrl(record.getAudioUrl());
         existing.setLatitude(record.getLatitude());
         existing.setLongitude(record.getLongitude());
+        // Optional: allow manual set; if absent, keep existing; if legacy data missing, fill.
+        if (record.getOperationTime() != null) {
+            existing.setOperationTime(record.getOperationTime());
+        } else if (existing.getOperationTime() == null) {
+            existing.setOperationTime(LocalDateTime.now());
+        }
         return plantingRecordRepository.save(existing);
     }
 

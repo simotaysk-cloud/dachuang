@@ -155,6 +155,9 @@ public class DevMockDataSeeder implements CommandLineRunner {
     }
 
     private void seedPlantingRecords() {
+        // `planting_records.operation_time` is NOT NULL (DB-level). Seed explicit timestamps to keep startup stable.
+        LocalDateTime t0 = LocalDateTime.now().minusDays(30).withHour(9).withMinute(10).withSecond(0).withNano(0);
+
         plantingRecordRepository.save(PlantingRecord.builder()
                 .batchNo(ROOT_BATCH_NO)
                 .fieldName("一号地块")
@@ -164,6 +167,7 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .latitude(34.123456)
                 .longitude(104.123456)
                 .imageUrl("https://example.com/mock/seed.jpg")
+                .operationTime(t0)
                 .build());
 
         plantingRecordRepository.save(PlantingRecord.builder()
@@ -175,6 +179,7 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .latitude(34.123489)
                 .longitude(104.123499)
                 .imageUrl("https://example.com/mock/fertilize.jpg")
+                .operationTime(t0.plusDays(7))
                 .build());
 
         plantingRecordRepository.save(PlantingRecord.builder()
@@ -186,6 +191,7 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 .latitude(34.123501)
                 .longitude(104.123512)
                 .imageUrl("https://example.com/mock/irrigation.jpg")
+                .operationTime(t0.plusDays(12))
                 .build());
     }
 

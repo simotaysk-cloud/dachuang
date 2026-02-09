@@ -8,6 +8,8 @@ import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
@@ -40,4 +42,7 @@ public class PlantingRecord extends BaseEntity {
 
     private Double latitude; // 定位纬度
     private Double longitude; // 定位经度
+
+    @Column(name = "operation_time", nullable = false)
+    private LocalDateTime operationTime; // 实际操作时间（施肥/灌溉等）
 }

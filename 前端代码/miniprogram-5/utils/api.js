@@ -2,24 +2,38 @@ function getDefaultBaseUrl() {
     try {
         const info = wx.getSystemInfoSync()
         if (info && info.platform === 'devtools') {
-            return 'http://127.0.0.1:8081'
+            return 'http://127.0.0.1:8091'
         }
     } catch (e) {
         // ignore
     }
     // Real device preview cannot access 127.0.0.1 on PC; use LAN IP (can be overridden in login page).
-    return 'http://192.168.0.251:8081'
+    // Real device preview cannot access 127.0.0.1 on PC; use LAN IP (can be overridden in login page).
+    return 'http://192.168.31.157:8091'
+}
+
+function normalizeRole(role) {
+    return String(role || '').trim().toUpperCase()
+}
+
+function normalizeBaseUrl(url) {
+    const u = String(url || '').trim()
+    if (!u) return u
+    // Upgrade legacy defaults to the new dev port (8091) to avoid the 8081 port conflict.
+    if (u === 'http://127.0.0.1:8081') return 'http://127.0.0.1:8091'
+    if (u === 'http://192.168.31.157:8081') return 'http://192.168.31.157:8091'
+    return u
 }
 
 const api = {
-    baseUrl: wx.getStorageSync('baseUrl') || getDefaultBaseUrl(),
-
+    baseUrl: normalizeBaseUrl(wx.getStorageSync('baseUrl') || getDefaultBaseUrl()),
     token: wx.getStorageSync('token') || '',
-    role: wx.getStorageSync('role') || '',
+    role: normalizeRole(wx.getStorageSync('role') || ''),
 
     setBaseUrl(url) {
-        this.baseUrl = url
-        wx.setStorageSync('baseUrl', url)
+        const u = normalizeBaseUrl(url)
+        this.baseUrl = u
+        wx.setStorageSync('baseUrl', u)
     },
 
     setToken(token) {
@@ -28,8 +42,9 @@ const api = {
     },
 
     setRole(role) {
-        this.role = role
-        wx.setStorageSync('role', role)
+        const r = normalizeRole(role)
+        this.role = r
+        wx.setStorageSync('role', r)
     },
 
     request(path, method = 'GET', data = undefined) {

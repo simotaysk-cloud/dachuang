@@ -91,6 +91,13 @@
             <version>2.3.0</version>
         </dependency>
 
+        <!-- Web3 (EVM-compatible chains) -->
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>core</artifactId>
+            <version>4.10.3</version>
+        </dependency>
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>

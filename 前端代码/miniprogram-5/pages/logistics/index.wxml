@@ -32,24 +32,6 @@
             暂无发运单
         </view>
     </view>
-    <!-- 发运单表单 -->
-    <view class="card" wx:if="{{showShipmentForm}}">
-        <view class="section-title">新建发运单</view>
-        <view class="field-label">成品批次号</view>
-        <input class="input" placeholder="输入批次号" value="{{shipmentForm.batchNo}}" data-field="batchNo" bindinput="onShipmentInput" />
-        <view class="field-label">收货方/经销商</view>
-        <input class="input" placeholder="例如：某连锁药店" value="{{shipmentForm.distributorName}}" data-field="distributorName" bindinput="onShipmentInput" />
-        <view class="field-label">承运商</view>
-        <input class="input" placeholder="例如：顺丰冷链" value="{{shipmentForm.carrier}}" data-field="carrier" bindinput="onShipmentInput" />
-        <view class="field-label">物流运单号</view>
-        <input class="input" placeholder="快递单号" value="{{shipmentForm.trackingNo}}" data-field="trackingNo" bindinput="onShipmentInput" />
-        <view class="field-label">备注</view>
-        <textarea class="textarea" placeholder="发货备注..." value="{{shipmentForm.remarks}}" data-field="remarks" bindinput="onShipmentInput" />
-        <view class="btn-group">
-            <button class="btn btn-primary" bindtap="createShipment">创建</button>
-            <button class="btn btn-outline" bindtap="cancelShipmentEdit">取消</button>
-        </view>
-    </view>
     <!-- 轨迹事件管理 (选中发运单后显示) -->
     <view class="card" wx:if="{{currentShipment}}">
         <view class="section-title">物流轨迹: {{currentShipment.shipmentNo}}</view>

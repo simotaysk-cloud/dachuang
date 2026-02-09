@@ -24,6 +24,11 @@ public class ProcessingRecordController {
         return Result.success(processingRecordService.list(batchNo, parentBatchNo));
     }
 
+    @GetMapping("/{id}")
+    public Result<ProcessingRecord> getById(@PathVariable Long id) {
+        return Result.success(processingRecordService.getById(id));
+    }
+
     @PostMapping
     public Result<ProcessingRecord> create(@Valid @RequestBody ProcessingRecord record) {
         return Result.success(processingRecordService.create(record));

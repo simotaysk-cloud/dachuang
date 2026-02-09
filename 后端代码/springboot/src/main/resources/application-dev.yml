@@ -30,3 +30,18 @@ jwt:
 wx:
   appid: mock-appid
   secret: mock-secret
+
+# Blockchain (demo)
+# - mode=MOCK: generate fake txHash/dataHash
+# - mode=EVM: send real transaction to an EVM-compatible chain (testnet recommended)
+app:
+  blockchain:
+    mode: ${APP_BLOCKCHAIN_MODE:MOCK}
+    evm:
+      rpc-url: ${EVM_RPC_URL:}
+      chain-id: ${EVM_CHAIN_ID:11155111}
+      private-key: ${EVM_PRIVATE_KEY:}
+      contract-address: ${EVM_CONTRACT_ADDRESS:}
+      gas-limit: ${EVM_GAS_LIMIT:300000}
+      gas-price-wei: ${EVM_GAS_PRICE_WEI:}
+      explorer-tx-url: ${EVM_EXPLORER_TX_URL:https://sepolia.etherscan.io/tx/}

@@ -1,0 +1,63 @@
+<view class="page-container">
+    <view class="header">
+        <view class="title">质检报告/派生</view>
+        <view class="desc">发布质检报告，或按等级派生新批次</view>
+    </view>
+
+    <view class="card">
+        <view class="section-title">模式选择</view>
+        <view class="chip-row">
+            <view class="chip {{mode === 'SIMPLE' ? 'chip-active' : ''}}" bindtap="switchMode" data-mode="SIMPLE">
+                普通报告
+            </view>
+            <view class="chip {{mode === 'DERIVE' ? 'chip-active' : ''}}" bindtap="switchMode" data-mode="DERIVE">
+                分级派生
+            </view>
+        </view>
+    </view>
+
+    <view class="card" wx:if="{{mode === 'SIMPLE'}}">
+        <view class="section-title">{{form.id ? '编辑报告' : '新建报告'}}</view>
+        <view class="readonly-row" wx:if="{{form.id}}">
+            <view class="readonly-label">记录ID</view>
+            <view class="readonly-value">#{{form.id}}</view>
+        </view>
+        <view class="field-label">批次号</view>
+        <input class="input" placeholder="输入被检批次号" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />
+        <view class="field-label">检测结果</view>
+        <input class="input" placeholder="例如：合格、优级" value="{{form.result}}" data-field="result" bindinput="onInput" />
+        <view class="field-label">报告链接</view>
+        <input class="input" placeholder="PDF/图片 URL" value="{{form.reportUrl}}" data-field="reportUrl" bindinput="onInput" />
+        <view class="field-label">质检员</view>
+        <input class="input" placeholder="姓名" value="{{form.inspector}}" data-field="inspector" bindinput="onInput" />
+        <view class="btn-group">
+            <button class="btn btn-primary" bindtap="save">发布/保存</button>
+            <button class="btn btn-warn" wx:if="{{form.id}}" bindtap="remove">撤回</button>
+        </view>
+    </view>
+
+    <view class="card" wx:if="{{mode === 'DERIVE'}}">
+        <view class="section-title">分级派生</view>
+        <view class="field-label">上游批次号</view>
+        <input class="input" placeholder="原料批次" value="{{deriveForm.parentBatchNo}}" data-field="parentBatchNo" bindinput="onDeriveInput" />
+        <view class="field-label">派生新批次号</view>
+        <input class="input" placeholder="留空自动生成" value="{{deriveForm.childBatchNo}}" data-field="childBatchNo" bindinput="onDeriveInput" />
+        <view class="field-label">结论/等级</view>
+        <input class="input" placeholder="例如：GRADE_A" value="{{deriveForm.result}}" data-field="result" bindinput="onDeriveInput" />
+        <view class="field-label">报告/凭证链接</view>
+        <input class="input" placeholder="URL" value="{{deriveForm.reportUrl}}" data-field="reportUrl" bindinput="onDeriveInput" />
+        <view class="field-label">质检员</view>
+        <input class="input" placeholder="姓名" value="{{deriveForm.inspector}}" data-field="inspector" bindinput="onDeriveInput" />
+        <view class="field-label">备注说明</view>
+        <textarea class="textarea" placeholder="分级理由..." value="{{deriveForm.details}}" data-field="details" bindinput="onDeriveInput" />
+        <view class="btn-group">
+            <button class="btn btn-primary" bindtap="derive">派生并发布</button>
+        </view>
+    </view>
+
+    <view class="card">
+        <view class="section-title">返回</view>
+        <button class="btn btn-outline" bindtap="cancel">返回列表</button>
+    </view>
+</view>
+

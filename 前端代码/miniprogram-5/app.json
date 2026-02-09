@@ -3,10 +3,15 @@
     "pages/login/index",
     "pages/index/index",
     "pages/batch/index",
+    "pages/batch-form/index",
     "pages/planting/index",
+    "pages/planting-form/index",
     "pages/processing/index",
+    "pages/processing-form/index",
     "pages/logistics/index",
     "pages/inspection/index",
+    "pages/inspection-form/index",
+    "pages/shipment-form/index",
     "pages/security/index",
     "pages/trace/index",
     "pages/logs/logs",
@@ -24,9 +29,6 @@
   "permission": {
     "scope.userLocation": {
       "desc": "用于记录农事操作定位，提高溯源真实性"
-    },
-    "scope.record": {
-      "desc": "用于录制农事操作语音留痕，提高溯源真实性"
     }
   }
 }

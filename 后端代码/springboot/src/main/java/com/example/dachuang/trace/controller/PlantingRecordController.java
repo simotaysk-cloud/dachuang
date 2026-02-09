@@ -21,6 +21,11 @@ public class PlantingRecordController {
         return Result.success(plantingRecordService.list(batchNo));
     }
 
+    @GetMapping("/{id}")
+    public Result<PlantingRecord> getById(@PathVariable Long id) {
+        return Result.success(plantingRecordService.getById(id));
+    }
+
     @PostMapping
     public Result<PlantingRecord> create(@Valid @RequestBody PlantingRecord record) {
         return Result.success(plantingRecordService.create(record));
