@@ -26,7 +26,7 @@ public class BlockchainService {
     @Value("${app.blockchain.mode:MOCK}")
     private String mode;
 
-    public RecordResult recordOnChain(String batchNo, String data) {
+    public synchronized RecordResult recordOnChain(String batchNo, String data) {
         // Check existence using repository directly to avoid circular dependency
         if (batchRepository.findByBatchNo(batchNo).isEmpty()) {
             throw new BusinessException(404, "Batch not found: " + batchNo);
