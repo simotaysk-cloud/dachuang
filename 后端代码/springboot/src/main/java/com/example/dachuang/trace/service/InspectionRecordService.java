@@ -22,6 +22,11 @@ public class InspectionRecordService {
         return inspectionRecordRepository.findAllByBatchNo(batchNo);
     }
 
+    public InspectionRecord getById(Long id) {
+        return inspectionRecordRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(404, "Inspection record not found"));
+    }
+
     public InspectionRecord create(InspectionRecord record) {
         batchService.getBatchByNo(record.getBatchNo());
         return inspectionRecordRepository.save(record);

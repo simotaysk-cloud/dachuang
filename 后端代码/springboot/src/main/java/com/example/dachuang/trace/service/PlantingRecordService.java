@@ -32,6 +32,11 @@ public class PlantingRecordService {
         return plantingRecordRepository.findAllByBatchNo(batchNo);
     }
 
+    public PlantingRecord getById(Long id) {
+        return plantingRecordRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(404, "Planting record not found"));
+    }
+
     public PlantingRecord create(PlantingRecord record) {
         batchService.getBatchByNo(record.getBatchNo());
         validateEvidenceAndGeo(record);
