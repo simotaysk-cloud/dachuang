@@ -1,0 +1,359 @@
+const api = require('../../utils/api')
+
+const OPERATION_OPTIONS = ['播种', '施肥', '灌溉', '除草', '病虫害防治', '采收', '其他']
+const KEY_OPERATIONS = ['施肥', '灌溉', '除草', '病虫害防治', '采收', '播种']
+const REFRESH_KEY = 'plantingNeedRefresh'
+
+function resolveUrlMaybe(url) {
+    const u = String(url || '').trim()
+    if (!u) return ''
+    if (u.startsWith('http://') || u.startsWith('https://') || u.startsWith('wxfile://')) return u
+    if (u.startsWith('/')) return `${api.baseUrl}${u}`
+    return u
+}
+
+Page({
+    data: {
+        operationOptions: OPERATION_OPTIONS,
+        selectedOperation: '',
+        customOperation: '',
+        // local attachments (picked/recorded on device)
+        imageFilePath: '',
+        audioFilePath: '',
+        recording: false,
+        uploading: false,
+        form: {
+            id: '',
+            batchNo: '',
+            fieldName: '',
+            operation: '',
+            operator: '',
+            details: '',
+            imageUrl: '',
+            audioUrl: '',
+            latitude: null,
+            longitude: null
+        }
+    },
+
+    onLoad(options) {
+        this.init(options || {})
+    },
+
+    async init(options) {
+        try {
+            const id = options.id ? String(options.id) : ''
+            const batchNo = options.batchNo ? decodeURIComponent(String(options.batchNo)) : ''
+
+            const meRes = await api.getMe()
+            const p = meRes?.data || {}
+            const operator = p?.name || p?.nickname || p?.username || ''
+
+            if (id) {
+                const res = await api.request(`/api/v1/planting/${encodeURIComponent(id)}`)
+                const record = res?.data || {}
+                const op = record.operation || ''
+                const matched = OPERATION_OPTIONS.includes(op) ? op : (op ? '其他' : '')
+                this.setData({
+                    selectedOperation: matched,
+                    customOperation: matched === '其他' ? op : '',
+                    form: {
+                        id: record.id ? String(record.id) : '',
+                        batchNo: record.batchNo || '',
+                        fieldName: record.fieldName || '',
+                        operation: op,
+                        operator: record.operator || operator,
+                        details: record.details || '',
+                        imageUrl: record.imageUrl || '',
+                        audioUrl: record.audioUrl || '',
+                        latitude: record.latitude ?? null,
+                        longitude: record.longitude ?? null
+                    }
+                })
+                return
+            }
+
+            if (!batchNo) {
+                wx.showToast({ title: '缺少批次号', icon: 'none' })
+                wx.navigateBack()
+                return
+            }
+
+            this.setData({
+                selectedOperation: '',
+                customOperation: '',
+                imageFilePath: '',
+                audioFilePath: '',
+                recording: false,
+                uploading: false,
+                form: {
+                    id: '',
+                    batchNo,
+                    fieldName: '',
+                    operation: '',
+                    operator,
+                    details: '',
+                    imageUrl: '',
+                    audioUrl: '',
+                    latitude: null,
+                    longitude: null
+                }
+            })
+        } catch (err) {
+            wx.showToast({ title: '加载失败', icon: 'none' })
+        }
+    },
+
+    onInput(e) {
+        const { field } = e.currentTarget.dataset
+        this.setData({ [`form.${field}`]: e.detail.value })
+    },
+
+    selectOperation(e) {
+        const { value } = e.currentTarget.dataset
+        if (!value) return
+        if (value === '其他') {
+            this.setData({
+                selectedOperation: '其他',
+                customOperation: '',
+                'form.operation': ''
+            })
+            return
+        }
+
+        this.setData({
+            selectedOperation: value,
+            customOperation: '',
+            'form.operation': value
+        })
+
+        // Auto-fetch location for key operations.
+        if (KEY_OPERATIONS.includes(value)) {
+            this.fetchLocation()
+        }
+    },
+
+    onCustomOperationInput(e) {
+        const v = (e.detail.value || '').trim()
+        this.setData({
+            customOperation: v,
+            'form.operation': v
+        })
+    },
+
+    async fetchLocation() {
+        try {
+            const pos = await new Promise((resolve, reject) => {
+                wx.getLocation({
+                    type: 'wgs84',
+                    success: resolve,
+                    fail: reject
+                })
+            })
+            const latitude = typeof pos?.latitude === 'number' ? pos.latitude : null
+            const longitude = typeof pos?.longitude === 'number' ? pos.longitude : null
+            if (latitude == null || longitude == null) {
+                wx.showToast({ title: '定位失败', icon: 'none' })
+                return false
+            }
+            this.setData({
+                'form.latitude': latitude,
+                'form.longitude': longitude
+            })
+            return true
+        } catch (err) {
+            wx.showToast({ title: '请授权定位后重试', icon: 'none' })
+            return false
+        }
+    },
+
+    async chooseImage() {
+        try {
+            const res = await new Promise((resolve, reject) => {
+                wx.chooseMedia({
+                    count: 1,
+                    mediaType: ['image'],
+                    sourceType: ['camera', 'album'],
+                    success: resolve,
+                    fail: reject
+                })
+            })
+            const filePath = res?.tempFiles?.[0]?.tempFilePath || ''
+            if (!filePath) return
+            this.setData({ imageFilePath: filePath, 'form.imageUrl': '' })
+        } catch (err) {
+            // ignore
+        }
+    },
+
+    async previewImage() {
+        const p = this.data.imageFilePath
+        const url = p || resolveUrlMaybe(this.data.form.imageUrl)
+        if (!url) return
+        wx.previewImage({ urls: [url] })
+    },
+
+    clearImage() {
+        this.setData({ imageFilePath: '', 'form.imageUrl': '' })
+    },
+
+    async chooseAudio() {
+        try {
+            const res = await new Promise((resolve, reject) => {
+                wx.chooseMessageFile({
+                    count: 1,
+                    type: 'file',
+                    extension: ['mp3', 'm4a', 'wav', 'aac'],
+                    success: resolve,
+                    fail: reject
+                })
+            })
+            const filePath = res?.tempFiles?.[0]?.path || ''
+            if (!filePath) return
+            this.setData({ audioFilePath: filePath, 'form.audioUrl': '' })
+        } catch (err) {
+            // ignore
+        }
+    },
+
+    startRecord() {
+        if (this.data.recording) return
+        const rm = wx.getRecorderManager()
+        this._recorder = rm
+        if (!this._recorderInited) {
+            this._recorderInited = true
+            rm.onStop((res) => {
+                const filePath = res?.tempFilePath || ''
+                if (filePath) {
+                    this.setData({ audioFilePath: filePath, 'form.audioUrl': '' })
+                }
+                this.setData({ recording: false })
+            })
+            rm.onError(() => {
+                this.setData({ recording: false })
+                wx.showToast({ title: '录音失败', icon: 'none' })
+            })
+        }
+        this.setData({ recording: true })
+        rm.start({ format: 'mp3', duration: 60 * 1000 })
+    },
+
+    stopRecord() {
+        if (!this.data.recording) return
+        try {
+            this._recorder && this._recorder.stop()
+        } catch (e) {
+            this.setData({ recording: false })
+        }
+    },
+
+    clearAudio() {
+        this.setData({ audioFilePath: '', 'form.audioUrl': '' })
+    },
+
+    async uploadAttachmentsIfNeeded() {
+        const imageFilePath = this.data.imageFilePath
+        const audioFilePath = this.data.audioFilePath
+        if (!imageFilePath && !audioFilePath) return
+
+        this.setData({ uploading: true })
+        try {
+            if (imageFilePath) {
+                const up = await api.uploadFile(imageFilePath)
+                const url = up?.data?.url ? String(up.data.url) : ''
+                if (url) {
+                    // Store relative URL in DB; preview uses baseUrl at runtime.
+                    this.setData({ 'form.imageUrl': url, imageFilePath: '' })
+                }
+            }
+            if (audioFilePath) {
+                const up = await api.uploadFile(audioFilePath)
+                const url = up?.data?.url ? String(up.data.url) : ''
+                if (url) {
+                    this.setData({ 'form.audioUrl': url, audioFilePath: '' })
+                }
+            }
+        } finally {
+            this.setData({ uploading: false })
+        }
+    },
+
+    async save() {
+        try {
+            if (!this.data.form.batchNo) {
+                wx.showToast({ title: '缺少批次号', icon: 'none' })
+                return
+            }
+            if (!this.data.form.operation) {
+                wx.showToast({ title: '请选择操作类型', icon: 'none' })
+                return
+            }
+            if (!this.data.form.fieldName) {
+                wx.showToast({ title: '请填写地块名称', icon: 'none' })
+                return
+            }
+
+            const op = (this.data.form.operation || '').trim()
+            const isKeyOp = KEY_OPERATIONS.includes(op)
+            if (isKeyOp) {
+                await this.uploadAttachmentsIfNeeded()
+
+                const hasEvidence = !!((this.data.form.imageUrl || '').trim() || (this.data.form.audioUrl || '').trim())
+                if (!hasEvidence) {
+                    wx.showToast({ title: '关键操作需上传图片或语音', icon: 'none' })
+                    return
+                }
+                if (this.data.form.latitude == null || this.data.form.longitude == null) {
+                    const ok = await this.fetchLocation()
+                    if (!ok) return
+                }
+            }
+
+            if (this.data.form.id) {
+                await api.request(`/api/v1/planting/${this.data.form.id}`, 'PUT', this.data.form)
+            } else {
+                const payload = { ...this.data.form }
+                delete payload.id
+                await api.request('/api/v1/planting', 'POST', payload)
+            }
+
+            wx.setStorageSync(REFRESH_KEY, true)
+            wx.showToast({ title: '保存成功' })
+            setTimeout(() => wx.navigateBack(), 300)
+        } catch (err) {
+            const backendMsg = err?.data?.message || err?.data?.msg || ''
+            const rawMsg = backendMsg || err?.message || err?.errMsg || ''
+            wx.showToast({ title: backendMsg || (rawMsg ? String(rawMsg) : '保存失败'), icon: 'none' })
+        }
+    },
+
+    async remove() {
+        if (!this.data.form.id) return
+
+        const confirmed = await new Promise((resolve) => {
+            wx.showModal({
+                title: '确认删除',
+                content: `删除记录 #${this.data.form.id}？此操作不可恢复。`,
+                confirmText: '删除',
+                confirmColor: '#e74c3c',
+                success: (r) => resolve(!!r.confirm),
+                fail: () => resolve(false)
+            })
+        })
+        if (!confirmed) return
+
+        try {
+            await api.request(`/api/v1/planting/${this.data.form.id}`, 'DELETE')
+            wx.setStorageSync(REFRESH_KEY, true)
+            wx.showToast({ title: '删除成功' })
+            setTimeout(() => wx.navigateBack(), 300)
+        } catch (err) {
+            wx.showToast({ title: err?.data?.message || '删除失败', icon: 'none' })
+        }
+    },
+
+    cancel() {
+        wx.navigateBack()
+    }
+})
+

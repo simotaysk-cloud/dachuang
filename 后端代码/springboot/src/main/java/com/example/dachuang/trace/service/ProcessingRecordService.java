@@ -26,6 +26,11 @@ public class ProcessingRecordService {
         return processingRecordRepository.findAll();
     }
 
+    public ProcessingRecord getById(Long id) {
+        return processingRecordRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(404, "Processing record not found"));
+    }
+
     public ProcessingRecord create(ProcessingRecord record) {
         // If a parent is provided, treat this as a potential divergence point.
         if (record.getParentBatchNo() != null && !record.getParentBatchNo().isBlank()) {
