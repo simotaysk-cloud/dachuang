@@ -8,6 +8,7 @@ import com.example.dachuang.trace.entity.BatchLineage;
 import com.example.dachuang.trace.repository.BatchRepository;
 import com.example.dachuang.trace.repository.BatchLineageRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,10 @@ public class BatchService {
     private final BatchLineageRepository batchLineageRepository;
     private final Gs1Service gs1Service;
     private final UserRepository userRepository;
+    private final com.example.dachuang.blockchain.BlockchainService blockchainService;
+
+    @Value("${app.blockchain.auto-anchor-on-batch-create:false}")
+    private boolean autoAnchorOnBatchCreate;
 
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final DateTimeFormatter DAY_FMT = DateTimeFormatter.BASIC_ISO_DATE; // yyyyMMdd
@@ -55,7 +60,8 @@ public class BatchService {
             batch.setOwnerUserId(u.getId());
         }
 
-        // Batch number: farmers typically don't type it; backend generates a unique one.
+        // Batch number: farmers typically don't type it; backend generates a unique
+        // one.
         String requestedNo = (batch.getBatchNo() == null) ? "" : batch.getBatchNo().trim();
         if (!"ADMIN".equalsIgnoreCase(role)) {
             requestedNo = ""; // ignore client-provided batchNo for non-admin
@@ -75,7 +81,8 @@ public class BatchService {
             batch.setMinCode(java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 16));
         }
 
-        // Generate GS1 lot & code if not provided. Use a short unique lotNo for AI(10) to avoid collisions.
+        // Generate GS1 lot & code if not provided. Use a short unique lotNo for AI(10)
+        // to avoid collisions.
         if (batch.getGs1LotNo() == null || batch.getGs1LotNo().isBlank()) {
             batch.setGs1LotNo(generateGs1LotNo(batch.getBatchNo()));
         }
@@ -83,7 +90,14 @@ public class BatchService {
             batch.setGs1Code(gs1Service.generateGs1HRI(batch.getGs1LotNo(), batch.getQuantity(), batch.getUnit()));
         }
 
-        return batchRepository.save(batch);
+        Batch saved = batchRepository.save(batch);
+
+        // Optional: auto-anchor to blockchain in background (disabled by default to avoid unexpected gas cost).
+        if (autoAnchorOnBatchCreate) {
+            blockchainService.autoAnchor(saved.getBatchNo(), "Initial batch creation: " + saved.getName());
+        }
+
+        return saved;
     }
 
     public Batch deriveBatch(String parentBatchNo, String childBatchNo, String stage, String processType,
@@ -213,7 +227,8 @@ public class BatchService {
             batch.setQuantity(batchDetails.getQuantity());
             batch.setUnit(batchDetails.getUnit());
 
-            // Refresh GS1 HRI when quantity/unit changes, but keep lotNo stable once created.
+            // Refresh GS1 HRI when quantity/unit changes, but keep lotNo stable once
+            // created.
             if (batch.getGs1LotNo() == null || batch.getGs1LotNo().isBlank()) {
                 batch.setGs1LotNo(generateGs1LotNo(batch.getBatchNo()));
             }
