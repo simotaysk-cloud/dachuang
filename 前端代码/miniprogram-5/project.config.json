@@ -1,6 +1,5 @@
 {
   "compileType": "miniprogram",
-  "cloudfunctionRoot": "cloudfunctions/",
   "libVersion": "3.14.2",
   "packOptions": {
     "ignore": [],

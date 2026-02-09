@@ -5,10 +5,14 @@ Page({
         batchNo: '',
         loading: false,
         report: null, // Structured trace report
+        isScanned: false, // Whether loaded via QR scan
     },
 
-    onLoad() {
-        if (api.role === 'FARMER') {
+    onLoad(options) {
+        if (options && options.batchNo) {
+            this.setData({ batchNo: options.batchNo, isScanned: true })
+            this.query()
+        } else if (api.role === 'FARMER') {
             wx.showToast({ title: '无权限（农户仅可使用种植相关模块）', icon: 'none' })
             return wx.redirectTo({ url: '/pages/index/index' })
         }
@@ -43,31 +47,37 @@ Page({
         console.log('Trace Data Received:', data)
         const b = data.batch || {}
 
+        // Parse commonPairings string into array
+        let pairings = []
+        if (b.commonPairings) {
+            pairings = b.commonPairings.split('\n').map(s => s.replace(/^\d+\.\s*/, '').trim()).filter(s => s)
+        }
+
         // --- Ultra-Robust GS1 Detection ---
         let gs1 = b.gs1Code || b.gs1code || b.gs1_code || ''
 
-        // 1. If not found by key, search all string values for the GS1 pattern (01)
         if (!gs1) {
             const keys = Object.keys(b)
             const gKey = keys.find(k => typeof b[k] === 'string' && b[k].includes('(01)'))
             if (gKey) gs1 = b[gKey]
         }
 
-        // 2. If still not found, try to construct it from lotNo if we have it
-        if (!gs1) {
-            const lot = b.gs1LotNo || b.gs1lot_no || b.gs1lotno || ''
-            if (lot) {
-                gs1 = `(01)06912345678901(10)${lot}`
-            }
+        if (!gs1 && b.gs1LotNo) {
+            gs1 = `(01)06912345678901(10)${b.gs1LotNo}`
         }
 
-        // 3. Final fallback: use batchNo
         if (!gs1 && b.batchNo) {
             gs1 = `(01)06912345678901(10)${b.batchNo}`
         }
 
         // Flatten all records into a chronological timeline
         const timeline = []
+
+        const formatTime = (isoStr) => {
+            if (!isoStr) return '未知时间'
+            const d = new Date(isoStr)
+            return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+        }
 
         // 1. Planting
         if (data.plantingRecords) {
@@ -77,8 +87,10 @@ Page({
                     tag: '种植',
                     title: r.operation,
                     time: r.createdAt,
+                    timeDisplay: formatTime(r.createdAt),
                     details: `${r.fieldName} | 操作人: ${r.operator}\n${r.details}`,
-                    icon: '🌱'
+                    icon: '🌱',
+                    imageUrl: r.imageUrl
                 })
             })
         }
@@ -91,8 +103,10 @@ Page({
                     tag: '加工',
                     title: r.processType,
                     time: r.createdAt,
+                    timeDisplay: formatTime(r.createdAt),
                     details: `${r.factory} | 操作人: ${r.operator}\n${r.details}`,
-                    icon: '⚙️'
+                    icon: '⚙️',
+                    imageUrl: r.imageUrl
                 })
             })
         }
@@ -105,6 +119,7 @@ Page({
                     tag: '质检',
                     title: '品质检验通过',
                     time: r.createdAt,
+                    timeDisplay: formatTime(r.createdAt),
                     details: `结论: ${r.result} | 质检员: ${r.inspector}`,
                     icon: '🛡️',
                     isHighlight: true
@@ -122,6 +137,7 @@ Page({
                             tag: '物流',
                             title: e.details,
                             time: e.eventTime,
+                            timeDisplay: formatTime(e.eventTime),
                             details: `位置: ${e.location} | 状态: ${e.status}`,
                             icon: '🚚'
                         })
@@ -137,7 +153,8 @@ Page({
             report: {
                 batch: b,
                 gs1: gs1,
-                timeline: timeline
+                timeline: timeline,
+                pairings: pairings
             }
         })
     }

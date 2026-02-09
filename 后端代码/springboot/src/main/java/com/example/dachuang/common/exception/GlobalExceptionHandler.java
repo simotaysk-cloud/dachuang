@@ -29,10 +29,10 @@ public class GlobalExceptionHandler {
         return Result.error(400, "Validation Failed", errors);
     }
 
-    @ExceptionHandler(Exception.class)
-    public Result<Void> handleException(Exception e) {
-        log.error("Unhandled exception: ", e);
-        return Result.error(500, "Internal Server Error: " + e.getMessage());
+    @ExceptionHandler(Throwable.class)
+    public Result<Void> handleThrowable(Throwable e) {
+        log.error("Unhandled error: ", e);
+        return Result.error(500, "Internal Server Error: " + e.getClass().getSimpleName() + " - " + e.getMessage());
     }
 
     @ExceptionHandler(BusinessException.class)

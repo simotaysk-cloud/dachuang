@@ -1,6 +1,6 @@
 function getDefaultBaseUrl() {
     try {
-        const info = wx.getSystemInfoSync()
+        const info = wx.getAppBaseInfo()
         if (info && info.platform === 'devtools') {
             return 'http://127.0.0.1:8091'
         }
@@ -29,6 +29,10 @@ const api = {
     baseUrl: normalizeBaseUrl(wx.getStorageSync('baseUrl') || getDefaultBaseUrl()),
     token: wx.getStorageSync('token') || '',
     role: normalizeRole(wx.getStorageSync('role') || ''),
+
+    init() {
+        console.log('Current API Base URL:', this.baseUrl)
+    },
 
     setBaseUrl(url) {
         const u = normalizeBaseUrl(url)
@@ -65,6 +69,7 @@ const api = {
                     // Backend always returns HTTP 200 with business `code`.
                     if (res.statusCode >= 200 && res.statusCode < 300) {
                         if (payload && typeof payload === 'object' && 'code' in payload && payload.code !== 200) {
+                            console.error('API Business Error:', payload.code, payload.message)
                             wx.showToast({
                                 title: payload?.message || '请求失败',
                                 icon: 'none'

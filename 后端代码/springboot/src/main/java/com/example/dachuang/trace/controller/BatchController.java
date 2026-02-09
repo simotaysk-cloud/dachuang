@@ -4,17 +4,21 @@ import com.example.dachuang.common.api.Result;
 import com.example.dachuang.trace.entity.Batch;
 import com.example.dachuang.trace.entity.BatchLineage;
 import com.example.dachuang.trace.service.BatchService;
+import com.example.dachuang.trace.service.QrCodeService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/batches")
 @RequiredArgsConstructor
 public class BatchController {
 
     private final BatchService batchService;
+    private final QrCodeService qrCodeService;
 
     @GetMapping
     public Result<List<Batch>> getAll() {
@@ -30,8 +34,7 @@ public class BatchController {
     public Result<Batch> create(
             @RequestBody Batch batch,
             @RequestAttribute("username") String username,
-            @RequestAttribute("role") String role
-    ) {
+            @RequestAttribute("role") String role) {
         return Result.success(batchService.createBatch(batch, username, role));
     }
 
@@ -40,9 +43,9 @@ public class BatchController {
             @PathVariable String parentBatchNo,
             @RequestParam(required = false) String childBatchNo,
             @RequestParam(required = false) String processType,
-            @RequestParam(required = false) String details
-    ) {
-        return Result.success(batchService.deriveBatch(parentBatchNo, childBatchNo, "PROCESSING", processType, details));
+            @RequestParam(required = false) String details) {
+        return Result
+                .success(batchService.deriveBatch(parentBatchNo, childBatchNo, "PROCESSING", processType, details));
     }
 
     @PostMapping("/{batchNo}/lock-gs1")
