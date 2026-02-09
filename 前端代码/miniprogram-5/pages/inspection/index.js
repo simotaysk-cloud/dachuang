@@ -24,6 +24,20 @@ Page({
         loading: false
     },
 
+    scrollToForm() {
+        setTimeout(() => {
+            const q = wx.createSelectorQuery()
+            q.select('#inspectionFormCard').boundingClientRect()
+            q.selectViewport().scrollOffset()
+            q.exec((res) => {
+                const rect = res && res[0]
+                const viewport = res && res[1]
+                if (!rect || !viewport) return
+                wx.pageScrollTo({ scrollTop: rect.top + viewport.scrollTop - 12, duration: 260 })
+            })
+        }, 80)
+    },
+
     onLoad() {
         if (api.role === 'FARMER') {
             wx.showToast({ title: '无权限（农户仅可使用种植相关模块）', icon: 'none' })
@@ -69,6 +83,9 @@ Page({
                 inspector: '',
                 details: ''
             }
+        }, () => {
+            wx.showToast({ title: '已进入新建', icon: 'none' })
+            this.scrollToForm()
         })
     },
 
@@ -79,6 +96,8 @@ Page({
             showForm: true,
             mode: 'SIMPLE',
             form: { ...item }
+        }, () => {
+            this.scrollToForm()
         })
     },
 

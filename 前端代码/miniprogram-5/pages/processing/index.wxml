@@ -35,7 +35,7 @@
         <view class="empty" wx:if="{{(!records || records.length === 0) && !loading}}">暂无记录</view>
     </view>
     <!-- 表单 -->
-    <view class="card" wx:if="{{showForm}}">
+    <view class="card" wx:if="{{showForm}}" id="processingFormCard">
         <view class="section-title">{{form.id ? '编辑记录' : '新建加工'}}</view>
         <view class="readonly-row" wx:if="{{form.id}}">
             <view class="readonly-label">记录ID</view>
