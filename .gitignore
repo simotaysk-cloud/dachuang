@@ -6,6 +6,9 @@
 *.iml
 **/uploads/
 后端代码/springboot/backend_*.log
+后端代码/springboot/.env
+后端代码/springboot/.env.*
+!后端代码/springboot/.env.example
 
 # Node / frontend
 node_modules/
