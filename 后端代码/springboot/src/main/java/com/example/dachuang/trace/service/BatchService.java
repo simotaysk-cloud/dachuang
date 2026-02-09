@@ -28,6 +28,10 @@ public class BatchService {
     private final UserRepository userRepository;
     private final com.example.dachuang.blockchain.BlockchainService blockchainService;
 
+    public com.example.dachuang.blockchain.BlockchainService getBlockchainService() {
+        return blockchainService;
+    }
+
     @Value("${app.blockchain.auto-anchor-on-batch-create:false}")
     private boolean autoAnchorOnBatchCreate;
 

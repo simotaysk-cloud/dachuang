@@ -315,6 +315,23 @@
         kvs.appendChild(kv("gs1LotNo", batch.gs1LotNo));
         kvs.appendChild(kv("gs1Code", batch.gs1Code));
 
+        const bc = d.blockchainRecord || {};
+        if (bc.txHash) {
+          kvs.appendChild(kv("区块链状态", "已存证 (" + (bc.mode || "EVM") + ")"));
+          kvs.appendChild(kv("交易哈希 (TxHash)", bc.txHash));
+          if (bc.txUrl) {
+            const link = document.createElement("a");
+            link.href = bc.txUrl;
+            link.target = "_blank";
+            link.textContent = "在浏览器中查看";
+            link.style.display = "block";
+            link.style.marginTop = "4px";
+            kvs.appendChild(kv("区块链接", link.outerHTML));
+          }
+        } else {
+          kvs.appendChild(kv("区块链状态", "未存证 / 处理中"));
+        }
+
         const lineage = $("lineageList");
         (d.lineageBatches || []).forEach((b, idx) => {
           const title = (idx === 0 ? "ROOT" : "NODE") + " | " + (b.batchNo || "-");

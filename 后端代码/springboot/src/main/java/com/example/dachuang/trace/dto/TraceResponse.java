@@ -1,6 +1,7 @@
 package com.example.dachuang.trace.dto;
 
 import com.example.dachuang.trace.entity.*;
+import com.example.dachuang.blockchain.BlockchainRecord;
 import lombok.Builder;
 import lombok.Data;
 import java.util.List;
@@ -16,4 +17,5 @@ public class TraceResponse {
     private List<LogisticsRecord> logisticsRecords;
     private List<InspectionRecord> inspectionRecords;
     private List<ShipmentWithEvents> shipmentsWithEvents;
+    private BlockchainRecord blockchainRecord;
 }

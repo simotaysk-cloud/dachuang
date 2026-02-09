@@ -23,6 +23,7 @@ public class TraceService {
     private final InspectionRecordRepository inspectionRecordRepository;
     private final ShipmentRepository shipmentRepository;
     private final ShipmentEventRepository shipmentEventRepository;
+    private final com.example.dachuang.blockchain.BlockchainRecordRepository blockchainRecordRepository;
 
     public TraceResponse getFullTraceByBatchNo(String batchNo) {
         List<Batch> lineageBatches = new ArrayList<>();
@@ -34,7 +35,8 @@ public class TraceService {
             lineageBatches.add(current);
 
             BatchLineage parentEdge = batchService.getParentEdge(cursor);
-            if (parentEdge == null) break;
+            if (parentEdge == null)
+                break;
             lineageEdges.add(parentEdge);
             cursor = parentEdge.getParentBatchNo();
         }
@@ -49,7 +51,8 @@ public class TraceService {
         List<ShipmentWithEvents> shipmentsWithEvents = shipmentRepository.findAllByBatchNo(batch.getBatchNo()).stream()
                 .map(shipment -> ShipmentWithEvents.builder()
                         .shipment(shipment)
-                        .events(shipmentEventRepository.findAllByShipmentNoOrderByEventTimeAsc(shipment.getShipmentNo()))
+                        .events(shipmentEventRepository
+                                .findAllByShipmentNoOrderByEventTimeAsc(shipment.getShipmentNo()))
                         .build())
                 .toList();
 
@@ -62,6 +65,7 @@ public class TraceService {
                 .logisticsRecords(logisticsRecordRepository.findAllByBatchNo(batchNo))
                 .inspectionRecords(inspectionRecordRepository.findAllByBatchNoIn(batchNosInChain))
                 .shipmentsWithEvents(shipmentsWithEvents)
+                .blockchainRecord(blockchainRecordRepository.findByBatchNo(batchNo).orElse(null))
                 .build();
     }
 }
