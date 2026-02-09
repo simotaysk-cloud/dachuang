@@ -44,6 +44,8 @@ Page({
                 batchNo: this.data.batchNo,
                 data: this.data.bcData
             })
+            const mode = res?.data?.mode ? String(res.data.mode) : ''
+            wx.showToast({ title: mode ? `上链成功(${mode})` : '上链成功', icon: 'none' })
             this.setResult(res)
         } catch (err) { this.setResult(err) }
     },
@@ -63,6 +65,8 @@ Page({
                 batchNo: this.data.batchNo,
                 data: this.data.bcData
             })
+            const ok = !!res?.data?.match
+            wx.showToast({ title: ok ? '验证成功：链上哈希一致' : '验证失败：链上哈希不一致', icon: 'none' })
             this.setResult(res)
         } catch (err) { this.setResult(err) }
     }
