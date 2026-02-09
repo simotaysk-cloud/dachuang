@@ -29,7 +29,10 @@ public class CodeController {
         if (invisibleCode == null || invisibleCode.isBlank()) {
             throw new BusinessException(400, "invisibleCode is required");
         }
-        boolean valid = codeService.verifyInvisibleCode(invisibleCode);
-        return Result.success(Map.of("valid", valid));
+        CodeService.VerifyResult r = codeService.verifyInvisibleCode(invisibleCode);
+        if (r.valid()) {
+            return Result.success(Map.of("valid", true, "batchNo", r.batchNo()));
+        }
+        return Result.success(Map.of("valid", false));
     }
 }
