@@ -37,48 +37,4 @@
         </view>
         <view class="empty" wx:if="{{(!batches || batches.length === 0) && !loading}}">暂无批次数据</view>
     </view>
-    <!-- 编辑/新增表单 (弹窗或折叠卡片) -->
-    <view class="card" wx:if="{{showForm}}">
-        <view class="section-title">{{form.id ? '编辑批次' : '新建批次'}}</view>
-        <view class="readonly-row" wx:if="{{form.id}}">
-            <view class="readonly-label">内部ID</view>
-            <view class="readonly-value">#{{form.id}}</view>
-        </view>
-        <view class="field-label">批次号 (BatchNo)</view>
-        <input class="input" placeholder="留空自动生成 (推荐，农户创建批次用)" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" disabled="{{form.id}}" />
-        <view class="field-label">药材名称</view>
-        <input class="input" placeholder="例如：长白山人参" value="{{form.name}}" data-field="name" bindinput="onInput" />
-        <view class="field-label">类别</view>
-        <input class="input" placeholder="例如：根茎类" value="{{form.category}}" data-field="category" bindinput="onInput" />
-        <view class="field-label">产地</view>
-        <input class="input" placeholder="例如：吉林省抚松县" value="{{form.origin}}" data-field="origin" bindinput="onInput" />
-        <view class="field-label">当前状态</view>
-        <input class="input" placeholder="例如：PLANTING" value="{{form.status}}" data-field="status" bindinput="onInput" />
-        <!-- 库存与GS1 -->
-        <view class="sub-title" style="margin-top:20rpx;">收获重量/库存与GS1</view>
-        <view class="stat-row">
-            <view class="stat-item">
-                <view class="field-label">数量 (可后补)</view>
-                <input class="input input-compact" type="digit" value="{{form.quantity}}" data-field="quantity" bindinput="onInput" disabled="{{form.gs1Locked}}" />
-            </view>
-            <view class="stat-item">
-                <view class="field-label">单位</view>
-                <input class="input input-compact" value="{{form.unit}}" data-field="unit" bindinput="onInput" disabled="{{form.gs1Locked}}" />
-            </view>
-        </view>
-        <view class="meta" wx:if="{{form.gs1Locked}}" style="color:orange;">
-            ⚠️ GS1信息已锁定，不可修改数量与单位
-        </view>
-        <view class="field-label" style="margin-top:20rpx;">备注</view>
-        <textarea class="textarea" placeholder="更多描述..." value="{{form.description}}" data-field="description" bindinput="onInput" />
-        <view class="btn-group">
-            <button class="btn btn-primary" bindtap="save">保存</button>
-            <button class="btn btn-warn" wx:if="{{form.id}}" bindtap="remove">删除</button>
-        </view>
-        <button class="btn btn-outline" style="margin-top:20rpx;" bindtap="cancelEdit">取消</button>
-        <view wx:if="{{form.id && !form.gs1Locked}}" style="margin-top:30rpx; border-top:1rpx solid #eee; padding-top:20rpx;">
-            <button class="btn btn-warn" bindtap="lockGs1">🔒 锁定GS1 (打印贴标后)</button>
-            <view class="desc" style="text-align:center;">锁定后将无法修改数量，并生成最终条码</view>
-        </view>
-    </view>
 </view>

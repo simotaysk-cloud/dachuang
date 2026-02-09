@@ -34,31 +34,4 @@
         </view>
         <view class="empty" wx:if="{{(!records || records.length === 0) && !loading}}">暂无记录</view>
     </view>
-    <!-- 表单 -->
-    <view class="card" wx:if="{{showForm}}">
-        <view class="section-title">{{form.id ? '编辑记录' : '新建加工'}}</view>
-        <view class="readonly-row" wx:if="{{form.id}}">
-            <view class="readonly-label">记录ID</view>
-            <view class="readonly-value">#{{form.id}}</view>
-        </view>
-        <view class="field-label">原料批次号 (Parent Batch)</view>
-        <input class="input" placeholder="输入上游批次号" value="{{form.parentBatchNo}}" data-field="parentBatchNo" bindinput="onInput" />
-        <view class="field-label">产出批次号 (Child Batch)</view>
-        <input class="input" placeholder="留空则自动生成新批次号" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />
-        <view class="field-label">加工工艺</view>
-        <input class="input" placeholder="例如：切片、烘干、包装" value="{{form.processType}}" data-field="processType" bindinput="onInput" />
-        <view class="field-label">工厂名称</view>
-        <input class="input" placeholder="例如：同仁堂加工厂" value="{{form.factory}}" data-field="factory" bindinput="onInput" />
-        <view class="field-label">操作人</view>
-        <input class="input" placeholder="记录员姓名" value="{{form.operator}}" data-field="operator" bindinput="onInput" />
-        <view class="field-label">现场照片</view>
-        <input class="input" placeholder="图片URL" value="{{form.imageUrl}}" data-field="imageUrl" bindinput="onInput" />
-        <view class="field-label">详细说明</view>
-        <textarea class="textarea" placeholder="备注信息..." value="{{form.details}}" data-field="details" bindinput="onInput" />
-        <view class="btn-group">
-            <button class="btn btn-primary" bindtap="save">保存</button>
-            <button class="btn btn-warn" wx:if="{{form.id}}" bindtap="remove">删除</button>
-        </view>
-        <button class="btn btn-outline" style="margin-top:20rpx;" bindtap="cancelEdit">取消</button>
-    </view>
 </view>

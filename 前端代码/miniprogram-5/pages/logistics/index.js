@@ -1,18 +1,13 @@
 const api = require('../../utils/api')
 
+const REFRESH_KEY = 'shipmentNeedRefresh'
+const LAST_QUERY_KEY = 'shipmentLastQueryBatchNo'
+
 Page({
     data: {
         shipments: [],
         events: [],
         currentShipment: null,
-
-        shipmentForm: {
-            batchNo: '',
-            distributorName: '',
-            carrier: '',
-            trackingNo: '',
-            remarks: ''
-        },
         // For searching shipments
         shipmentQueryBatchNo: '',
 
@@ -22,8 +17,6 @@ Page({
             status: '',
             details: ''
         },
-
-        showShipmentForm: false,
         loading: false
     },
 
@@ -34,9 +27,13 @@ Page({
         }
     },
 
-    onShipmentInput(e) {
-        const { field } = e.currentTarget.dataset
-        this.setData({ [`shipmentForm.${field}`]: e.detail.value })
+    onShow() {
+        if (wx.getStorageSync(REFRESH_KEY)) {
+            wx.removeStorageSync(REFRESH_KEY)
+            const last = wx.getStorageSync(LAST_QUERY_KEY) || ''
+            if (last) this.setData({ shipmentQueryBatchNo: last })
+            this.listShipments()
+        }
     },
 
     onShipmentQueryInput(e) {
@@ -49,20 +46,9 @@ Page({
     },
 
     startCreateShipment() {
-        this.setData({
-            showShipmentForm: true,
-            shipmentForm: {
-                batchNo: '',
-                distributorName: '',
-                carrier: '',
-                trackingNo: '',
-                remarks: ''
-            }
-        })
-    },
-
-    cancelShipmentEdit() {
-        this.setData({ showShipmentForm: false })
+        const q = (this.data.shipmentQueryBatchNo || '').trim()
+        const qs = q ? `?batchNo=${encodeURIComponent(q)}` : ''
+        wx.navigateTo({ url: `/pages/shipment-form/index${qs}` })
     },
 
     async listShipments() {
@@ -75,6 +61,7 @@ Page({
             // API returns list or single depending on backend implementation for query
             // Assuming it returns a list for this endpoint
             this.setData({ shipments: Array.isArray(res.data) ? res.data : (res.data ? [res.data] : []) })
+            if (batchNo) wx.setStorageSync(LAST_QUERY_KEY, batchNo)
 
             if (!this.data.shipments || this.data.shipments.length === 0) {
                 wx.showToast({ title: '未找到发运单', icon: 'none' })
@@ -84,19 +71,6 @@ Page({
             wx.showToast({ title: '查询失败', icon: 'none' })
         } finally {
             this.setData({ loading: false })
-        }
-    },
-
-    async createShipment() {
-        try {
-            const res = await api.request('/api/v1/shipments', 'POST', this.data.shipmentForm)
-            wx.showToast({ title: '创建成功' })
-            this.setData({ showShipmentForm: false })
-            // Refresh list
-            this.listShipments()
-        } catch (err) {
-            console.error(err)
-            wx.showToast({ title: '创建失败', icon: 'none' })
         }
     },
 

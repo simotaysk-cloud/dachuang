@@ -27,6 +27,11 @@ public class InspectionRecordController {
         return Result.success(inspectionRecordService.list(batchNo));
     }
 
+    @GetMapping("/{id}")
+    public Result<InspectionRecord> getById(@PathVariable Long id) {
+        return Result.success(inspectionRecordService.getById(id));
+    }
+
     @PostMapping("/derive")
     public Result<InspectionDeriveResponse> derive(@Valid @RequestBody InspectionDeriveRequest request) {
         Batch derived = batchService.deriveBatch(

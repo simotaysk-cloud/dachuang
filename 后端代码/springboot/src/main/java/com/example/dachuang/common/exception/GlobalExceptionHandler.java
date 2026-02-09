@@ -2,6 +2,7 @@ package com.example.dachuang.common.exception;
 
 import com.example.dachuang.common.api.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -12,6 +13,13 @@ import java.util.Map;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public Result<Void> handleMethodNotSupported(HttpRequestMethodNotSupportedException e) {
+        // Keep consistent with frontend assumption: HTTP 200 with business code.
+        // Use 405 to avoid hiding the real cause as "500 Internal Server Error".
+        return Result.error(405, "Method Not Allowed: " + e.getMessage());
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Result<Map<String, String>> handleValidationException(MethodArgumentNotValidException e) {
