@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>智汇本草 Demo | 溯源查询</title>
+    <style>
+      :root {
+        --bg: #f6f7fb;
+        --card: #ffffff;
+        --text: #0f172a;
+        --sub: #64748b;
+        --border: rgba(15, 23, 42, 0.10);
+        --primary: #0b3a6a;
+        --primary-2: #0f4c81;
+        --danger: #b42318;
+        --ok: #067647;
+        --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        background: radial-gradient(1200px 600px at 15% 0%, rgba(11, 58, 106, 0.10), transparent 60%),
+                    radial-gradient(900px 500px at 90% 20%, rgba(15, 76, 129, 0.10), transparent 55%),
+                    var(--bg);
+        color: var(--text);
+      }
+
+      .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 18px 48px; }
+
+      .top {
+        display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+        padding: 18px 18px 12px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.70));
+        backdrop-filter: blur(6px);
+      }
+      .brand h1 { margin: 0; font-size: 20px; letter-spacing: 0.4px; }
+      .brand p { margin: 6px 0 0; color: var(--sub); font-size: 13px; }
+      .pill {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 8px 10px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(255,255,255,0.85);
+        font-size: 13px;
+        color: var(--sub);
+        white-space: nowrap;
+      }
+      .dot { width: 8px; height: 8px; border-radius: 50%; background: #9ca3af; }
+      .dot.ok { background: var(--ok); }
+      .dot.bad { background: var(--danger); }
+
+      .grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
+      @media (min-width: 980px) { .grid { grid-template-columns: 0.9fr 1.1fr; } }
+
+      .card {
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--card);
+        padding: 14px 14px;
+      }
+      .card h2 { margin: 0 0 10px; font-size: 14px; letter-spacing: 0.3px; }
+      .meta { color: var(--sub); font-size: 12px; line-height: 1.5; }
+
+      .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+      .field { display: grid; gap: 6px; width: 100%; }
+      .field label { font-size: 12px; color: var(--sub); }
+      input, textarea {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font-size: 14px;
+        background: #fff;
+        outline: none;
+      }
+      textarea { min-height: 96px; resize: vertical; font-family: var(--mono); font-size: 12px; }
+      input.mono { font-family: var(--mono); }
+
+      .btn {
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--text);
+        padding: 10px 12px;
+        border-radius: 12px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .btn.primary { background: var(--primary); border-color: rgba(11, 58, 106, 0.20); color: #fff; }
+      .btn.primary:hover { background: var(--primary-2); }
+      .btn.ghost { background: transparent; }
+
+      .kvs { display: grid; grid-template-columns: 1fr; gap: 8px; }
+      @media (min-width: 980px) { .kvs { grid-template-columns: 1fr 1fr; } }
+      .kv {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px 10px;
+        background: rgba(246, 247, 251, 0.55);
+      }
+      .kv .k { font-size: 11px; color: var(--sub); }
+      .kv .v { margin-top: 4px; font-family: var(--mono); font-size: 12px; }
+
+      .section { margin-top: 12px; }
+      .section h3 { margin: 0 0 8px; font-size: 13px; }
+      .list { display: grid; gap: 8px; }
+      .item {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 10px 10px;
+        background: rgba(255,255,255,0.92);
+      }
+      .item .title { font-weight: 650; font-size: 13px; }
+      .item .sub { margin-top: 4px; color: var(--sub); font-size: 12px; line-height: 1.5; }
+
+      .warn { color: var(--danger); font-size: 12px; }
+      .ok { color: var(--ok); font-size: 12px; }
+      .hr { height: 1px; background: var(--border); margin: 12px 0; }
+      .foot { margin-top: 18px; color: var(--sub); font-size: 12px; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="top">
+        <div class="brand">
+          <h1>智汇本草 Demo | 输入溯源码查看全链路</h1>
+          <p>溯源码 = 批次号（batchNo）。演示默认数据：<span class="mono">MOCK-2024001</span>（原料） / <span class="mono">MOCK-2024001-P</span>（加工品）。</p>
+        </div>
+        <div class="pill" title="需要先登录获取 token，再查询溯源接口">
+          <span id="healthDot" class="dot"></span>
+          <span id="healthText">Health: unknown</span>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h2>1) 登录（只用于演示页面请求 API）</h2>
+          <div class="row">
+            <div class="field" style="flex: 1 1 200px;">
+              <label>用户名</label>
+              <input id="username" value="admin" autocomplete="username" />
+            </div>
+            <div class="field" style="flex: 1 1 200px;">
+              <label>密码</label>
+              <input id="password" value="123456" type="password" autocomplete="current-password" />
+            </div>
+          </div>
+          <div class="row" style="margin-top: 10px;">
+            <button class="btn primary" id="btnLogin">登录</button>
+            <button class="btn ghost" id="btnLogout">清除 token</button>
+            <span class="meta" id="loginHint"></span>
+          </div>
+          <div class="hr"></div>
+          <div class="meta">
+            注意：本页面不会把 token 发到第三方；仅存于浏览器本地存储（LocalStorage）。
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>2) 输入溯源码（batchNo）查询溯源档案</h2>
+          <div class="row">
+            <div class="field" style="flex: 1 1 420px;">
+              <label>溯源码 / 批次号（batchNo）</label>
+              <input id="batchNo" class="mono" placeholder="例如：MOCK-2024001-P" />
+            </div>
+          </div>
+          <div class="row" style="margin-top: 10px;">
+            <button class="btn primary" id="btnQuery">查询档案</button>
+            <button class="btn" id="btnDemoRoot">填充示例：MOCK-2024001</button>
+            <button class="btn" id="btnDemoLeaf">填充示例：MOCK-2024001-P</button>
+            <span class="meta" id="queryHint"></span>
+          </div>
+
+          <div class="section">
+            <h3>双码（可选）</h3>
+            <div class="row">
+              <button class="btn" id="btnCodeGen">生成防伪双码</button>
+              <span class="meta">visibleCode 用于二维码内容；invisibleCode 用于防伪核验</span>
+            </div>
+            <div class="kvs" style="margin-top: 10px;">
+              <div class="kv"><div class="k">visibleCode（二维码内容）</div><div class="v" id="visibleCode">-</div></div>
+              <div class="kv"><div class="k">invisibleCode（隐形防伪码）</div><div class="v" id="invisibleCode">-</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 14px;">
+        <h2>3) 溯源报告</h2>
+        <div class="meta" id="reportMeta">未查询</div>
+
+        <div class="section">
+          <h3>批次信息</h3>
+          <div class="kvs" id="batchKvs"></div>
+        </div>
+
+        <div class="section">
+          <h3>批次谱系（root -> 当前）</h3>
+          <div class="list" id="lineageList"></div>
+        </div>
+
+        <div class="section">
+          <h3>种植记录（root 批次）</h3>
+          <div class="list" id="plantingList"></div>
+        </div>
+
+        <div class="section">
+          <h3>加工记录（链路批次）</h3>
+          <div class="list" id="processingList"></div>
+        </div>
+
+        <div class="section">
+          <h3>质检记录（链路批次）</h3>
+          <div class="list" id="inspectionList"></div>
+        </div>
+
+        <div class="section">
+          <h3>物流追踪（logistics_records）</h3>
+          <div class="list" id="logisticsList"></div>
+        </div>
+
+        <div class="section">
+          <h3>发运单与事件（shipments + shipment_events）</h3>
+          <div class="list" id="shipmentsList"></div>
+        </div>
+
+        <div class="section">
+          <h3>原始 JSON（便于对照）</h3>
+          <textarea id="rawJson" readonly></textarea>
+        </div>
+      </div>
+
+      <div class="foot">Demo page: <span class="mono">/demo/trace.html</span></div>
+    </div>
+
+    <script>
+      const LS_TOKEN = "dachuang_demo_token";
+
+      function $(id) { return document.getElementById(id); }
+      function setHint(el, text, kind) {
+        el.textContent = text || "";
+        el.className = kind === "ok" ? "ok" : kind === "warn" ? "warn" : "meta";
+      }
+      function token() { return localStorage.getItem(LS_TOKEN) || ""; }
+      function setToken(t) { if (t) localStorage.setItem(LS_TOKEN, t); else localStorage.removeItem(LS_TOKEN); }
+
+      async function api(path, { method = "GET", body } = {}) {
+        const headers = { "Content-Type": "application/json" };
+        const t = token();
+        if (t) headers.Authorization = "Bearer " + t;
+        const res = await fetch(path, {
+          method,
+          headers,
+          body: body ? JSON.stringify(body) : undefined
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.status >= 200 && res.status < 300) {
+          if (data && typeof data === "object" && "code" in data && data.code !== 200) {
+            const msg = data.message || "请求失败";
+            throw new Error(msg);
+          }
+          return data;
+        }
+        throw new Error((data && data.message) ? data.message : ("HTTP " + res.status));
+      }
+
+      function kv(label, value) {
+        const d = document.createElement("div");
+        d.className = "kv";
+        d.innerHTML = "<div class='k'></div><div class='v'></div>";
+        d.querySelector(".k").textContent = label;
+        d.querySelector(".v").textContent = value == null ? "-" : String(value);
+        return d;
+      }
+
+      function item(title, sub) {
+        const d = document.createElement("div");
+        d.className = "item";
+        d.innerHTML = "<div class='title'></div><div class='sub'></div>";
+        d.querySelector(".title").textContent = title || "-";
+        d.querySelector(".sub").textContent = sub || "";
+        return d;
+      }
+
+      function clearReport() {
+        $("reportMeta").textContent = "未查询";
+        $("batchKvs").innerHTML = "";
+        $("lineageList").innerHTML = "";
+        $("plantingList").innerHTML = "";
+        $("processingList").innerHTML = "";
+        $("inspectionList").innerHTML = "";
+        $("logisticsList").innerHTML = "";
+        $("shipmentsList").innerHTML = "";
+        $("rawJson").value = "";
+      }
+
+      function renderTrace(payload) {
+        const d = payload?.data || {};
+        const batch = d.batch || {};
+
+        $("reportMeta").textContent = "已查询： " + (batch.batchNo || "-");
+
+        const kvs = $("batchKvs");
+        kvs.appendChild(kv("batchNo（溯源码）", batch.batchNo));
+        kvs.appendChild(kv("minCode（隐形防伪码）", batch.minCode));
+        kvs.appendChild(kv("name", batch.name));
+        kvs.appendChild(kv("origin", batch.origin));
+        kvs.appendChild(kv("status", batch.status));
+        kvs.appendChild(kv("quantity", batch.quantity));
+        kvs.appendChild(kv("unit", batch.unit));
+        kvs.appendChild(kv("gs1LotNo", batch.gs1LotNo));
+        kvs.appendChild(kv("gs1Code", batch.gs1Code));
+
+        const lineage = $("lineageList");
+        (d.lineageBatches || []).forEach((b, idx) => {
+          const title = (idx === 0 ? "ROOT" : "NODE") + " | " + (b.batchNo || "-");
+          const sub = [b.name, b.status, b.origin].filter(Boolean).join(" | ");
+          lineage.appendChild(item(title, sub));
+        });
+        if ((d.lineageBatches || []).length === 0) {
+          lineage.appendChild(item("无谱系数据", "（可能缺少 batch_lineages 记录）"));
+        }
+
+        const planting = $("plantingList");
+        (d.plantingRecords || []).forEach((r) => {
+          const title = (r.operationTime ? (String(r.operationTime).replace("T", " ")) : "-") + " | " + (r.operation || "-");
+          const sub = [r.fieldName, r.operator, r.details, (r.latitude && r.longitude) ? ("定位: " + r.latitude + "," + r.longitude) : ""].filter(Boolean).join(" | ");
+          planting.appendChild(item(title, sub));
+        });
+        if ((d.plantingRecords || []).length === 0) planting.appendChild(item("无种植记录", ""));
+
+        const processing = $("processingList");
+        (d.processingRecords || []).forEach((r) => {
+          const title = (r.processType || "-") + " | batchNo=" + (r.batchNo || "-");
+          const sub = [r.factory, r.operator, r.details, r.parentBatchNo ? ("parent=" + r.parentBatchNo) : ""].filter(Boolean).join(" | ");
+          processing.appendChild(item(title, sub));
+        });
+        if ((d.processingRecords || []).length === 0) processing.appendChild(item("无加工记录", ""));
+
+        const inspection = $("inspectionList");
+        (d.inspectionRecords || []).forEach((r) => {
+          const title = (r.result || "-") + " | batchNo=" + (r.batchNo || "-");
+          const sub = [r.inspector, r.reportUrl].filter(Boolean).join(" | ");
+          inspection.appendChild(item(title, sub));
+        });
+        if ((d.inspectionRecords || []).length === 0) inspection.appendChild(item("无质检记录", ""));
+
+        const logistics = $("logisticsList");
+        (d.logisticsRecords || []).forEach((r) => {
+          const title = (r.updateTime ? String(r.updateTime).replace("T", " ") : "-") + " | " + (r.status || "-");
+          const sub = [r.location, r.trackingNo, r.fromLocation ? ("from=" + r.fromLocation) : "", r.toLocation ? ("to=" + r.toLocation) : ""].filter(Boolean).join(" | ");
+          logistics.appendChild(item(title, sub));
+        });
+        if ((d.logisticsRecords || []).length === 0) logistics.appendChild(item("无物流追踪记录", "（可使用发运单事件演示物流轨迹）"));
+
+        const shipments = $("shipmentsList");
+        (d.shipmentsWithEvents || []).forEach((s) => {
+          const ship = s.shipment || {};
+          const title = "Shipment | " + (ship.shipmentNo || "-") + " | batchNo=" + (ship.batchNo || "-");
+          const sub = [ship.carrier, ship.trackingNo, ship.distributorName, ship.status, ship.remarks].filter(Boolean).join(" | ");
+          const block = item(title, sub);
+          const evs = (s.events || []).map((e) => {
+            const t = e.eventTime ? String(e.eventTime).replace("T", " ") : "-";
+            return t + " | " + (e.location || "-") + " | " + (e.status || "-") + (e.details ? (" | " + e.details) : "");
+          }).join("\n");
+          const pre = document.createElement("pre");
+          pre.style.margin = "10px 0 0";
+          pre.style.whiteSpace = "pre-wrap";
+          pre.style.fontFamily = "var(--mono)";
+          pre.style.fontSize = "12px";
+          pre.style.color = "var(--sub)";
+          pre.textContent = evs || "(no events)";
+          block.appendChild(pre);
+          shipments.appendChild(block);
+        });
+        if ((d.shipmentsWithEvents || []).length === 0) shipments.appendChild(item("无发运单", ""));
+
+        $("rawJson").value = JSON.stringify(payload, null, 2);
+      }
+
+      async function refreshHealth() {
+        try {
+          const res = await fetch("/api/v1/health");
+          const data = await res.json().catch(() => ({}));
+          $("healthDot").className = "dot ok";
+          $("healthText").textContent = "Health: " + (data?.data?.status || "UP");
+        } catch (e) {
+          $("healthDot").className = "dot bad";
+          $("healthText").textContent = "Health: DOWN";
+        }
+      }
+
+      async function doLogin() {
+        setHint($("loginHint"), "登录中...", "meta");
+        try {
+          const u = $("username").value.trim();
+          const p = $("password").value;
+          const res = await api("/api/v1/auth/login", { method: "POST", body: { username: u, password: p } });
+          const t = res?.data?.token || "";
+          setToken(t);
+          setHint($("loginHint"), t ? "登录成功，token 已保存。" : "登录失败（无 token）。", t ? "ok" : "warn");
+        } catch (e) {
+          setHint($("loginHint"), "登录失败: " + e.message, "warn");
+        }
+      }
+
+      async function doQuery() {
+        clearReport();
+        setHint($("queryHint"), "查询中...", "meta");
+        try {
+          const bn = $("batchNo").value.trim();
+          if (!bn) throw new Error("请输入 batchNo");
+          const res = await api("/api/v1/trace/" + encodeURIComponent(bn));
+          renderTrace(res);
+          setHint($("queryHint"), "查询成功", "ok");
+        } catch (e) {
+          setHint($("queryHint"), "查询失败: " + e.message, "warn");
+        }
+      }
+
+      async function doCodeGen() {
+        setHint($("queryHint"), "生成双码中...", "meta");
+        try {
+          const bn = $("batchNo").value.trim();
+          if (!bn) throw new Error("请输入 batchNo");
+          const res = await api("/api/v1/code/generate", { method: "POST", body: { batchNo: bn } });
+          $("visibleCode").textContent = res?.data?.visibleCode || "-";
+          $("invisibleCode").textContent = res?.data?.invisibleCode || "-";
+          setHint($("queryHint"), "双码已生成", "ok");
+        } catch (e) {
+          setHint($("queryHint"), "生成失败: " + e.message, "warn");
+        }
+      }
+
+      $("btnLogin").addEventListener("click", doLogin);
+      $("btnLogout").addEventListener("click", () => { setToken(""); setHint($("loginHint"), "token 已清除", "meta"); });
+      $("btnQuery").addEventListener("click", doQuery);
+      $("btnCodeGen").addEventListener("click", doCodeGen);
+      $("btnDemoRoot").addEventListener("click", () => { $("batchNo").value = "MOCK-2024001"; });
+      $("btnDemoLeaf").addEventListener("click", () => { $("batchNo").value = "MOCK-2024001-P"; });
+
+      // init
+      refreshHealth();
+      $("batchNo").value = "MOCK-2024001-P";
+      // helpful hint if token exists
+      if (token()) setHint($("loginHint"), "检测到已保存 token，可直接查询。", "ok");
+    </script>
+  </body>
+</html>
+
