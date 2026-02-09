@@ -113,6 +113,7 @@ export EVM_EXPLORER_TX_URL="https://sepolia.etherscan.io/tx/"
 cd 后端代码/springboot
 bash scripts/run-evm-dev.sh
 ```
+默认端口是 `8091`（避免与本地 `8081` 冲突），可用 `APP_SERVER_PORT=8081` 覆盖。
 
 ### 3) 小程序演示入口
 

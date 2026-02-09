@@ -34,4 +34,14 @@ public class BlockchainController {
     public Result<BlockchainRecord> get(@PathVariable String batchNo) {
         return Result.success(blockchainService.getRecord(batchNo));
     }
+
+    @PostMapping("/verify")
+    public Result<BlockchainService.VerifyResult> verify(@RequestBody Map<String, String> body) {
+        String batchNo = body.get("batchNo");
+        if (batchNo == null || batchNo.isBlank()) {
+            throw new BusinessException(400, "batchNo is required");
+        }
+        String data = body.getOrDefault("data", "");
+        return Result.success(blockchainService.verifyOnChain(batchNo, data));
+    }
 }

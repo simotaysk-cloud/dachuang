@@ -20,4 +20,10 @@ public class BlockchainRecord extends BaseEntity {
     private String txHash; // 区块链交易哈希
     @Column(length = 80)
     private String dataHash; // 数据摘要摘要
+
+    @Column(length = 16)
+    private String mode; // MOCK / EVM
+
+    @Column(length = 255)
+    private String txUrl; // 浏览器链接（可选）
 }

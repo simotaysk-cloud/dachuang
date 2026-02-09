@@ -47,10 +47,14 @@ public class BlockchainService {
                     .batchNo(batchNo)
                     .txHash(txHash)
                     .dataHash(dataHash)
+                    .mode(mode)
+                    .txUrl(txUrl)
                     .build();
         } else {
             record.setTxHash(txHash);
             record.setDataHash(dataHash);
+            record.setMode(mode);
+            record.setTxUrl(txUrl);
         }
 
         blockchainRecordRepository.save(record);
@@ -59,6 +63,21 @@ public class BlockchainService {
 
     public BlockchainRecord getRecord(String batchNo) {
         return blockchainRecordRepository.findByBatchNo(batchNo).orElse(null);
+    }
+
+    public VerifyResult verifyOnChain(String batchNo, String data) {
+        batchService.getBatchByNo(batchNo);
+        String expected = sha256Hex(data == null ? "" : data);
+        if (!BlockchainMode.EVM.name().equalsIgnoreCase(mode)) {
+            BlockchainRecord r = blockchainRecordRepository.findByBatchNo(batchNo).orElse(null);
+            String recorded = r == null ? "" : (r.getDataHash() == null ? "" : r.getDataHash());
+            boolean match = !expected.isBlank() && expected.equalsIgnoreCase(recorded);
+            return new VerifyResult(mode, expected, recorded, match, "");
+        }
+
+        String onChain = evmBlockchainClient.readAnchoredHashHex(batchNo);
+        boolean match = !onChain.isBlank() && expected.equalsIgnoreCase(onChain);
+        return new VerifyResult(mode, expected, onChain, match, evmBlockchainClient.getContractAddress());
     }
 
     private static String sha256Hex(String data) {
@@ -72,5 +91,8 @@ public class BlockchainService {
     }
 
     public record RecordResult(String txHash, String dataHash, String txUrl, String mode) {
+    }
+
+    public record VerifyResult(String mode, String expectedHash, String onChainHash, boolean match, String contractAddress) {
     }
 }
