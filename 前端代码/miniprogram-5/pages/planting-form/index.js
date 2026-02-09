@@ -307,8 +307,7 @@ Page({
         }
     },
 
-    startRecord() {
-        if (this.data.recording) return
+    doStartRecord() {
         const rm = wx.getRecorderManager()
         this._recorder = rm
         if (!this._recorderInited) {
@@ -327,6 +326,24 @@ Page({
         }
         this.setData({ recording: true })
         rm.start({ format: 'mp3', duration: 60 * 1000 })
+    },
+
+    startRecord() {
+        if (this.data.recording) return
+        wx.authorize({
+            scope: 'scope.record',
+            success: () => this.doStartRecord(),
+            fail: () => {
+                wx.showModal({
+                    title: '需要录音权限',
+                    content: '用于语音留痕，请在设置中开启录音权限。',
+                    confirmText: '去设置',
+                    success: (r) => {
+                        if (r.confirm) wx.openSetting({})
+                    }
+                })
+            }
+        })
     },
 
     stopRecord() {
