@@ -3,6 +3,7 @@ package com.example.dachuang.trace.service;
 import com.example.dachuang.common.exception.BusinessException;
 import com.example.dachuang.trace.dto.CreateShipmentEventRequest;
 import com.example.dachuang.trace.dto.CreateShipmentRequest;
+import com.example.dachuang.trace.dto.LogisticsWebhookDTO;
 import com.example.dachuang.trace.entity.Shipment;
 import com.example.dachuang.trace.entity.ShipmentEvent;
 import com.example.dachuang.trace.repository.ShipmentEventRepository;
@@ -60,6 +61,8 @@ public class ShipmentService {
                 .eventTime(eventTime)
                 .location(request.getLocation())
                 .status(request.getStatus())
+                .latitude(request.getLatitude())
+                .longitude(request.getLongitude())
                 .details(request.getDetails())
                 .build();
 
@@ -70,6 +73,22 @@ public class ShipmentService {
         }
 
         return shipmentEventRepository.save(event);
+    }
+
+    public void handleWebhook(LogisticsWebhookDTO callback) {
+        Shipment shipment = shipmentRepository.findTopByTrackingNoOrderByCreatedAtDesc(callback.getTrackingNo())
+                .orElseThrow(() -> new BusinessException(404,
+                        "Shipment with trackingNo " + callback.getTrackingNo() + " not found"));
+
+        CreateShipmentEventRequest req = new CreateShipmentEventRequest();
+        req.setStatus(callback.getStatus());
+        req.setLocation(callback.getLocation());
+        req.setLatitude(callback.getLatitude());
+        req.setLongitude(callback.getLongitude());
+        req.setDetails(callback.getDetails());
+        req.setEventTime(callback.getEventTime());
+
+        addEvent(shipment.getShipmentNo(), req);
     }
 
     public List<ShipmentEvent> listEvents(String shipmentNo) {

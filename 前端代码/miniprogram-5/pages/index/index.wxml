@@ -56,6 +56,10 @@
         <view class="menu-icon">溯</view>
         <view class="menu-label">溯源查询</view>
       </view>
+      <view class="menu-item" bindtap="navTo" data-url="/pages/web-dashboard/index" wx:if="{{role === 'ADMIN'}}">
+        <view class="menu-icon" style="background: #4f46e5; color: white; display: flex; align-items: center; justify-content: center; font-size: 28rpx; width: 80rpx; height: 80rpx; border-radius: 20rpx; margin-bottom: 10rpx;">看</view>
+        <view class="menu-label">数据看板</view>
+      </view>
       <view class="menu-item" bindtap="navTo" data-url="/pages/logs/logs" wx:if="{{role !== 'FARMER'}}">
         <view class="menu-icon">志</view>
         <view class="menu-label">操作日志</view>

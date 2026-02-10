@@ -16,29 +16,32 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(
-        name = "shipment_events",
-        indexes = {
+@Table(name = "shipment_events", indexes = {
                 @Index(name = "idx_shipment_events_ship_no_time", columnList = "shipment_no,event_time")
-        }
-)
+})
 public class ShipmentEvent extends BaseEntity {
 
-    @Column(nullable = false, length = 64)
-    @NotBlank(message = "shipmentNo cannot be blank")
-    private String shipmentNo;
+        @Column(nullable = false, length = 64)
+        @NotBlank(message = "shipmentNo cannot be blank")
+        private String shipmentNo;
 
-    @Column(nullable = false)
-    private LocalDateTime eventTime;
+        @Column(nullable = false)
+        private LocalDateTime eventTime;
 
-    @Column(nullable = false, length = 128)
-    @NotBlank(message = "location cannot be blank")
-    private String location;
+        @Column(nullable = false, length = 128)
+        @NotBlank(message = "location cannot be blank")
+        private String location;
 
-    @Column(nullable = false, length = 32)
-    @NotBlank(message = "status cannot be blank")
-    private String status;
+        @Column(nullable = false, length = 32)
+        @NotBlank(message = "status cannot be blank")
+        private String status;
 
-    @Column(length = 1000)
-    private String details;
+        @Column(length = 32)
+        private String latitude;
+
+        @Column(length = 32)
+        private String longitude;
+
+        @Column(length = 1000)
+        private String details;
 }

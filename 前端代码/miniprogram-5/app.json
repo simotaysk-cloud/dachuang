@@ -19,7 +19,8 @@
     "pages/line-work/index",
     "pages/trace/index",
     "pages/logs/logs",
-    "pages/user-mgmt/index"
+    "pages/user-mgmt/index",
+    "pages/web-dashboard/index"
   ],
   "window": {
     "navigationBarTextStyle": "black",

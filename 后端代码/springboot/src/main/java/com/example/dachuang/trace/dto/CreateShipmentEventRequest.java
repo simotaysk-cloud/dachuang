@@ -14,5 +14,7 @@ public class CreateShipmentEventRequest {
 
     @NotBlank(message = "status cannot be blank")
     private String status;
+    private String latitude;
+    private String longitude;
     private String details;
 }
