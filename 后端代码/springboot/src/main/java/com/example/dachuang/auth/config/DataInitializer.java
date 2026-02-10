@@ -35,7 +35,8 @@ public class DataInitializer implements CommandLineRunner {
                 // rows.
                 ensureDefaultUser("admin", "123456", "ADMIN", "系统管理员", "dummy_admin");
                 ensureDefaultUser("farmer", "123456", "FARMER", "示范农户", "dummy_farmer");
-                log.info("Default dev accounts ensured: admin/farmer (password: 123456)");
+                ensureDefaultUser("manufacturer", "123456", "MANUFACTURER", "合作加工厂", "dummy_manufacturer");
+                log.info("Default dev accounts ensured: admin/farmer/manufacturer (password: 123456)");
 
                 ensureMockData();
         }

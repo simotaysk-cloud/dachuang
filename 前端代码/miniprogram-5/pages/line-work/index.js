@@ -3,6 +3,7 @@ const api = require('../../utils/api')
 Page({
     data: {
         batchNo: '',
+        manualBatchNo: '', // Temporary input storage
         batchInfo: null,
         sessionRecords: [],
         showAddModal: false,
@@ -28,14 +29,25 @@ Page({
             return wx.redirectTo({ url: '/pages/index/index' })
         }
 
-        const batchNo = options.batchNo
-        if (!batchNo) {
-            wx.showToast({ title: '参数错误', icon: 'none' })
-            return wx.navigateBack()
-        }
-        this.setData({ batchNo })
         await this.initOperator()
-        this.fetchBatchInfo(batchNo)
+
+        const batchNo = options.batchNo
+        if (batchNo) {
+            this.setData({ batchNo })
+            this.fetchBatchInfo(batchNo)
+        }
+    },
+
+    onManualInput(e) {
+        this.setData({ manualBatchNo: e.detail.value })
+    },
+
+    async submitManualBatch() {
+        const val = (this.data.manualBatchNo || '').trim()
+        if (!val) return wx.showToast({ title: '请输入批次号', icon: 'none' })
+
+        this.setData({ batchNo: val })
+        await this.fetchBatchInfo(val)
     },
 
     async initOperator() {
@@ -130,18 +142,6 @@ Page({
     },
 
     async confirmSettle() {
-        const ok = await new Promise((resolve) => {
-            wx.showModal({
-                title: '确认结算并锁定',
-                content: '结算后会生成新的溯源码，并锁定已录入的历史记录（不可修改/删除）。如录入有误，请新增一条“更正记录”。是否继续？',
-                confirmText: '继续',
-                cancelText: '取消',
-                success: (r) => resolve(!!r.confirm),
-                fail: () => resolve(false)
-            })
-        })
-        if (!ok) return
-
         try {
             wx.showLoading({ title: '正在结算分支' })
             // Settle is essentially a deriveBatch via ProcessingRecord with empty batchNo
@@ -156,6 +156,23 @@ Page({
                 factory: this.data.settleForm.factory,
                 details: steps ? `本次工序：${steps}` : '阶段性产线结算，进入下一工艺分库。'
             }
+
+            // 1. Prompt user about locking
+            const confirm = await new Promise((resolve) => {
+                wx.showModal({
+                    title: '确认完工结算？',
+                    content: '⚠️ 警告：结算将生成新批次并【永久锁定】数据（数量/单位不可更改）。请确保所有工序已录入无误。',
+                    confirmText: '确定锁定',
+                    confirmColor: '#e74c3c',
+                    success: (res) => resolve(res.confirm)
+                })
+            })
+            if (!confirm) {
+                wx.hideLoading()
+                return
+            }
+
+            wx.showLoading({ title: '正在结算并锁定' })
             const res = await api.request('/api/v1/processing', 'POST', payload)
             const newBatchNo = res.data.batchNo
 

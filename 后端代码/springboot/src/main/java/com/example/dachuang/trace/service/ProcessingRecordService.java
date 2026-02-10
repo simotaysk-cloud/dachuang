@@ -41,6 +41,10 @@ public class ProcessingRecordService {
             String childNo = record.getBatchNo();
             Batch child = batchService.deriveBatch(parentNo, childNo, "PROCESSING", record.getProcessType(),
                     record.getDetails());
+            // LOCK LOGIC: Immediately lock GS1 data for derived batches to prevent
+            // tampering
+            batchService.lockGs1ByBatchNo(child.getBatchNo());
+
             record.setBatchNo(child.getBatchNo());
         } else {
             String batchNo = (record.getBatchNo() == null) ? "" : record.getBatchNo().trim();

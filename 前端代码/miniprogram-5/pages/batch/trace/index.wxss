@@ -1,0 +1,123 @@
+/* pages/batch/trace/index.wxss */
+.page-container {
+    padding: 30rpx;
+    padding-bottom: 60rpx;
+}
+
+.tree-container {
+    padding: 40rpx 20rpx;
+}
+
+.node {
+    background: #fff;
+    border-radius: 12rpx;
+    border: 2rpx solid #eee;
+    padding: 24rpx;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.03);
+}
+
+.node.root {
+    border-color: var(--primary-color);
+    background: #f0fdf4;
+}
+
+.node-title {
+    font-size: 30rpx;
+    font-weight: 600;
+    color: #333;
+}
+
+.node-sub {
+    font-size: 24rpx;
+    color: #666;
+    margin-top: 6rpx;
+    font-family: monospace;
+}
+
+.node-desc {
+    font-size: 22rpx;
+    color: #999;
+    margin-top: 10rpx;
+}
+
+.tag {
+    display: inline-block;
+    font-size: 20rpx;
+    padding: 4rpx 10rpx;
+    border-radius: 6rpx;
+    margin-top: 10rpx;
+}
+
+.tag.success {
+    background: #e6f7ff;
+    color: #1890ff;
+}
+
+.process-tag {
+    position: absolute;
+    top: -16rpx;
+    left: 20rpx;
+    background: var(--primary-color);
+    color: #fff;
+    font-size: 20rpx;
+    padding: 4rpx 12rpx;
+    border-radius: 20rpx;
+}
+
+/* Connectors */
+.children {
+    margin-top: 40rpx;
+    padding-left: 20rpx;
+    /* Indent */
+    position: relative;
+}
+
+.connector-v {
+    position: absolute;
+    top: -40rpx;
+    left: 50rpx;
+    width: 2rpx;
+    height: 40rpx;
+    background: #ccc;
+    z-index: 1;
+}
+
+.child-branch {
+    position: relative;
+    padding-left: 60rpx;
+    margin-bottom: 30rpx;
+}
+
+.connector-h {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 60rpx;
+    height: 2rpx;
+    background: #ccc;
+    transform: translateY(-50%);
+}
+
+.child-branch::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 2rpx;
+    background: #ccc;
+}
+
+.child-branch:last-child::before {
+    bottom: 50%;
+    /* Stop line at last child */
+}
+
+.empty-tree {
+    text-align: center;
+    color: #999;
+    font-size: 24rpx;
+    margin-top: 40rpx;
+}

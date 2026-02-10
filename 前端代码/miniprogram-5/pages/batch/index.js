@@ -25,13 +25,14 @@ Page({
     },
 
     onLoad() {
+        this.setData({ role: api.role })
         this.listAll()
     },
 
     async listAll() {
         this.setData({ loading: true })
         try {
-            const res = await api.request('/api/v1/batches')
+            const res = await api.request('/api/v1/batches?rootOnly=true')
             this.setData({ batches: res.data || [] })
         } catch (err) {
             console.error(err)
@@ -77,7 +78,33 @@ Page({
                 quantity: '',
                 unit: '',
                 description: '',
+                imageUrl: '', // clear image
                 gs1Locked: false
+            }
+        })
+    },
+
+    startExternalRegistration() {
+        wx.navigateTo({ url: '/pages/batch/add-external/index' })
+    },
+
+    async chooseImage() {
+        const that = this
+        wx.chooseMedia({
+            count: 1,
+            mediaType: ['image'],
+            sourceType: ['album', 'camera'],
+            success: async (res) => {
+                const tempFilePath = res.tempFiles[0].tempFilePath
+                wx.showLoading({ title: '上传中...' })
+                try {
+                    const uploadRes = await api.uploadFile(tempFilePath)
+                    that.setData({ 'form.imageUrl': uploadRes.data }) // Assuming backend returns { code: 200, data: "url" }
+                    wx.hideLoading()
+                } catch (e) {
+                    wx.hideLoading()
+                    wx.showToast({ title: '上传失败', icon: 'none' })
+                }
             }
         })
     },
@@ -106,6 +133,14 @@ Page({
     async save() {
         try {
             const payload = { ...this.data.form }
+
+            // MANUFACTURER VALIDATION
+            if (this.data.role === 'MANUFACTURER' && !payload.id) {
+                if (!payload.imageUrl) {
+                    return wx.showToast({ title: '必须上传来源凭证(照片)', icon: 'none' })
+                }
+            }
+
             if (!payload.id) delete payload.id
             if (!payload.batchNo) delete payload.batchNo // allow backend to gen (recommended for farmers)
 
@@ -187,7 +222,39 @@ Page({
     },
 
     async showQrCode(e) {
-        const { batchNo } = e.currentTarget.dataset
+        const item = e.currentTarget.dataset.item
+        const batchNo = item.batchNo
+        const isLocked = item.gs1Locked
+
+        if (!isLocked) {
+            const confirm = await new Promise((resolve) => {
+                wx.showModal({
+                    title: '锁定提示',
+                    content: '⚠️ 查看/下载二维码将【永久锁定】该批次数据（数量/单位不可更改）。是否继续？',
+                    confirmText: '锁定并查看',
+                    confirmColor: '#e74c3c',
+                    success: (res) => resolve(res.confirm)
+                })
+            })
+            if (!confirm) return
+
+            // Lock it first
+            try {
+                wx.showLoading({ title: '正在锁定...' })
+                await api.request(`/api/v1/batches/${batchNo}/lock-gs1`, 'POST')
+                // Update local list state to reflect lock
+                const newBatches = this.data.batches.map(b => {
+                    if (b.batchNo === batchNo) return { ...b, gs1Locked: true }
+                    return b
+                })
+                this.setData({ batches: newBatches })
+            } catch (err) {
+                wx.hideLoading()
+                console.error(err)
+                return wx.showToast({ title: '锁定失败，无法查看', icon: 'none' })
+            }
+        }
+
         this.setData({ loading: true })
         try {
             const res = await api.request(`/api/v1/public/qr-code/${batchNo}`)
@@ -196,7 +263,9 @@ Page({
                 showQrModal: true,
                 currentBatchNo: batchNo
             })
+            wx.hideLoading()
         } catch (err) {
+            wx.hideLoading()
             console.error('QR Code Fetch Error details:', JSON.stringify(err))
             const msg = err?.data?.message || '获取二维码失败'
             wx.showToast({ title: msg, icon: 'none' })
@@ -207,6 +276,12 @@ Page({
 
     hideQrModal() {
         this.setData({ showQrModal: false })
+    },
+
+    viewTrace() {
+        const batchNo = this.data.form.batchNo
+        if (!batchNo) return
+        wx.navigateTo({ url: `/pages/batch/trace/index?batchNo=${encodeURIComponent(batchNo)}` })
     },
 
     saveQrCode() {

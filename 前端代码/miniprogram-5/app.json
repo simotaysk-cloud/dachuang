@@ -3,6 +3,8 @@
     "pages/login/index",
     "pages/index/index",
     "pages/batch/index",
+    "pages/batch/add-external/index",
+    "pages/batch/trace/index",
     "pages/batch-form/index",
     "pages/planting/index",
     "pages/planting-form/index",

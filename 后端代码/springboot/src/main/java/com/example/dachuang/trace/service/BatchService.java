@@ -38,7 +38,10 @@ public class BatchService {
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final DateTimeFormatter DAY_FMT = DateTimeFormatter.BASIC_ISO_DATE; // yyyyMMdd
 
-    public List<Batch> getAllBatches() {
+    public List<Batch> getAllBatches(boolean rootOnly) {
+        if (rootOnly) {
+            return batchRepository.findRootBatches();
+        }
         return batchRepository.findAll();
     }
 
@@ -78,6 +81,16 @@ public class BatchService {
 
         if (batchRepository.findByBatchNo(batch.getBatchNo()).isPresent()) {
             throw new BusinessException(400, "Batch number already exists");
+        }
+
+        // ROLE CONSTRAINT: MANUFACTURER must provide proof for root batches (External
+        // Source)
+        if ("MANUFACTURER".equalsIgnoreCase(role)) {
+            if (batch.getImageUrl() == null || batch.getImageUrl().isBlank()) {
+                throw new BusinessException(400,
+                        "Manufacturers must upload source proof (contract/invoice) when registering external materials.");
+            }
+            // Optional: Enforce specific naming or category if needed
         }
 
         // 生成隐形码（如果未提供）

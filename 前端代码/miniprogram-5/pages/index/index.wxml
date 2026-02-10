@@ -3,7 +3,6 @@
     <view class="title">智汇本草</view>
     <view class="desc">中药材全过程溯源管理系统</view>
   </view>
-
   <view class="card">
     <view class="section-title">系统状态</view>
     <view class="stat-row">
@@ -17,7 +16,6 @@
       </view>
     </view>
   </view>
-
   <view class="card">
     <view class="section-title">环境配置</view>
     <view class="field-label">后端地址（Base URL）</view>
@@ -27,7 +25,6 @@
       <button class="btn btn-outline" bindtap="goLogin">账号登录</button>
     </view>
   </view>
-
   <view class="card">
     <view class="section-title">功能入口</view>
     <view class="menu-grid">
@@ -35,7 +32,7 @@
         <view class="menu-icon">批</view>
         <view class="menu-label">批次管理</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/planting/index">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/planting/index" wx:if="{{role !== 'MANUFACTURER'}}">
         <view class="menu-icon">种</view>
         <view class="menu-label">种植录入</view>
       </view>
@@ -43,19 +40,19 @@
         <view class="menu-icon">加</view>
         <view class="menu-label">加工登记</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/logistics/index" wx:if="{{role !== 'FARMER'}}">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/logistics/index" wx:if="{{role !== 'FARMER' && role !== 'MANUFACTURER'}}">
         <view class="menu-icon">物</view>
         <view class="menu-label">物流追踪</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/inspection/index" wx:if="{{role !== 'FARMER'}}">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/inspection/index" wx:if="{{role !== 'FARMER' && role !== 'MANUFACTURER'}}">
         <view class="menu-icon">检</view>
         <view class="menu-label">质检中心</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/security/index" wx:if="{{role !== 'FARMER'}}">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/security/index" wx:if="{{role !== 'FARMER' && role !== 'MANUFACTURER'}}">
         <view class="menu-icon">防</view>
         <view class="menu-label">安全防伪</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/trace/index" wx:if="{{role !== 'FARMER'}}">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/trace/index" wx:if="{{role !== 'FARMER' && role !== 'MANUFACTURER'}}">
         <view class="menu-icon">溯</view>
         <view class="menu-label">溯源查询</view>
       </view>

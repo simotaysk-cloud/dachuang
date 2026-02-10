@@ -10,28 +10,45 @@
             <input class="input-inline" placeholder="输入产出批次号查询" value="{{queryNo}}" bindinput="onQueryInput" />
             <button class="btn-small" bindtap="query">查询</button>
         </view>
-        <view class="btn-group" style="margin-bottom: 20rpx;">
-            <button class="btn btn-primary" bindtap="startCreate">新建加工记录</button>
-            <button class="btn btn-outline" bindtap="refreshList">刷新列表</button>
+        <!-- 核心操作区 -->
+        <view class="action-area" style="padding: 10rpx 0 30rpx; text-align: center;">
+            <button class="btn btn-primary" style="width: 90%; height: 100rpx; font-size: 36rpx; margin: 0 auto; display: flex; align-items: center; justify-content: center; padding: 0;" bindtap="onScanStart">
+                扫码开工
+            </button>
+            <view style="font-size: 24rpx; color: #999; margin-top: 10rpx;">推荐使用扫码直接进入产线作业模式</view>
         </view>
-        <button class="btn btn-outline" bindtap="onScanStart">扫码开工（产线模式）</button>
+        <view class="btn-group" style="margin-bottom: 20rpx; display: flex; justify-content: space-between;">
+            <button class="btn btn-outline" style="width: 48%; font-size: 28rpx;" bindtap="startCreate">
+                手工录入记录
+            </button>
+            <button class="btn btn-outline" style="width: 48%; font-size: 28rpx;" bindtap="refreshList">
+                刷新列表
+            </button>
+        </view>
         <!-- 列表内容 -->
         <view class="list" wx:if="{{records && records.length > 0}}">
-            <view class="list-item" wx:for="{{records}}" wx:key="id" bindtap="editFromList" data-item="{{item}}">
-                <view class="list-main">
-                    <view class="list-title">
+            <view class="list-item" wx:for="{{records}}" wx:key="id" style="background: #f8f9fa; border: 2rpx solid #eee; margin-bottom: 20rpx; border-radius: 12rpx; padding: 24rpx; display: flex; align-items: flex-start; justify-content: space-between;">
+                <view class="list-main" style="flex: 1;">
+                    <view class="list-title" style="font-size: 30rpx; font-weight: 500; display: flex; align-items: center;">
                         {{item.processType || '未命名工艺'}}
-                        <text style="font-size:24rpx; color:#999;">#{{item.id}}</text>
+                        <text style="font-size: 22rpx; color: #999; margin-left: 10rpx; font-weight: normal;">
+                            #{{item.id}}
+                        </text>
                     </view>
-                    <view class="list-sub">
+                    <view class="list-sub" style="margin-top: 10rpx; color: #666; font-size: 26rpx;">
                         原料: {{item.parentBatchNo}}
-                        <text wx:if="{{item.batchNo}}">➡ 产出: {{item.batchNo}}</text>
+                        <view wx:if="{{item.batchNo}}" style="margin-top: 4rpx;">
+                            ➡ 产出: {{item.batchNo}}
+                        </view>
                     </view>
-                    <view class="list-meta">
+                    <view class="list-meta" style="margin-top: 12rpx; font-size: 24rpx; color: #999;">
                         工厂: {{item.factory || '-'}} · 操作人: {{item.operator || '-'}}
                     </view>
                 </view>
-                <view class="list-action">详情</view>
+                <view style="font-size: 22rpx; color: #999; display: flex; align-items: center; background: #eee; padding: 6rpx 12rpx; border-radius: 8rpx; margin-left: 20rpx; height: fit-content;">
+                    <text style="margin-right: 6rpx;">🔒</text>
+                    已锁定
+                </view>
             </view>
         </view>
         <view class="empty" wx:if="{{(!records || records.length === 0) && !loading}}">暂无记录</view>
