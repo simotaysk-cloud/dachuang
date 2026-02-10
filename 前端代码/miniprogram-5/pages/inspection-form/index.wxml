@@ -14,6 +14,9 @@
                 分级派生
             </view>
         </view>
+        <view class="meta" wx:if="{{readOnly}}" style="color:#999;">
+            该质检记录已锁定：不可修改/撤回。如需更正，请发布一条新的说明记录。
+        </view>
     </view>
 
     <view class="card" wx:if="{{mode === 'SIMPLE'}}">
@@ -23,14 +26,14 @@
             <view class="readonly-value">#{{form.id}}</view>
         </view>
         <view class="field-label">批次号</view>
-        <input class="input" placeholder="输入被检批次号" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />
+        <input class="input" placeholder="输入被检批次号" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" disabled="{{readOnly}}" />
         <view class="field-label">检测结果</view>
-        <input class="input" placeholder="例如：合格、优级" value="{{form.result}}" data-field="result" bindinput="onInput" />
+        <input class="input" placeholder="例如：合格、优级" value="{{form.result}}" data-field="result" bindinput="onInput" disabled="{{readOnly}}" />
         <view class="field-label">报告链接</view>
-        <input class="input" placeholder="PDF/图片 URL" value="{{form.reportUrl}}" data-field="reportUrl" bindinput="onInput" />
+        <input class="input" placeholder="PDF/图片 URL" value="{{form.reportUrl}}" data-field="reportUrl" bindinput="onInput" disabled="{{readOnly}}" />
         <view class="field-label">质检员</view>
-        <input class="input" placeholder="姓名" value="{{form.inspector}}" data-field="inspector" bindinput="onInput" />
-        <view class="btn-group">
+        <input class="input" placeholder="姓名" value="{{form.inspector}}" data-field="inspector" bindinput="onInput" disabled="{{readOnly}}" />
+        <view class="btn-group" wx:if="{{!readOnly}}">
             <button class="btn btn-primary" bindtap="save">发布/保存</button>
             <button class="btn btn-warn" wx:if="{{form.id}}" bindtap="remove">撤回</button>
         </view>
@@ -60,4 +63,3 @@
         <button class="btn btn-outline" bindtap="cancel">返回列表</button>
     </view>
 </view>
-
