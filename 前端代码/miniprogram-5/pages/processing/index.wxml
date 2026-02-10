@@ -10,10 +10,11 @@
             <input class="input-inline" placeholder="输入产出批次号查询" value="{{queryNo}}" bindinput="onQueryInput" />
             <button class="btn-small" bindtap="query">查询</button>
         </view>
-        <view class="btn-group" style="flex-direction: column; margin-bottom: 20rpx;">
-            <button class="btn btn-primary" bindtap="onScanStart">扫码开工（产线模式）</button>
-            <button class="btn btn-outline" bindtap="startCreate">普通增补记录</button>
+        <view class="btn-group" style="margin-bottom: 20rpx;">
+            <button class="btn btn-primary" bindtap="startCreate">新建加工记录</button>
+            <button class="btn btn-outline" bindtap="refreshList">刷新列表</button>
         </view>
+        <button class="btn btn-outline" bindtap="onScanStart">扫码开工（产线模式）</button>
         <!-- 列表内容 -->
         <view class="list" wx:if="{{records && records.length > 0}}">
             <view class="list-item" wx:for="{{records}}" wx:key="id" bindtap="editFromList" data-item="{{item}}">
