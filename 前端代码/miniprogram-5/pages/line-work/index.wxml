@@ -1,58 +1,63 @@
 <view class="page-container">
     <view class="header">
-        <view class="batch-card">
-            <view class="batch-label">当前作业批次</view>
-            <view class="batch-no">{{batchNo}}</view>
-            <view class="batch-info" wx:if="{{batchInfo}}">
-                {{batchInfo.name}} · {{batchInfo.category}} · {{batchInfo.origin}}
-            </view>
+        <view class="title">产线作业</view>
+        <view class="desc">扫码进入后，针对当前批次快速录入工序；完工结算会生成新的溯源码供下一环节继续扫码</view>
+    </view>
+
+    <view class="card">
+        <view class="section-title">当前作业批次</view>
+        <view class="code-box">{{batchNo}}</view>
+        <view class="meta" wx:if="{{batchInfo}}">
+            {{batchInfo.name}} · {{batchInfo.category}} · {{batchInfo.origin}}
         </view>
     </view>
-    <view class="workspace">
-        <view class="section-title">
-            <text>本次已录入工序</text>
-            <text class="count">{{sessionRecords.length}}</text>
-        </view>
-        <scroll-view scroll-y class="record-list">
-            <view class="record-item" wx:for="{{sessionRecords}}" wx:key="id">
-                <view class="record-dot"></view>
-                <view class="record-body">
-                    <view class="record-type">{{item.processType}}</view>
-                    <view class="record-time">{{item.operator}} · {{item.lineName}}</view>
+
+    <view class="card">
+        <view class="section-title">本次已录入工序</view>
+        <view class="meta">共 {{sessionRecords.length}} 条</view>
+        <view class="empty" wx:if="{{sessionRecords.length === 0}}">请点击“添加工序”开始记录</view>
+        <view class="steps" wx:if="{{sessionRecords.length > 0}}">
+            <view class="step" wx:for="{{sessionRecords}}" wx:key="id">
+                <view class="step-main">
+                    <view class="step-title">{{item.processType || '-'}}</view>
+                    <view class="step-sub">{{item.operator || '-'}} · {{item.lineName || '-'}}</view>
                 </view>
             </view>
-            <view class="empty-tip" wx:if="{{sessionRecords.length === 0}}">请点击下方“添加工序”开始记录</view>
-        </scroll-view>
+        </view>
     </view>
-    <view class="action-dock">
-        <button class="btn btn-secondary" bindtap="openAddDialog">➕ 添加工序</button>
-        <button class="btn btn-primary" bindtap="settleLine" wx:if="{{sessionRecords.length > 0}}">
-            ✅ 完工结算
-        </button>
+
+    <view class="card">
+        <view class="section-title">操作</view>
+        <view class="btn-group">
+            <button class="btn btn-primary" bindtap="openAddDialog">添加工序</button>
+            <button class="btn btn-outline" bindtap="settleLine" wx:if="{{sessionRecords.length > 0}}">完工结算</button>
+        </view>
+        <view class="meta" style="margin-top: 16rpx;">提示：结算后会自动派生一个新批次并生成二维码。</view>
     </view>
-    <!-- Simple Float Dialog for Adding Step -->
-    <view class="modal" wx:if="{{showAddModal}}">
-        <view class="modal-content card">
-            <view class="modal-title">快速添加工序</view>
+
+    <!-- Add Step Modal -->
+    <view class="modal-mask" wx:if="{{showAddModal}}">
+        <view class="modal card">
+            <view class="modal-title">添加工序</view>
             <view class="field-label">工艺名称</view>
             <input class="input" placeholder="如：清洗、烘干、取样" value="{{addForm.processType}}" data-form="add" data-field="processType" bindinput="onModalInput" />
             <view class="field-label">说明（可选）</view>
             <input class="input" placeholder="如：低温烘干 48h" value="{{addForm.details}}" data-form="add" data-field="details" bindinput="onModalInput" />
             <view class="field-label">生产线名称</view>
-            <input class="input" placeholder="如果不填则使用默认" value="{{addForm.lineName}}" data-form="add" data-field="lineName" bindinput="onModalInput" />
+            <input class="input" placeholder="不填则使用默认" value="{{addForm.lineName}}" data-form="add" data-field="lineName" bindinput="onModalInput" />
             <view class="field-label">操作人</view>
             <input class="input" placeholder="姓名" value="{{addForm.operator}}" data-form="add" data-field="operator" bindinput="onModalInput" />
             <view class="btn-group">
-                <button class="btn btn-primary" bindtap="confirmAdd">确认添加</button>
+                <button class="btn btn-primary" bindtap="confirmAdd">确认</button>
                 <button class="btn btn-outline" bindtap="closeAddModal">取消</button>
             </view>
         </view>
     </view>
 
     <!-- Settle Modal -->
-    <view class="modal" wx:if="{{showSettleModal}}">
-        <view class="modal-content card">
-            <view class="modal-title">产线完工结算</view>
+    <view class="modal-mask" wx:if="{{showSettleModal}}">
+        <view class="modal card">
+            <view class="modal-title">完工结算</view>
             <view class="field-label">产出类型 / 分型（必填）</view>
             <input class="input" placeholder="如：研磨、切片、浸出、包装" value="{{settleForm.outputType}}" data-form="settle" data-field="outputType" bindinput="onModalInput" />
             <view class="field-label">规格（可选）</view>
@@ -62,7 +67,7 @@
             <view class="field-label">操作人</view>
             <input class="input" placeholder="姓名" value="{{settleForm.operator}}" data-form="settle" data-field="operator" bindinput="onModalInput" />
             <view class="btn-group">
-                <button class="btn btn-primary" bindtap="confirmSettle">确认结算并生成新码</button>
+                <button class="btn btn-primary" bindtap="confirmSettle">确认并生成新码</button>
                 <button class="btn btn-outline" bindtap="closeSettleModal">取消</button>
             </view>
         </view>
