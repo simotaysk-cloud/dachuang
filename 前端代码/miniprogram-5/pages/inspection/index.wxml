@@ -6,7 +6,7 @@
     <!-- 列表 -->
     <view class="card">
         <view class="section-title">质检记录</view>
-        <view class="search-bar">
+        <view class="search-bar search-bar-paired">
             <input class="input-inline" placeholder="输入批次号查询" value="{{queryNo}}" bindinput="onQueryInput" />
             <button class="btn-small" bindtap="query">查询</button>
         </view>
