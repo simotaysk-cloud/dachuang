@@ -87,7 +87,7 @@ public class DataInitializer implements CommandLineRunner {
                                                         "jin"))
                                         .gs1Locked(true)
                                         .description("2024年春季种植示范批次")
-                                        .imageUrl("https://images.unsplash.com/photo-1584017320005-27a3c7ea99f4?q=80&w=600&auto=format&fit=crop")
+                                        .imageUrl("https://picsum.photos/seed/ginseng/800/600")
                                         .usageAdvice("建议每日3-5克，可切片含服、泡水或炖汤。建议早晨空腹服用，吸收效果更佳。")
                                         .contraindications("感冒发热、红肿热痛等实证热证患者忌服。不宜与萝卜、藜芦、五灵脂同食。")
                                         .commonPairings("1. 人参+当归：补气生血。\n2. 人参+枸杞：益精明目。\n3. 人参+红枣：健脾益气。")
@@ -101,7 +101,7 @@ public class DataInitializer implements CommandLineRunner {
                                         .operator("李农户")
                                         .fieldName("一号示范田")
                                         .operationTime(LocalDateTime.now().minusDays(30))
-                                        .imageUrl("https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?q=80&w=400&auto=format&fit=crop")
+                                        .imageUrl("https://picsum.photos/seed/planting/800/600")
                                         .build());
 
                         plantingRecordRepository.save(com.example.dachuang.trace.entity.PlantingRecord.builder()
@@ -111,7 +111,7 @@ public class DataInitializer implements CommandLineRunner {
                                         .operator("李农户")
                                         .fieldName("一号示范田")
                                         .operationTime(LocalDateTime.now().minusDays(20))
-                                        .imageUrl("https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?q=80&w=400&auto=format&fit=crop")
+                                        .imageUrl("https://picsum.photos/seed/fertilize1/800/600")
                                         .build());
 
                         log.info("Mock Planting Data Created: {}", plantingBatchNo);
@@ -136,7 +136,7 @@ public class DataInitializer implements CommandLineRunner {
                                                         "kg"))
                                         .gs1Locked(true)
                                         .description("经多道工序精制而成")
-                                        .imageUrl("https://images.unsplash.com/photo-1611241893603-3c359704e0ee?q=80&w=600&auto=format&fit=crop")
+                                        .imageUrl("https://picsum.photos/seed/redginseng/800/600")
                                         .usageAdvice("每次3克，每日1-2次。可用温开水冲服，或加入汤剂中。")
                                         .contraindications("孕妇慎用。经期停用。不宜与茶叶同服，以免降低药效。")
                                         .commonPairings("1. 三七+丹参：活血化瘀，通络止痛。\n2. 三七+西洋参：益气养阴，活血定痛。")
@@ -150,7 +150,7 @@ public class DataInitializer implements CommandLineRunner {
                                         .factory("同仁堂吉林分厂")
                                         .operator("张工")
                                         .details("使用山泉水清洗，去土率99%")
-                                        .imageUrl("https://images.unsplash.com/photo-1540320641830-4e26adefcc0c?q=80&w=400&auto=format&fit=crop")
+                                        .imageUrl("https://picsum.photos/seed/wash/800/600")
                                         .build());
 
                         processingRecordRepository.save(com.example.dachuang.trace.entity.ProcessingRecord.builder()
@@ -160,7 +160,7 @@ public class DataInitializer implements CommandLineRunner {
                                         .factory("同仁堂吉林分厂")
                                         .operator("王工")
                                         .details("低温烘干，保留活性成分")
-                                        .imageUrl("https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=400&auto=format&fit=crop")
+                                        .imageUrl("https://picsum.photos/seed/dry/800/600")
                                         .build());
 
                         batchLineageRepository.save(com.example.dachuang.trace.entity.BatchLineage.builder()
@@ -237,7 +237,7 @@ public class DataInitializer implements CommandLineRunner {
                                                         "kg"))
                                         .gs1Locked(true)
                                         .description("云南文山高山三七，三年生")
-                                        .imageUrl("https://images.unsplash.com/photo-1512103002291-d24c80a48f42?q=80&w=600&auto=format&fit=crop")
+                                        .imageUrl("https://picsum.photos/seed/sanqi/800/600")
                                         .usageAdvice("熟吃大补，生吃消肿。研末服用效果最佳。")
                                         .contraindications("血虚无瘀者慎用。孕妇禁用。")
                                         .commonPairings("1. 三七+山楂：降脂通脉。\n2. 三七+红景天：抗疲劳，增强体力。")
@@ -253,7 +253,7 @@ public class DataInitializer implements CommandLineRunner {
                                         .operator("王农户")
                                         .fieldName("文山二号山地")
                                         .operationTime(LocalDateTime.now().minusDays(60))
-                                        .imageUrl("https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=400&auto=format&fit=crop")
+                                        .imageUrl("https://picsum.photos/seed/soil/800/600")
                                         .build());
 
                         plantingRecordRepository.save(com.example.dachuang.trace.entity.PlantingRecord.builder()
@@ -263,7 +263,7 @@ public class DataInitializer implements CommandLineRunner {
                                         .operator("王农户")
                                         .fieldName("文山二号山地")
                                         .operationTime(LocalDateTime.now().minusDays(45))
-                                        .imageUrl("https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?q=80&w=400&auto=format&fit=crop")
+                                        .imageUrl("https://picsum.photos/seed/planting/800/600")
                                         .build());
 
                         String sanqiProcBatchNo = "MOCK-TRX-001-P";
@@ -283,7 +283,7 @@ public class DataInitializer implements CommandLineRunner {
                                                         "kg"))
                                         .gs1Locked(true)
                                         .description("超微粉碎工艺，吸收更快")
-                                        .imageUrl("https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=600&auto=format&fit=crop")
+                                        .imageUrl("https://picsum.photos/seed/sanqipowder/800/600")
                                         .usageAdvice("每日2次，每次2克。餐后温水送服。")
                                         .contraindications("阴虚内热者慎服。")
                                         .commonPairings("1. 三七粉+牛奶：早餐伴侣，补血养颜。\n2. 三七粉+蜂蜜：改善口感，润肺止痛。")
@@ -297,7 +297,7 @@ public class DataInitializer implements CommandLineRunner {
                                         .factory("文山联合工厂")
                                         .operator("陈工")
                                         .details("真空冷冻干燥，温度控制在-40度")
-                                        .imageUrl("https://images.unsplash.com/photo-1547514126-538466e38706?q=80&w=400&auto=format&fit=crop")
+                                        .imageUrl("https://picsum.photos/seed/freezedry/800/600")
                                         .build());
 
                         processingRecordRepository.save(com.example.dachuang.trace.entity.ProcessingRecord.builder()
@@ -307,7 +307,7 @@ public class DataInitializer implements CommandLineRunner {
                                         .factory("文山联合工厂")
                                         .operator("刘工")
                                         .details("粒径达到300目以上")
-                                        .imageUrl("https://images.unsplash.com/photo-1516746826332-ddc74a51ceac?q=80&w=400&auto=format&fit=crop")
+                                        .imageUrl("https://picsum.photos/seed/crush/800/600")
                                         .build());
 
                         batchLineageRepository.save(com.example.dachuang.trace.entity.BatchLineage.builder()
