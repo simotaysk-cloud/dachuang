@@ -14,7 +14,6 @@ function resolveUrlMaybe(url) {
 
 Page({
     data: {
-        readOnly: false,
         operationOptions: OPERATION_OPTIONS,
         selectedOperation: '',
         customOperation: '',
@@ -85,7 +84,6 @@ Page({
                 const date = opTimeParts[0] || nowParts.date
                 const clock = (opTimeParts[1] || nowParts.clock).slice(0, 5)
                 this.setData({
-                    readOnly: true,
                     selectedOperation: matched,
                     customOperation: matched === '其他' ? op : '',
                     operationTimeText: opTimeText,
@@ -121,7 +119,6 @@ Page({
 
             const now = this.getNowParts()
             this.setData({
-                readOnly: false,
                 selectedOperation: '',
                 customOperation: '',
                 imageFilePath: '',
@@ -154,7 +151,6 @@ Page({
     },
 
     onManualTimeChange(e) {
-        if (this.data.readOnly) return
         const v = !!e.detail.value
         this.setData({ manualTime: v })
         if (!v) {
@@ -170,27 +166,23 @@ Page({
     },
 
     onOperationDateChange(e) {
-        if (this.data.readOnly) return
         const date = e.detail.value
         this.setData({ operationDate: date })
         if (this.data.manualTime) this.updateOperationTimeFromParts(date, this.data.operationClock)
     },
 
     onOperationClockChange(e) {
-        if (this.data.readOnly) return
         const clock = e.detail.value
         this.setData({ operationClock: clock })
         if (this.data.manualTime) this.updateOperationTimeFromParts(this.data.operationDate, clock)
     },
 
     onInput(e) {
-        if (this.data.readOnly) return
         const { field } = e.currentTarget.dataset
         this.setData({ [`form.${field}`]: e.detail.value })
     },
 
     selectOperation(e) {
-        if (this.data.readOnly) return
         const { value } = e.currentTarget.dataset
         if (!value) return
         if (value === '其他') {
@@ -215,7 +207,6 @@ Page({
     },
 
     onCustomOperationInput(e) {
-        if (this.data.readOnly) return
         const v = (e.detail.value || '').trim()
         this.setData({
             customOperation: v,
@@ -396,10 +387,6 @@ Page({
     },
 
     async save() {
-        if (this.data.readOnly) {
-            wx.showToast({ title: '该记录已锁定，不可修改', icon: 'none' })
-            return
-        }
         try {
             if (!this.data.form.batchNo) {
                 wx.showToast({ title: '缺少批次号', icon: 'none' })
@@ -452,10 +439,6 @@ Page({
     },
 
     async remove() {
-        if (this.data.readOnly) {
-            wx.showToast({ title: '该记录已锁定，不可删除', icon: 'none' })
-            return
-        }
         if (!this.data.form.id) return
 
         const confirmed = await new Promise((resolve) => {

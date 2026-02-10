@@ -22,8 +22,8 @@ public class BatchController {
     private final QrCodeService qrCodeService;
 
     @GetMapping
-    public Result<List<Batch>> getAll() {
-        return Result.success(batchService.getAllBatches());
+    public Result<List<Batch>> getAll(@RequestParam(defaultValue = "false") boolean rootOnly) {
+        return Result.success(batchService.getAllBatches(rootOnly));
     }
 
     @GetMapping("/{batchNo}")
@@ -34,16 +34,14 @@ public class BatchController {
     @GetMapping("/{batchNo}/qrcode")
     public Result<Map<String, String>> getQrCode(
             @PathVariable String batchNo,
-            @RequestParam(defaultValue = "280") int size
-    ) {
+            @RequestParam(defaultValue = "280") int size) {
         Batch b = batchService.getBatchByNo(batchNo);
         int s = Math.max(120, Math.min(size, 1024));
         String base64 = qrCodeService.generateQrCodeBase64(b.getBatchNo(), s, s);
         String src = "data:image/png;base64," + base64;
         return Result.success(Map.of(
                 "batchNo", b.getBatchNo(),
-                "src", src
-        ));
+                "src", src));
     }
 
     @PostMapping

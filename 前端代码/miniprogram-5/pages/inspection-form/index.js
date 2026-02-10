@@ -6,7 +6,6 @@ const LAST_QUERY_KEY = 'inspectionLastQueryNo'
 Page({
     data: {
         mode: 'SIMPLE',
-        readOnly: false,
         form: {
             id: '',
             batchNo: '',
@@ -41,7 +40,6 @@ Page({
             if (res?.data) {
                 this.setData({
                     mode: 'SIMPLE',
-                    readOnly: true,
                     form: { ...res.data }
                 })
             }
@@ -57,7 +55,6 @@ Page({
     },
 
     onInput(e) {
-        if (this.data.readOnly) return
         const { field } = e.currentTarget.dataset
         this.setData({ [`form.${field}`]: e.detail.value })
     },
@@ -81,10 +78,6 @@ Page({
     },
 
     async save() {
-        if (this.data.readOnly) {
-            wx.showToast({ title: '该记录已锁定，不可修改', icon: 'none' })
-            return
-        }
         try {
             const payload = { ...this.data.form }
             if (!payload.id) delete payload.id
@@ -105,10 +98,6 @@ Page({
     },
 
     async remove() {
-        if (this.data.readOnly) {
-            wx.showToast({ title: '该记录已锁定，不可撤回', icon: 'none' })
-            return
-        }
         if (!this.data.form.id) return
         const confirmed = await new Promise((resolve) => {
             wx.showModal({
@@ -136,3 +125,4 @@ Page({
         wx.navigateBack()
     }
 })
+

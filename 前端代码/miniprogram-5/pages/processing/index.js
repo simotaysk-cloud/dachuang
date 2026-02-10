@@ -34,7 +34,7 @@ Page({
     },
 
     startCreate() {
-        wx.navigateTo({ url: '/pages/processing-form/index' })
+        wx.navigateTo({ url: '/pages/line-work/index' })
     },
 
     parseBatchNoFromScanResult(raw) {
@@ -74,10 +74,9 @@ Page({
         }
     },
 
+    // List item click is removed in WXML, but keeping this safe
     editFromList(e) {
-        const item = e.currentTarget.dataset.item
-        if (!item || item.id == null) return
-        wx.navigateTo({ url: `/pages/processing-form/index?id=${encodeURIComponent(String(item.id))}` })
+        // Read-only
     },
 
     async listAll() {
