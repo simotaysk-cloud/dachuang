@@ -12,5 +12,6 @@ public interface ShipmentRepository extends JpaRepository<Shipment, Long> {
     boolean existsByShipmentNo(String shipmentNo);
 
     List<Shipment> findAllByBatchNo(String batchNo);
-}
 
+    Optional<Shipment> findTopByTrackingNoOrderByCreatedAtDesc(String trackingNo);
+}

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智汇本草 - 管理控制台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="logo">智汇本草</div>
+            <nav>
+                <ul>
+                    <li class="nav-item active" data-page="dashboard"><a href="javascript:void(0)">数据看板</a></li>
+                    <li class="nav-item" data-page="herbs"><a href="javascript:void(0)">药材概览</a></li>
+                    <li class="nav-item" data-page="lines"><a href="javascript:void(0)">产线监控</a></li>
+                    <li class="nav-item" data-page="trace"><a href="javascript:void(0)">溯源统计</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <header>
+                <h1>数据可视化看板</h1>
+                <div class="user-info">admin | 管理员</div>
+            </header>
+
+            <div id="dashboardView" class="page-view">
+                <section class="stats-cards">
+                    <div class="card glass">
+                        <h3>药材种类</h3>
+                        <p id="totalHerbTypes" class="stat-value">0</p>
+                    </div>
+                    <div class="card glass">
+                        <h3>批次总数</h3>
+                        <p id="totalBatches" class="stat-value">0</p>
+                    </div>
+                    <div class="card glass">
+                        <h3>完成工序</h3>
+                        <p id="totalProcessing" class="stat-value">0</p>
+                    </div>
+                </section>
+
+                <section class="charts-grid">
+                    <div class="chart-container glass">
+                        <h2>产地分布统计</h2>
+                        <div id="originChart" class="chart"></div>
+                    </div>
+                    <div class="chart-container glass">
+                        <h2>加工工艺频次</h2>
+                        <div id="processChart" class="chart"></div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="herbsView" class="page-view" style="display: none;">
+                <section class="list-section glass">
+                    <div class="section-header">
+                        <h2>药材档案库</h2>
+                        <button class="btn-primary" onclick="alert('Demo: 新增功能开发中')">+ 新增药材</button>
+                    </div>
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>批次号</th>
+                                    <th>名称</th>
+                                    <th>分类</th>
+                                    <th>产地</th>
+                                    <th>库存</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody id="herbTableBody">
+                                <!-- Data injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <div id="traceView" class="page-view" style="display: none;">
+                <section class="trace-header">
+                    <div class="card glass highlight">
+                        <h3>全链路溯源覆盖率</h3>
+                        <p id="overallTraceRate" class="stat-value">0%</p>
+                    </div>
+                </section>
+
+                <section class="charts-grid">
+                    <div class="chart-container glass">
+                        <h2>溯源数据完整度分布</h2>
+                        <div id="integrityRadar" class="chart"></div>
+                    </div>
+                    <div class="chart-container glass">
+                        <h2>区块链存证动态墙</h2>
+                        <div class="blockchain-feed" id="blockchainFeed">
+                            <!-- Blockchain records injected by JS -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="placeholderView" class="page-view" style="display: none; text-align: center; padding-top: 5rem;">
+                <h2 style="color: var(--text-secondary);">该模块正在火速开发中...</h2>
+            </div>
+        </main>
+    </div>
+    <script src="js/dashboard.js"></script>
+</body>
+
+</html>

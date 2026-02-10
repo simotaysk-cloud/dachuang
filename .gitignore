@@ -19,4 +19,5 @@ dist/
 miniprogram_npm/
 # Environmental tools
 tools/
+env/
 *.zip

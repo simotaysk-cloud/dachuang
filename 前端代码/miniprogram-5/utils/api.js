@@ -7,9 +7,8 @@ function getDefaultBaseUrl() {
     } catch (e) {
         // ignore
     }
-    // Team update: Use LAN IP for real devices (requires same WiFi). 
-    // For local simulator, please use http://127.0.0.1:8091
-    return 'http://127.0.0.1:8091'
+    // Real device preview cannot access 127.0.0.1 on PC; use LAN IP (can be overridden in login page).
+    return 'http://192.168.1.64:8091'
 }
 
 function normalizeRole(role) {
@@ -17,11 +16,31 @@ function normalizeRole(role) {
 }
 
 function normalizeBaseUrl(url) {
-    const u = String(url || '').trim()
+    let u = String(url || '').trim()
     if (!u) return u
     // Upgrade legacy defaults to the new dev port (8091).
-    // Keep host untouched (team members may use different LAN IPs).
-    if (/:8081(\/|$)/.test(u)) return u.replace(/:8081(\/|$)/, ':8091$1')
+    if (/:8081(\/|$)/.test(u)) u = u.replace(/:8081(\/|$)/, ':8091$1')
+
+    if (u === 'http://192.168.0.251:8091' || u === 'http://192.168.43.176:8091') return 'http://192.168.1.64:8091'
+
+    // Replace old IPs with new IP
+    const oldIPs = ['192.168.0.251', '192.168.31.157', '192.168.43.176']
+    oldIPs.forEach(ip => {
+        if (u.includes(ip)) u = u.replace(ip, '192.168.1.64')
+    })
+
+    // Ensure port 8091 is present for development IPs if no port is specified
+    const hasPort = u.split('://')[1]?.includes(':') || (!u.includes('://') && u.includes(':'))
+    if ((u.includes('192.168.1.64') || u.includes('127.0.0.1')) && !hasPort) {
+        const ip = u.includes('192.168.1.64') ? '192.168.1.64' : '127.0.0.1'
+        u = u.replace(ip, ip + ':8091')
+    }
+
+    // Ensure protocol is present
+    if (u && !u.startsWith('http')) {
+        u = 'http://' + u
+    }
+
     return u
 }
 
