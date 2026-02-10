@@ -6,6 +6,7 @@ const LAST_QUERY_KEY = 'processingLastQueryNo'
 Page({
     data: {
         loading: false,
+        readOnly: false,
         form: {
             id: '',
             parentBatchNo: '',
@@ -40,7 +41,7 @@ Page({
         this.setData({ loading: true })
         try {
             const res = await api.request(`/api/v1/processing/${encodeURIComponent(id)}`)
-            if (res?.data) this.setData({ form: { ...res.data } })
+            if (res?.data) this.setData({ form: { ...res.data }, readOnly: true })
         } catch (err) {
             wx.showToast({ title: '加载失败', icon: 'none' })
         } finally {
@@ -49,11 +50,16 @@ Page({
     },
 
     onInput(e) {
+        if (this.data.readOnly) return
         const { field } = e.currentTarget.dataset
         this.setData({ [`form.${field}`]: e.detail.value })
     },
 
     async save() {
+        if (this.data.readOnly) {
+            wx.showToast({ title: '该记录已锁定，不可修改', icon: 'none' })
+            return
+        }
         try {
             const payload = { ...this.data.form }
             if (!payload.id) delete payload.id
@@ -99,6 +105,10 @@ Page({
     },
 
     async remove() {
+        if (this.data.readOnly) {
+            wx.showToast({ title: '该记录已锁定，不可删除', icon: 'none' })
+            return
+        }
         if (!this.data.form.id) return
         const confirmed = await new Promise((resolve) => {
             wx.showModal({
@@ -126,4 +136,3 @@ Page({
         wx.navigateBack()
     }
 })
-

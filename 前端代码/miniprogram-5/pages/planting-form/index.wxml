@@ -1,11 +1,14 @@
 <view class="page-container">
     <view class="header">
-        <view class="title">{{form.id ? '编辑种植记录' : '新建种植记录'}}</view>
+        <view class="title">{{form.id ? '查看种植记录' : '新建种植记录'}}</view>
         <view class="desc">关键操作会自动获取定位，且必须上传图片或语音留痕</view>
     </view>
 
     <view class="card">
         <view class="section-title">基本信息</view>
+        <view class="meta" wx:if="{{readOnly}}" style="color:#999;">
+            该记录已锁定：不可修改/删除。如录入错误，请新建一条“更正记录”说明原因。
+        </view>
         <view class="readonly-row" wx:if="{{form.id}}">
             <view class="readonly-label">记录ID</view>
             <view class="readonly-value">#{{form.id}}</view>
@@ -13,7 +16,7 @@
         <view class="section-title">操作时间</view>
         <view class="picker-row" style="margin-bottom: 16rpx;">
             <view class="picker-label">手动设置</view>
-            <switch checked="{{manualTime}}" bindchange="onManualTimeChange" />
+            <switch checked="{{manualTime}}" bindchange="onManualTimeChange" disabled="{{readOnly}}" />
         </view>
         <view class="meta" wx:if="{{!manualTime}}" style="margin-bottom: 16rpx;">不手动设置时：保存时记录当前时间</view>
         <view wx:if="{{manualTime}}">
@@ -38,7 +41,7 @@
         </view>
 
         <view class="field-label">地块名称</view>
-        <input class="input" placeholder="例如：一号地块" value="{{form.fieldName}}" data-field="fieldName" bindinput="onInput" />
+        <input class="input" placeholder="例如：一号地块" value="{{form.fieldName}}" data-field="fieldName" bindinput="onInput" disabled="{{readOnly}}" />
 
         <view class="sub-title">操作类型</view>
         <view class="chip-row">
@@ -48,14 +51,14 @@
         </view>
         <view wx:if="{{selectedOperation === '其他'}}">
             <view class="field-label">自定义操作类型</view>
-            <input class="input" placeholder="例如：病虫害排查" value="{{customOperation}}" bindinput="onCustomOperationInput" />
+            <input class="input" placeholder="例如：病虫害排查" value="{{customOperation}}" bindinput="onCustomOperationInput" disabled="{{readOnly}}" />
         </view>
 
         <view class="field-label">操作人（可改）</view>
-        <input class="input" placeholder="例如：张三" value="{{form.operator}}" data-field="operator" bindinput="onInput" />
+        <input class="input" placeholder="例如：张三" value="{{form.operator}}" data-field="operator" bindinput="onInput" disabled="{{readOnly}}" />
 
         <view class="field-label">详细描述</view>
-        <textarea class="textarea" placeholder="可选：用量、天气、备注等" value="{{form.details}}" data-field="details" bindinput="onInput" />
+        <textarea class="textarea" placeholder="可选：用量、天气、备注等" value="{{form.details}}" data-field="details" bindinput="onInput" disabled="{{readOnly}}" />
     </view>
 
     <view class="card">
@@ -71,19 +74,19 @@
 
         <view class="field-label">图片（可选）</view>
         <view class="btn-group">
-            <button class="btn btn-outline" bindtap="chooseImage">选择图片</button>
+            <button class="btn btn-outline" bindtap="chooseImage" disabled="{{readOnly}}">选择图片</button>
             <button class="btn btn-outline" wx:if="{{imageFilePath || form.imageUrl}}" bindtap="previewImage">预览</button>
-            <button class="btn btn-warn" wx:if="{{imageFilePath || form.imageUrl}}" bindtap="clearImage">清除</button>
+            <button class="btn btn-warn" wx:if="{{imageFilePath || form.imageUrl}}" bindtap="clearImage" disabled="{{readOnly}}">清除</button>
         </view>
         <view class="meta" wx:if="{{imageFilePath}}">已选择：本地图片</view>
         <view class="meta" wx:if="{{!imageFilePath && form.imageUrl}}">已保存：{{form.imageUrl}}</view>
 
         <view class="field-label" style="margin-top:20rpx;">语音（可选）</view>
         <view class="btn-group">
-            <button class="btn btn-outline" bindtap="chooseAudio">选择音频</button>
-            <button class="btn btn-outline" wx:if="{{!recording}}" bindtap="startRecord">开始录音</button>
-            <button class="btn btn-warn" wx:if="{{recording}}" bindtap="stopRecord">停止录音</button>
-            <button class="btn btn-warn" wx:if="{{audioFilePath || form.audioUrl}}" bindtap="clearAudio">清除</button>
+            <button class="btn btn-outline" bindtap="chooseAudio" disabled="{{readOnly}}">选择音频</button>
+            <button class="btn btn-outline" wx:if="{{!recording}}" bindtap="startRecord" disabled="{{readOnly}}">开始录音</button>
+            <button class="btn btn-warn" wx:if="{{recording}}" bindtap="stopRecord" disabled="{{readOnly}}">停止录音</button>
+            <button class="btn btn-warn" wx:if="{{audioFilePath || form.audioUrl}}" bindtap="clearAudio" disabled="{{readOnly}}">清除</button>
         </view>
         <view class="meta" wx:if="{{recording}}">录音中...</view>
         <view class="meta" wx:if="{{audioFilePath}}">已录音：本地音频</view>
@@ -94,7 +97,7 @@
 
     <view class="card">
         <view class="section-title">操作</view>
-        <view class="btn-group">
+        <view class="btn-group" wx:if="{{!readOnly}}">
             <button class="btn btn-primary" bindtap="save">保存</button>
             <button class="btn btn-warn" wx:if="{{form.id}}" bindtap="remove">删除</button>
         </view>

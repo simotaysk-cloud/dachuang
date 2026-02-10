@@ -130,6 +130,18 @@ Page({
     },
 
     async confirmSettle() {
+        const ok = await new Promise((resolve) => {
+            wx.showModal({
+                title: '确认结算并锁定',
+                content: '结算后会生成新的溯源码，并锁定已录入的历史记录（不可修改/删除）。如录入有误，请新增一条“更正记录”。是否继续？',
+                confirmText: '继续',
+                cancelText: '取消',
+                success: (r) => resolve(!!r.confirm),
+                fail: () => resolve(false)
+            })
+        })
+        if (!ok) return
+
         try {
             wx.showLoading({ title: '正在结算分支' })
             // Settle is essentially a deriveBatch via ProcessingRecord with empty batchNo

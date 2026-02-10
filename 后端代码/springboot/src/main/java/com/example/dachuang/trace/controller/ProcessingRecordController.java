@@ -1,6 +1,7 @@
 package com.example.dachuang.trace.controller;
 
 import com.example.dachuang.common.api.Result;
+import com.example.dachuang.common.exception.BusinessException;
 import com.example.dachuang.trace.entity.ProcessingRecord;
 import com.example.dachuang.trace.service.ProcessingRecordService;
 import jakarta.validation.Valid;
@@ -36,12 +37,11 @@ public class ProcessingRecordController {
 
     @PutMapping("/{id}")
     public Result<ProcessingRecord> update(@PathVariable Long id, @RequestBody ProcessingRecord record) {
-        return Result.success(processingRecordService.update(id, record));
+        throw new BusinessException(409, "Processing record is immutable once published; create a new record to correct it");
     }
 
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id) {
-        processingRecordService.delete(id);
-        return Result.success(null);
+        throw new BusinessException(409, "Processing record is immutable once published; create a new record to correct it");
     }
 }
