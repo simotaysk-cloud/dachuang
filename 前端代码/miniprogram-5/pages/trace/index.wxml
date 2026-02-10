@@ -1,6 +1,6 @@
 <view class="page-container">
     <!-- Hero Header -->
-    <view class="hero-section" style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7)), url({{report.batch.imageUrl || 'https://picsum.photos/seed/herb_fallback/800/600'}})">
+    <view wx:if="{{report}}" class="hero-section" style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.7)), url({{report.batch.imageUrl || 'https://picsum.photos/seed/herb_fallback/800/600'}})">
         <view class="hero-content">
             <view class="product-badge">
                 <text class="badge-icon">🛡️</text>
@@ -94,7 +94,7 @@
             </view>
         </view>
         <!-- Safety Footer -->
-        <view class="safety-footer">
+        <view wx:if="{{report}}" class="safety-footer">
             <view class="seal-logo">智汇 · 本草</view>
             <view class="safety-tips">本报告由区块链溯源系统底层支撑，保障数据真实不可篡改</view>
             <view class="report-id">报告唯一标识：{{report.batch.batchNo}}</view>
