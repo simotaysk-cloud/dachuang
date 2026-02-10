@@ -102,6 +102,7 @@ Page({
                     stage: 'PROCESSING',
                     tag: '加工',
                     title: r.processType,
+                    lineName: r.lineName, // New field for grouping
                     time: r.createdAt,
                     timeDisplay: formatTime(r.createdAt),
                     details: `${r.factory} | 操作人: ${r.operator}\n${r.details}`,

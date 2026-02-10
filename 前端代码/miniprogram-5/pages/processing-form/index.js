@@ -11,11 +11,18 @@ Page({
             parentBatchNo: '',
             batchNo: '',
             processType: '',
+            lineName: '',
             factory: '',
             details: '',
             operator: '',
             imageUrl: ''
-        }
+        },
+        actionModes: ['追加工序 (同识别码)', '完工结算 (生成新码)'],
+        actionModeIndex: 0
+    },
+
+    onActionModeChange(e) {
+        this.setData({ actionModeIndex: e.detail.value })
     },
 
     onLoad(options) {
@@ -50,7 +57,15 @@ Page({
         try {
             const payload = { ...this.data.form }
             if (!payload.id) delete payload.id
-            if (!payload.batchNo) delete payload.batchNo // allow backend to gen
+
+            // "Settle Line" mode: we want to create a NEW batch from the parent.
+            // Backend deriveBatch is triggered when parentBatchNo is provided and batchNo matches certain conditions.
+            // For our UI, if it's "Settle Mode", we ensure batchNo is empty so backend generates a new one.
+            if (this.data.actionModeIndex == 1) {
+                payload.batchNo = ''
+            }
+
+            if (!payload.batchNo) delete payload.batchNo
 
             let res
             if (this.data.form.id) {
@@ -59,11 +74,25 @@ Page({
                 res = await api.request('/api/v1/processing', 'POST', payload)
             }
 
-            const q = res?.data?.batchNo || payload.parentBatchNo || ''
-            if (q) wx.setStorageSync(LAST_QUERY_KEY, q)
-            wx.setStorageSync(REFRESH_KEY, true)
-            wx.showToast({ title: '保存成功' })
-            setTimeout(() => wx.navigateBack(), 300)
+            const newBatchNo = res?.data?.batchNo || ''
+            if (newBatchNo && this.data.actionModeIndex == 1) {
+                wx.showModal({
+                    title: '产线结算成功',
+                    content: `已成功派生新识别码：\n${newBatchNo}\n\n请打印并贴在产线出口的容器上。`,
+                    showCancel: false,
+                    success: () => {
+                        wx.setStorageSync(LAST_QUERY_KEY, newBatchNo)
+                        wx.setStorageSync(REFRESH_KEY, true)
+                        wx.navigateBack()
+                    }
+                })
+            } else {
+                const q = newBatchNo || payload.parentBatchNo || ''
+                if (q) wx.setStorageSync(LAST_QUERY_KEY, q)
+                wx.setStorageSync(REFRESH_KEY, true)
+                wx.showToast({ title: '记录已保存' })
+                setTimeout(() => wx.navigateBack(), 300)
+            }
         } catch (err) {
             wx.showToast({ title: err?.data?.message || '保存失败', icon: 'none' })
         }

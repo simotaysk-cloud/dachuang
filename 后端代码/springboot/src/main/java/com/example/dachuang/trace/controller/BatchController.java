@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -28,6 +29,21 @@ public class BatchController {
     @GetMapping("/{batchNo}")
     public Result<Batch> getByNo(@PathVariable String batchNo) {
         return Result.success(batchService.getBatchByNo(batchNo));
+    }
+
+    @GetMapping("/{batchNo}/qrcode")
+    public Result<Map<String, String>> getQrCode(
+            @PathVariable String batchNo,
+            @RequestParam(defaultValue = "280") int size
+    ) {
+        Batch b = batchService.getBatchByNo(batchNo);
+        int s = Math.max(120, Math.min(size, 1024));
+        String base64 = qrCodeService.generateQrCodeBase64(b.getBatchNo(), s, s);
+        String src = "data:image/png;base64," + base64;
+        return Result.success(Map.of(
+                "batchNo", b.getBatchNo(),
+                "src", src
+        ));
     }
 
     @PostMapping

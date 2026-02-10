@@ -8,11 +8,13 @@
     "pages/planting-form/index",
     "pages/processing/index",
     "pages/processing-form/index",
+    "pages/qrcode/index",
     "pages/logistics/index",
     "pages/inspection/index",
     "pages/inspection-form/index",
     "pages/shipment-form/index",
     "pages/security/index",
+    "pages/line-work/index",
     "pages/trace/index",
     "pages/logs/logs",
     "pages/user-mgmt/index"

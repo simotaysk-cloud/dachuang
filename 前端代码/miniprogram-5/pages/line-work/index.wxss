@@ -1,0 +1,190 @@
+.page-container {
+    background: #f8f9fa;
+    min-height: 100vh;
+    padding-bottom: 200rpx;
+}
+
+.header {
+    background: #2c3e50;
+    padding: 60rpx 40rpx;
+    color: #fff;
+}
+
+.batch-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30rpx;
+    border-radius: 16rpx;
+    border-left: 8rpx solid #1abc9c;
+}
+
+.batch-label {
+    font-size: 20rpx;
+    color: #bdc3c7;
+    margin-bottom: 8rpx;
+}
+
+.batch-no {
+    font-family: monospace;
+    font-size: 36rpx;
+    font-weight: bold;
+    letter-spacing: 2rpx;
+}
+
+.batch-info {
+    font-size: 24rpx;
+    color: #ecf0f1;
+    margin-top: 10rpx;
+}
+
+.workspace {
+    padding: 40rpx;
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30rpx;
+    font-size: 32rpx;
+    font-weight: bold;
+    color: #34495e;
+}
+
+.count {
+    background: #e74c3c;
+    color: #fff;
+    padding: 4rpx 16rpx;
+    border-radius: 20rpx;
+    font-size: 22rpx;
+}
+
+.record-list {
+    background: #fff;
+    border-radius: 20rpx;
+    padding: 30rpx;
+    min-height: 400rpx;
+}
+
+.record-item {
+    display: flex;
+    align-items: center;
+    padding: 24rpx 0;
+    border-bottom: 1rpx solid #f1f2f6;
+}
+
+.record-dot {
+    width: 16rpx;
+    height: 16rpx;
+    background: #1abc9c;
+    border-radius: 50%;
+    margin-right: 24rpx;
+}
+
+.record-type {
+    font-size: 28rpx;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.record-time {
+    font-size: 22rpx;
+    color: #95a5a6;
+    margin-top: 4rpx;
+}
+
+.empty-tip {
+    text-align: center;
+    color: #bdc3c7;
+    padding-top: 100rpx;
+    font-size: 26rpx;
+}
+
+.action-dock {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    padding: 30rpx 40rpx;
+    display: flex;
+    gap: 20rpx;
+    box-shadow: 0 -10rpx 30rpx rgba(0, 0, 0, 0.05);
+}
+
+.btn {
+    flex: 1;
+    height: 90rpx;
+    line-height: 90rpx;
+    font-size: 30rpx;
+    font-weight: bold;
+    border-radius: 12rpx;
+}
+
+.btn-primary {
+    background: #1abc9c;
+    color: #fff;
+}
+
+.btn-secondary {
+    background: #34495e;
+    color: #fff;
+}
+
+.btn-outline {
+    border: 2rpx solid #eee;
+    background: #fff;
+    color: #666;
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    width: 650rpx;
+    padding: 40rpx;
+}
+
+.modal-title {
+    font-size: 36rpx;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 40rpx;
+}
+
+.field-label {
+    font-size: 24rpx;
+    color: #7f8c8d;
+    margin-top: 30rpx;
+    margin-bottom: 10rpx;
+}
+
+.input {
+    background: #f8f9fa;
+    height: 80rpx;
+    padding: 0 24rpx;
+    border-radius: 8rpx;
+    font-size: 28rpx;
+}
+
+.btn-group {
+    margin-top: 50rpx;
+    display: flex;
+    flex-direction: column;
+    gap: 20rpx;
+}
+
+.card {
+    background: #fff;
+    border-radius: 24rpx;
+    box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
