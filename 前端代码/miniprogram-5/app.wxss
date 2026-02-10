@@ -113,10 +113,8 @@ page {
 }
 
 .search-bar-paired {
-  /* Match the combined width of a 2-button row (excluding the middle gap). */
-  width: calc(100% - var(--layout-gap));
-  margin-left: auto;
-  margin-right: auto;
+  /* Keep for compatibility. When a page wants search aligned with a 2-button row, use full width. */
+  width: 100%;
 }
 
 .btn-group {
