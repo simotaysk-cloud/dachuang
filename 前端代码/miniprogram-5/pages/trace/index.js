@@ -45,7 +45,11 @@ Page({
 
     prepareReport(data) {
         console.log('Trace Data Received:', data)
-        const b = data.batch || {}
+        if (!data || !data.batch) {
+            console.warn('Incomplete trace data received')
+            return
+        }
+        const b = data.batch
 
         // Parse commonPairings string into array
         let pairings = []
