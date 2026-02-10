@@ -3,7 +3,6 @@
         <view class="title">{{form.id ? '编辑加工记录' : '新建加工记录'}}</view>
         <view class="desc">记录烘干、切片、包装等工厂环节</view>
     </view>
-
     <view class="card">
         <view class="section-title">信息</view>
         <view class="readonly-row" wx:if="{{form.id}}">
@@ -14,18 +13,18 @@
         <input class="input" placeholder="输入上游批次号" value="{{form.parentBatchNo}}" data-field="parentBatchNo" bindinput="onInput" />
         <view class="field-label">产出批次号 (Child Batch)</view>
         <input class="input" placeholder="留空则自动生成新批次号" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />
-        <view class="field-label">加工工艺</view>
-        <input class="input" placeholder="例如：切片、烘干、包装" value="{{form.processType}}" data-field="processType" bindinput="onInput" />
-        <view class="field-label">工厂名称</view>
-        <input class="input" placeholder="例如：同仁堂加工厂" value="{{form.factory}}" data-field="factory" bindinput="onInput" />
-        <view class="field-label">操作人</view>
-        <input class="input" placeholder="记录员姓名" value="{{form.operator}}" data-field="operator" bindinput="onInput" />
-        <view class="field-label">现场照片</view>
-        <input class="input" placeholder="图片URL" value="{{form.imageUrl}}" data-field="imageUrl" bindinput="onInput" />
+        <view class="field-label">生产线 / 工位名称</view>
+        <input class="input" placeholder="例如：1号清洗干燥线" value="{{form.lineName}}" data-field="lineName" bindinput="onInput" />
+        <view class="field-label">操作模式</view>
+        <picker bindchange="onActionModeChange" value="{{actionModeIndex}}" range="{{actionModes}}">
+            <view class="input">当前模式：{{actionModes[actionModeIndex]}}</view>
+        </picker>
+        <view class="meta" wx:if="{{actionModeIndex == 1}}" style="color: #e67e22;">
+            💡 结算模式：保存后将自动派生新批次号并扣减原库存
+        </view>
         <view class="field-label">详细说明</view>
         <textarea class="textarea" placeholder="备注信息..." value="{{form.details}}" data-field="details" bindinput="onInput" />
     </view>
-
     <view class="card">
         <view class="section-title">操作</view>
         <view class="btn-group">
@@ -35,4 +34,3 @@
         <button class="btn btn-outline" style="margin-top:20rpx;" bindtap="cancel">返回</button>
     </view>
 </view>
-

@@ -11,14 +11,20 @@ Page({
             batchNo: '',
             minCode: '',
             name: '',
-            category: '',
+            category: '根茎类',
             origin: '',
             status: 'PLANTING',
             quantity: '',
             unit: '',
             description: '',
             gs1Locked: false
-        }
+        },
+        categories: ['根茎类', '花叶类', '全草类', '饮片', '提取物', '颗粒剂', '成药/胶囊', '其他']
+    },
+
+    onCategoryChange(e) {
+        const idx = e.detail.value
+        this.setData({ 'form.category': this.data.categories[idx] })
     },
 
     onLoad(options) {

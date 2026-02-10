@@ -1,14 +1,13 @@
 spring:
   datasource:
-    # URL for H2 memory database (fallback)
-    url: jdbc:h2:mem:dachuang;DB_CLOSE_DELAY=-1;MODE=MySQL
-    username: sa
-    password: 
-    driver-class-name: org.h2.Driver
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:dachuang}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: ${DB_USER:dachuang}
+    password: ${DB_PASSWORD:Dachuang123!}
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
@@ -37,7 +36,7 @@ wx:
 app:
   blockchain:
     mode: ${APP_BLOCKCHAIN_MODE:MOCK}
-    auto-anchor-on-batch-create: ${APP_BLOCKCHAIN_AUTO_ANCHOR:true}
+    auto-anchor-on-batch-create: ${APP_BLOCKCHAIN_AUTO_ANCHOR:false}
     evm:
       rpc-url: ${EVM_RPC_URL:}
       chain-id: ${EVM_CHAIN_ID:11155111}

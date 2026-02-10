@@ -1,0 +1,31 @@
+<view class="page-container">
+  <view class="header">
+    <view class="title">批次二维码</view>
+    <view class="desc">将该二维码贴在容器/产物上，供下一工序扫码继续作业</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">溯源码（batchNo）</view>
+    <view class="code-box">{{batchNo}}</view>
+    <view class="btn-group" style="margin-top: 20rpx;">
+      <button class="btn btn-outline" bindtap="copy">复制溯源码</button>
+      <button class="btn btn-primary" bindtap="goLineWork">继续开工</button>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">二维码</view>
+    <view class="meta" wx:if="{{loading}}">生成中...</view>
+    <image class="qr" mode="aspectFit" src="{{qrSrc}}" wx:if="{{qrSrc}}" />
+    <view class="meta" wx:if="{{!qrSrc && !loading}}">暂无二维码（请检查后端是否可用）</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">下一步</view>
+    <view class="btn-group">
+      <button class="btn btn-outline" bindtap="goTrace">查看溯源档案</button>
+      <button class="btn btn-outline" bindtap="back">返回</button>
+    </view>
+  </view>
+</view>
+

@@ -34,6 +34,43 @@ Page({
         wx.navigateTo({ url: '/pages/processing-form/index' })
     },
 
+    parseBatchNoFromScanResult(raw) {
+        const s = String(raw || '').trim()
+        if (!s) return ''
+        // Prefer query param: ...?batchNo=XXX
+        const m1 = s.match(/[?&]batchNo=([^&]+)/i)
+        if (m1 && m1[1]) return decodeURIComponent(m1[1])
+        // If it's a URL-like path, take last segment.
+        if (s.startsWith('http://') || s.startsWith('https://') || s.includes('/')) {
+            const noHash = s.split('#')[0]
+            const noQuery = noHash.split('?')[0]
+            const parts = noQuery.split('/').filter(Boolean)
+            if (parts.length > 0) return decodeURIComponent(parts[parts.length - 1])
+        }
+        return s
+    },
+
+    async onScanStart() {
+        try {
+            const res = await new Promise((resolve, reject) => {
+                wx.scanCode({
+                    scanType: ['qrCode', 'barCode'],
+                    success: resolve,
+                    fail: reject
+                })
+            })
+            const raw = res?.result || ''
+            const batchNo = this.parseBatchNoFromScanResult(raw)
+            if (!batchNo) {
+                wx.showToast({ title: '未识别到批次号', icon: 'none' })
+                return
+            }
+            wx.navigateTo({ url: `/pages/line-work/index?batchNo=${encodeURIComponent(batchNo)}` })
+        } catch (err) {
+            // user canceled or failed
+        }
+    },
+
     editFromList(e) {
         const item = e.currentTarget.dataset.item
         if (!item || item.id == null) return

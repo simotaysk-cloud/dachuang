@@ -7,9 +7,9 @@ function getDefaultBaseUrl() {
     } catch (e) {
         // ignore
     }
-    // Real device preview cannot access 127.0.0.1 on PC; use LAN IP (can be overridden in login page).
-    // Real device preview cannot access 127.0.0.1 on PC; use LAN IP (can be overridden in login page).
-    return 'http://192.168.0.251:8091'
+    // Team update: Use LAN IP for real devices (requires same WiFi). 
+    // For local simulator, please use http://127.0.0.1:8091
+    return 'http://127.0.0.1:8091'
 }
 
 function normalizeRole(role) {

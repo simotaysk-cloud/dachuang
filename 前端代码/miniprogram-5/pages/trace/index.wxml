@@ -13,7 +13,6 @@
             </view>
         </view>
     </view>
-
     <!-- Query Section (Floating) - Hidden for scanned view to keep it focused -->
     <view wx:if="{{!isScanned}}" class="search-floating {{report ? 'has-report' : ''}}">
         <view class="search-bar">
@@ -23,9 +22,7 @@
             </view>
         </view>
     </view>
-
     <view wx:if="{{report}}" class="content-body animated fadeIn">
-        
         <!-- Summary Card -->
         <view class="card summary-card">
             <view class="section-title">
@@ -38,14 +35,12 @@
                 <view class="gs1-code">{{report.gs1}}</view>
             </view>
         </view>
-
         <!-- Medicinal Encyclopedia Section -->
         <view class="section-header">
             <view class="header-line"></view>
             <text class="header-text">药材百科</text>
             <view class="header-line"></view>
         </view>
-
         <view class="card wiki-card">
             <view class="wiki-section">
                 <view class="wiki-title">
@@ -54,7 +49,6 @@
                 </view>
                 <view class="wiki-content">{{report.batch.usageAdvice || '暂无服用建议'}}</view>
             </view>
-
             <view class="wiki-section">
                 <view class="wiki-title warning">
                     <text class="wiki-icon">⚠️</text>
@@ -62,7 +56,6 @@
                 </view>
                 <view class="wiki-content">{{report.batch.contraindications || '暂无禁忌说明'}}</view>
             </view>
-
             <view class="wiki-section">
                 <view class="wiki-title pairing">
                     <text class="wiki-icon">🧪</text>
@@ -72,18 +65,18 @@
                     <view class="pairing-item" wx:for="{{report.pairings}}" wx:key="index">
                         {{item}}
                     </view>
-                    <view wx:if="{{!report.pairings || report.pairings.length === 0}}">暂无相关配伍推荐</view>
+                    <view wx:if="{{!report.pairings || report.pairings.length === 0}}">
+                        暂无相关配伍推荐
+                    </view>
                 </view>
             </view>
         </view>
-
         <!-- Traceability Timeline Section -->
         <view class="section-header">
             <view class="header-line"></view>
             <text class="header-text">生命周期回溯</text>
             <view class="header-line"></view>
         </view>
-
         <view class="timeline-container">
             <view class="timeline-item {{item.isHighlight ? 'highlight' : ''}}" wx:for="{{report.timeline}}" wx:key="index">
                 <view class="item-left">
@@ -94,12 +87,12 @@
                     <view class="dot-inner">{{item.icon}}</view>
                 </view>
                 <view class="item-content card">
+                    <view class="line-badge" wx:if="{{item.lineName}}">{{item.lineName}}</view>
                     <view class="content-title">{{item.title}}</view>
                     <view class="content-detail">{{item.details}}</view>
                 </view>
             </view>
         </view>
-
         <!-- Safety Footer -->
         <view class="safety-footer">
             <view class="seal-logo">智汇 · 本草</view>
@@ -107,7 +100,6 @@
             <view class="report-id">报告唯一标识：{{report.batch.batchNo}}</view>
         </view>
     </view>
-
     <!-- Initial State -->
     <view class="initial-state" wx:if="{{!report && !loading}}">
         <view class="hero-placeholder">
@@ -116,4 +108,3 @@
         <view class="placeholder-text">每一株草本，都有它的故事</view>
     </view>
 </view>
-

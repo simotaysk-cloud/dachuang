@@ -36,7 +36,8 @@ public class ProcessingRecordService {
         if (record.getParentBatchNo() != null && !record.getParentBatchNo().isBlank()) {
             String parentNo = record.getParentBatchNo().trim();
             String childNo = record.getBatchNo();
-            Batch child = batchService.deriveBatch(parentNo, childNo, "PROCESSING", record.getProcessType(), record.getDetails());
+            Batch child = batchService.deriveBatch(parentNo, childNo, "PROCESSING", record.getProcessType(),
+                    record.getDetails());
             record.setBatchNo(child.getBatchNo());
         } else {
             batchService.getBatchByNo(record.getBatchNo());
@@ -54,6 +55,7 @@ public class ProcessingRecordService {
         existing.setBatchNo(record.getBatchNo());
         existing.setParentBatchNo(record.getParentBatchNo());
         existing.setProcessType(record.getProcessType());
+        existing.setLineName(record.getLineName());
         existing.setFactory(record.getFactory());
         existing.setDetails(record.getDetails());
         existing.setOperator(record.getOperator());
