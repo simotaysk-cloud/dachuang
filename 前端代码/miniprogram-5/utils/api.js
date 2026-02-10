@@ -19,10 +19,9 @@ function normalizeRole(role) {
 function normalizeBaseUrl(url) {
     const u = String(url || '').trim()
     if (!u) return u
-    // Upgrade legacy defaults to the new dev port (8091) to avoid the 8081 port conflict.
-    if (u === 'http://127.0.0.1:8081') return 'http://127.0.0.1:8091'
-    if (u === 'http://192.168.0.251:8081') return 'http://192.168.0.251:8091'
-    if (u.includes('192.168.31.157')) return u.replace('192.168.31.157', '192.168.0.251')
+    // Upgrade legacy defaults to the new dev port (8091).
+    // Keep host untouched (team members may use different LAN IPs).
+    if (/:8081(\/|$)/.test(u)) return u.replace(/:8081(\/|$)/, ':8091$1')
     return u
 }
 

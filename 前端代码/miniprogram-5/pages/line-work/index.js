@@ -15,8 +15,7 @@ Page({
             factory: '数字化工厂中心'
         },
         settleForm: {
-            outputType: '',
-            outputSpec: '',
+            statusLabel: '',
             lineName: '1号生产线',
             operator: '',
             factory: '数字化工厂中心'
@@ -78,7 +77,11 @@ Page({
     },
 
     openSettleDialog() {
-        this.setData({ showSettleModal: true })
+        const inferred = this.inferStatusLabel()
+        this.setData({
+            showSettleModal: true,
+            'settleForm.statusLabel': (this.data.settleForm.statusLabel || '').trim() || inferred
+        })
     },
 
     closeSettleModal() {
@@ -127,16 +130,11 @@ Page({
     },
 
     async confirmSettle() {
-        if (!this.data.settleForm.outputType) {
-            return wx.showToast({ title: '请填写产出类型/分型', icon: 'none' })
-        }
-
         try {
             wx.showLoading({ title: '正在结算分支' })
             // Settle is essentially a deriveBatch via ProcessingRecord with empty batchNo
             const steps = (this.data.sessionRecords || []).map((r) => r?.processType).filter(Boolean).join('、')
-            const spec = (this.data.settleForm.outputSpec || '').trim()
-            const settleTitle = `${this.data.settleForm.outputType}${spec ? `（${spec}）` : ''}`
+            const settleTitle = (this.data.settleForm.statusLabel || '').trim() || this.inferStatusLabel()
             const payload = {
                 parentBatchNo: this.data.batchNo,
                 batchNo: '', // Trigger derivation
@@ -155,7 +153,17 @@ Page({
             wx.navigateTo({ url: `/pages/qrcode/index?batchNo=${encodeURIComponent(String(newBatchNo))}` })
         } catch (err) {
             wx.hideLoading()
-            wx.showToast({ title: '结算失败', icon: 'none' })
+            const msg = err?.data?.message || err?.data?.data?.batchNo || '结算失败'
+            wx.showToast({ title: msg, icon: 'none' })
         }
+    },
+
+    inferStatusLabel() {
+        const steps = (this.data.sessionRecords || []).map((r) => String(r?.processType || '').trim()).filter(Boolean)
+        if (steps.length === 0) return '加工完成'
+        const last = steps[steps.length - 1]
+        if (!last) return '加工完成'
+        if (last.includes('完成') || last.includes('结算')) return last
+        return `${last}完成`
     }
 })
