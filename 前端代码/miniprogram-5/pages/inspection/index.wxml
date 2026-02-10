@@ -12,6 +12,7 @@
         </view>
         <view class="btn-group" style="margin-bottom: 20rpx;">
             <button class="btn btn-primary" bindtap="startCreate">新建质检/派生</button>
+            <button class="btn btn-outline" bindtap="refreshList">刷新列表</button>
         </view>
         <!-- 列表内容 -->
         <view class="list" wx:if="{{records && records.length > 0}}">

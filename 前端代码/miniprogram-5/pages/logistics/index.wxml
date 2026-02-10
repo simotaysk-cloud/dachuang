@@ -12,6 +12,7 @@
         </view>
         <view class="btn-group" style="margin-bottom: 20rpx;">
             <button class="btn btn-primary" bindtap="startCreateShipment">新建发运单</button>
+            <button class="btn btn-outline" bindtap="listShipments">刷新列表</button>
         </view>
         <!-- 列表内容 -->
         <view class="list" wx:if="{{shipments && shipments.length > 0}}">

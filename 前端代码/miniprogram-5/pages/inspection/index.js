@@ -15,6 +15,8 @@ Page({
             wx.showToast({ title: '无权限（农户仅可使用种植相关模块）', icon: 'none' })
             return wx.redirectTo({ url: '/pages/index/index' })
         }
+
+        this.listAll()
     },
 
     onShow() {
@@ -38,6 +40,28 @@ Page({
         const item = e.currentTarget.dataset.item
         if (!item || item.id == null) return
         wx.navigateTo({ url: `/pages/inspection-form/index?id=${encodeURIComponent(String(item.id))}` })
+    },
+
+    async listAll() {
+        this.setData({ loading: true })
+        try {
+            const res = await api.request('/api/v1/inspection')
+            this.setData({ records: res.data || [] })
+            if (!res.data || res.data.length === 0) {
+                wx.showToast({ title: '暂无记录', icon: 'none' })
+            }
+        } catch (err) {
+            console.error(err)
+            wx.showToast({ title: '加载失败', icon: 'none' })
+        } finally {
+            this.setData({ loading: false })
+        }
+    },
+
+    refreshList() {
+        this.setData({ queryNo: '' })
+        wx.removeStorageSync(LAST_QUERY_KEY)
+        this.listAll()
     },
 
     async query() {
