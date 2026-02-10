@@ -32,6 +32,9 @@ public class ProcessingRecordService {
     }
 
     public ProcessingRecord create(ProcessingRecord record) {
+        if (record == null) {
+            throw new BusinessException(400, "Invalid processing payload");
+        }
         // If a parent is provided, treat this as a potential divergence point.
         if (record.getParentBatchNo() != null && !record.getParentBatchNo().isBlank()) {
             String parentNo = record.getParentBatchNo().trim();
@@ -40,7 +43,12 @@ public class ProcessingRecordService {
                     record.getDetails());
             record.setBatchNo(child.getBatchNo());
         } else {
-            batchService.getBatchByNo(record.getBatchNo());
+            String batchNo = (record.getBatchNo() == null) ? "" : record.getBatchNo().trim();
+            if (batchNo.isBlank()) {
+                throw new BusinessException(400, "batchNo cannot be blank");
+            }
+            batchService.getBatchByNo(batchNo);
+            record.setBatchNo(batchNo);
         }
         return processingRecordRepository.save(record);
     }

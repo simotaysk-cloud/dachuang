@@ -5,7 +5,6 @@ import jakarta.persistence.Index;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Data
@@ -20,7 +19,6 @@ import lombok.*;
 })
 public class ProcessingRecord extends BaseEntity {
         @Column(nullable = false, length = 64)
-        @NotBlank(message = "batchNo cannot be blank")
         private String batchNo;
         @Column(length = 64)
         private String parentBatchNo; // 原料/上游批次号（分叉时填写）

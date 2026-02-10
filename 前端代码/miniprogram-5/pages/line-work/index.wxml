@@ -58,10 +58,8 @@
     <view class="modal-mask" wx:if="{{showSettleModal}}">
         <view class="modal card">
             <view class="modal-title">完工结算</view>
-            <view class="field-label">产出类型 / 分型（必填）</view>
-            <input class="input" placeholder="如：研磨、切片、浸出、包装" value="{{settleForm.outputType}}" data-form="settle" data-field="outputType" bindinput="onModalInput" />
-            <view class="field-label">规格（可选）</view>
-            <input class="input" placeholder="如：50ml、50g、100g" value="{{settleForm.outputSpec}}" data-form="settle" data-field="outputSpec" bindinput="onModalInput" />
+            <view class="field-label">下游状态（可选，默认自动生成）</view>
+            <input class="input" placeholder="例如：研磨完成、切片完成、包装完成" value="{{settleForm.statusLabel}}" data-form="settle" data-field="statusLabel" bindinput="onModalInput" />
             <view class="field-label">生产线名称</view>
             <input class="input" placeholder="如：2号研磨线" value="{{settleForm.lineName}}" data-form="settle" data-field="lineName" bindinput="onModalInput" />
             <view class="field-label">操作人</view>
