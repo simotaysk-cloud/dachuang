@@ -22,7 +22,7 @@
 
     <view class="card">
         <view class="section-title">记录列表</view>
-        <view class="search-bar">
+        <view class="search-bar search-bar-paired">
             <input class="input-inline" placeholder="输入ID/地块/操作/操作人查询" value="{{queryKey}}" bindinput="onQueryInput" />
             <button class="btn-small" bindtap="query">查询</button>
         </view>
