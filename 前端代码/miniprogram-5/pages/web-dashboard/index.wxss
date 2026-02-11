@@ -1,0 +1,11 @@
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+
+.list-action {
+  font-size: 28rpx;
+  color: var(--primary-color);
+  font-weight: 600;
+}

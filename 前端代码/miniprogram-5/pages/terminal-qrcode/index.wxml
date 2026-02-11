@@ -1,0 +1,72 @@
+<view class="page-container">
+  <view class="header">
+    <view class="title">末端二维码</view>
+    <view class="desc">支持全部末端批次批量生成溯源二维码，并可按原始批次筛选导出</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">筛选条件</view>
+    <input class="input" placeholder="可选：输入或扫码原始批次号" value="{{rootBatchNo}}" bindinput="onRootInput" />
+    <view class="btn-group">
+      <button class="btn btn-outline" bindtap="scanRootBatch">扫码填入</button>
+      <button class="btn btn-primary" bindtap="loadLeafBatches">加载末端批次</button>
+    </view>
+    <picker mode="selector" range="{{roots}}" range-key="batchNo" bindchange="onRootPick" wx:if="{{roots.length > 0}}">
+      <view class="picker-row" style="margin-top: 20rpx;">
+        <view class="picker-label">快速选择</view>
+        <view class="picker-value">从原始批次列表选择（留空则查询全部）</view>
+      </view>
+    </picker>
+  </view>
+
+  <view class="card">
+    <view class="section-title">末端批次列表</view>
+    <view class="meta" wx:if="{{loading}}">加载中</view>
+    <view class="empty" wx:if="{{!loading && leafRows.length === 0}}">暂无末端批次</view>
+    <view class="list" wx:if="{{leafRows.length > 0}}">
+      <view class="list-item proc-list-item" wx:for="{{leafRows}}" wx:key="batchNo">
+        <view class="list-main">
+          <view class="list-title proc-list-title">{{item.batchNo}}</view>
+          <view class="list-sub proc-list-sub">{{item.name || '-'}}</view>
+          <view class="list-meta">工序: {{item.processType || '-'}} · 产线: {{item.lineName || '-'}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">批量生成与导出</view>
+    <view class="btn-group">
+      <button class="btn btn-primary" bindtap="generateAllQrcodes" loading="{{generating}}">批量生成二维码</button>
+      <button class="btn btn-outline" bindtap="exportBatchCsv" loading="{{exporting}}">导出CSV</button>
+    </view>
+    <view class="meta">导出文件包含末端批次、追溯链接与二维码数据地址</view>
+  </view>
+
+  <view class="card" wx:if="{{qrRows.length > 0}}">
+    <view class="section-title">已生成二维码</view>
+    <view class="list">
+      <view class="list-item proc-list-item" wx:for="{{qrRows}}" wx:key="batchNo">
+        <view class="list-main">
+          <view class="list-title proc-list-title">{{item.batchNo}}</view>
+          <view class="list-sub proc-list-sub">{{item.name || '-'}}</view>
+          <view class="list-meta">工序: {{item.processType || '-'}} · 产线: {{item.lineName || '-'}}</view>
+        </view>
+        <view class="list-actions">
+          <button class="btn btn-mini btn-mini-outline" bindtap="previewQr" data-item="{{item}}">预览</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="modal-mask" wx:if="{{previewVisible}}" bindtap="closePreview">
+    <view class="modal batch-modal-center" catchtap="return">
+      <view class="modal-title">二维码预览</view>
+      <view class="code-box">{{previewBatchNo}}</view>
+      <image class="qr-preview" src="{{previewSrc}}" mode="aspectFit" />
+      <view class="btn-group" style="margin-top: 20rpx;">
+        <button class="btn btn-outline" bindtap="closePreview">关闭</button>
+      </view>
+    </view>
+  </view>
+</view>

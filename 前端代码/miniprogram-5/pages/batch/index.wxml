@@ -21,20 +21,20 @@
         </view>
         <!-- 列表内容 -->
         <view class="list" wx:if="{{batches && batches.length > 0}}">
-            <view class="list-item" wx:for="{{batches}}" wx:key="id" bindtap="editFromList" data-item="{{item}}">
+            <view class="list-item proc-list-item" wx:for="{{batches}}" wx:key="id" bindtap="editFromList" data-item="{{item}}">
                 <view class="list-main">
-                    <view class="list-title">
+                    <view class="list-title proc-list-title">
                         {{item.name}}
                         <text style="font-size:24rpx; color:#999; font-weight:normal;">
                             ({{item.batchNo}})
                         </text>
                     </view>
-                    <view class="list-sub">
+                    <view class="list-sub proc-list-sub">
                         产地: {{item.origin || '-'}} · 状态: {{item.status || '-'}}
                     </view>
                     <view class="list-meta" wx:if="{{item.quantity}}">
                         库存: {{item.quantity}}{{item.unit}}
-                        <text wx:if="{{item.gs1Locked}}">🔒</text>
+                        <text wx:if="{{item.gs1Locked}}">（已锁定）</text>
                     </view>
                 </view>
                 <view class="list-action">
@@ -46,28 +46,24 @@
         <view class="empty" wx:if="{{(!batches || batches.length === 0) && !loading}}">暂无批次数据</view>
     </view>
     <!-- QR Code Modal -->
-    <view class="modal-overlay" wx:if="{{showQrModal}}" bindtap="hideQrModal">
-        <view class="modal-content" catchtap="return">
-            <view class="modal-header">溯源二维码</view>
+    <view class="modal-mask" wx:if="{{showQrModal}}" bindtap="hideQrModal">
+        <view class="modal batch-modal-center" catchtap="return">
+            <view class="modal-title">溯源二维码</view>
             <view class="qr-container">
                 <image class="qr-image" src="data:image/png;base64,{{qrCodeBase64}}" mode="aspectFit" />
             </view>
             <view class="batch-hint">{{currentBatchNo}}</view>
-            <view class="modal-footer">
+            <view class="btn-group" style="margin-top: 20rpx;">
                 <button class="btn btn-primary" bindtap="saveQrCode">保存到相册</button>
-                <button class="btn btn-outline" style="margin-top:20rpx;" bindtap="hideQrModal">
-                    关闭
-                </button>
+                <button class="btn btn-outline" bindtap="hideQrModal">关闭</button>
             </view>
         </view>
     </view>
     <!-- 编辑/新增表单 (弹窗或折叠卡片) -->
     <!-- 编辑/新增表单 (弹窗) -->
-    <view class="modal-overlay" wx:if="{{showForm}}">
-        <view class="modal-content" style="width: 90%; max-height: 85vh; overflow-y: auto; display: block; padding: 30rpx;">
-            <view class="section-title" style="text-align: center; margin-bottom: 30rpx;">
-                {{form.id ? '批次详情' : '新建批次'}}
-            </view>
+    <view class="modal-mask" wx:if="{{showForm}}">
+        <view class="modal modal-scroll" catchtap="return">
+            <view class="modal-title">{{form.id ? '批次详情' : '新建批次'}}</view>
             <view class="readonly-row" wx:if="{{form.id}}">
                 <view class="readonly-label">内部ID</view>
                 <view class="readonly-value">#{{form.id}}</view>
@@ -95,13 +91,13 @@
                 </view>
             </view>
             <view class="meta" wx:if="{{form.gs1Locked && !form.id}}" style="color:orange;">
-                ⚠️ GS1信息已锁定，不可修改数量与单位
+                注意：GS1信息已锁定，不可修改数量与单位
             </view>
             <view class="field-label" style="margin-top:20rpx;">
                 来源凭证/图片 {{role === 'MANUFACTURER' ? '(必填)' : '(可选)'}}
             </view>
-            <view class="image-uploader" bindtap="{{form.id ? '' : 'chooseImage'}}" style="background:#f5f5f5; width:200rpx; height:200rpx; display:flex; align-items:center; justify-content:center; margin-bottom:20rpx; opacity: {{form.id ? 0.8 : 1}};">
-                <image wx:if="{{form.imageUrl}}" src="{{form.imageUrl}}" mode="aspectFill" style="width:100%; height:100%;" />
+            <view class="image-uploader" bindtap="{{form.id ? '' : 'chooseImage'}}" style="opacity: {{form.id ? 0.8 : 1}};">
+                <image wx:if="{{form.imageUrl}}" class="image-uploader-img" src="{{form.imageUrl}}" mode="aspectFill" />
                 <view wx:else style="color:#999;">{{form.id ? '无图片' : '+ 上传'}}</view>
             </view>
             <view class="field-label">备注</view>
@@ -119,7 +115,7 @@
                 </block>
             </view>
             <view wx:if="{{form.id && !form.gs1Locked}}" style="margin-top:30rpx; border-top:1rpx solid #eee; padding-top:20rpx;">
-                <button class="btn btn-warn" bindtap="lockGs1">🔒 锁定GS1 (打印贴标后)</button>
+                <button class="btn btn-warn" bindtap="lockGs1">锁定GS1 (打印贴标后)</button>
                 <view class="desc" style="text-align:center;">锁定后将无法修改数量，并生成最终条码</view>
             </view>
         </view>

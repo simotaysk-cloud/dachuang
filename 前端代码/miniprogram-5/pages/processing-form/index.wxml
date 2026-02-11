@@ -20,7 +20,7 @@
             <view class="input">当前模式：{{actionModes[actionModeIndex]}}</view>
         </picker>
         <view class="meta" wx:if="{{actionModeIndex == 1}}" style="color: #e67e22;">
-            💡 结算模式：保存后将自动派生新批次号并扣减原库存
+            提示：结算模式下，保存后将自动派生新批次号并扣减原库存
         </view>
         <view class="field-label">详细说明</view>
         <textarea class="textarea" placeholder="备注信息..." value="{{form.details}}" data-field="details" bindinput="onInput" />

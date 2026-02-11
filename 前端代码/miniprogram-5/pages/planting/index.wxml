@@ -37,12 +37,12 @@
             暂无数据，可以点击“新建记录”开始录入。
         </view>
         <view class="list" wx:if="{{records.length > 0}}">
-            <view class="list-item" wx:for="{{records}}" wx:key="id" bindtap="editFromList" data-id="{{item.id}}">
+            <view class="list-item proc-list-item" wx:for="{{records}}" wx:key="id" bindtap="editFromList" data-id="{{item.id}}">
                 <view class="list-main">
-                    <view class="list-title">
+                    <view class="list-title proc-list-title">
                         #{{item.id}} · {{item.operation || '未填写操作'}}
                     </view>
-                    <view class="list-sub">
+                    <view class="list-sub proc-list-sub">
                         批次: {{item.batchNo || '-'}} · 地块: {{item.fieldName || '-'}} · 操作人: {{item.operator || '-'}}
                     </view>
                     <view class="list-meta" wx:if="{{item.operationTimeText}}">

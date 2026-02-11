@@ -10,18 +10,22 @@
             <input class="input-inline" placeholder="输入批次号查询" value="{{queryNo}}" bindinput="onQueryInput" />
             <button class="btn-small" bindtap="query">查询</button>
         </view>
+        <view class="proc-hero">
+            <button class="btn btn-primary btn-hero" bindtap="onScanStart">扫码质检</button>
+            <view class="proc-hint">扫码填入被检批次号，提交后将生成新批次并生成新二维码</view>
+        </view>
         <view class="btn-group" style="margin-bottom: 20rpx;">
-            <button class="btn btn-primary" bindtap="startCreate">新建质检/派生</button>
+            <button class="btn btn-outline" bindtap="startCreate">手工质检</button>
             <button class="btn btn-outline" bindtap="refreshList">刷新列表</button>
         </view>
         <!-- 列表内容 -->
         <view class="list" wx:if="{{records && records.length > 0}}">
-            <view class="list-item" wx:for="{{records}}" wx:key="id" bindtap="editFromList" data-item="{{item}}">
+            <view class="list-item proc-list-item" wx:for="{{records}}" wx:key="id" bindtap="editFromList" data-item="{{item}}">
                 <view class="list-main">
-                    <view class="list-title">ID: #{{item.id}}</view>
-                    <view class="list-sub">
+                    <view class="list-title proc-list-title">ID: #{{item.id}}</view>
+                    <view class="list-sub proc-list-sub">
                         批次: {{item.batchNo || '-'}}
-                        <text wx:if="{{item.result}}">➡ 结果: {{item.result}}</text>
+                        <text wx:if="{{item.result}}"> 结果: {{item.result}}</text>
                     </view>
                     <view class="list-meta">质检员: {{item.inspector || '-'}}</view>
                 </view>

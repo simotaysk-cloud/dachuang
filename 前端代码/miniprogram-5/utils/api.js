@@ -1,11 +1,29 @@
-const config = require('./config.js')
+const DEFAULT_API_BASE_URL = 'http://192.168.1.64:8091'
+
+let config = {
+    apiBaseUrl: DEFAULT_API_BASE_URL,
+    debug: true
+}
+
+try {
+    const externalConfig = require('./config')
+    if (externalConfig && typeof externalConfig === 'object') {
+        config = {
+            ...config,
+            ...externalConfig
+        }
+    }
+} catch (err) {
+    // Keep app usable even when config.js is not packaged in dev tools.
+    console.warn('utils/config not loaded, using default apiBaseUrl')
+}
 
 function getDefaultBaseUrl() {
     try {
         const info = wx.getAppBaseInfo()
         if (info && info.platform === 'devtools') {
-            // 工具里优先使用 config 配置，如果想强制本机也可改为 127.0.0.1
-            return config.apiBaseUrl
+            // In WeChat devtools, backend usually runs on the same machine.
+            return 'http://127.0.0.1:8091'
         }
     } catch (e) {
         // ignore

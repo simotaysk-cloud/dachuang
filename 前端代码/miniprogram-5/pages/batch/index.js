@@ -43,15 +43,22 @@ Page({
     },
 
     async query() {
-        if (!this.data.queryNo) {
+        const q = String(this.data.queryNo || '').trim()
+        if (!q) {
             return this.listAll()
         }
         this.setData({ loading: true })
         try {
-            const res = await api.request(`/api/v1/batches/${this.data.queryNo}`)
-            // Result might be a single object or error
-            if (res.data) {
-                this.setData({ batches: [res.data] })
+            // Batch management only shows root (original) batches.
+            const res = await api.request('/api/v1/batches?rootOnly=true')
+            const roots = Array.isArray(res.data) ? res.data : []
+            const matched = roots.filter((item) => {
+                const idText = item && item.id != null ? String(item.id) : ''
+                const batchNo = item && item.batchNo ? String(item.batchNo) : ''
+                return idText === q || batchNo === q
+            })
+            if (matched.length > 0) {
+                this.setData({ batches: matched })
             } else {
                 this.setData({ batches: [] })
                 wx.showToast({ title: '未找到批次', icon: 'none' })
@@ -230,7 +237,7 @@ Page({
             const confirm = await new Promise((resolve) => {
                 wx.showModal({
                     title: '锁定提示',
-                    content: '⚠️ 查看/下载二维码将【永久锁定】该批次数据（数量/单位不可更改）。是否继续？',
+                    content: '注意：查看/下载二维码将【永久锁定】该批次数据（数量/单位不可更改）。是否继续？',
                     confirmText: '锁定并查看',
                     confirmColor: '#e74c3c',
                     success: (res) => resolve(res.confirm)

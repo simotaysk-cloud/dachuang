@@ -94,7 +94,14 @@ public class BlockchainService {
             return new VerifyResult(mode, expected, recorded, match, "");
         }
 
-        String onChain = evmBlockchainClient.readAnchoredHashHex(batchNo);
+        BlockchainRecord record = blockchainRecordRepository.findByBatchNo(batchNo).orElse(null);
+        String onChain = "";
+        if (record != null && record.getTxHash() != null && !record.getTxHash().isBlank()) {
+            onChain = evmBlockchainClient.readAnchoredHashFromTx(record.getTxHash());
+        }
+        if (onChain.isBlank()) {
+            onChain = evmBlockchainClient.readAnchoredHashHex(batchNo);
+        }
         boolean match = !onChain.isBlank() && expected.equalsIgnoreCase(onChain);
         return new VerifyResult(mode, expected, onChain, match, evmBlockchainClient.getContractAddress());
     }

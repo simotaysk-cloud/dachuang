@@ -5,7 +5,7 @@ const LAST_QUERY_KEY = 'processingLastQueryNo'
 
 Page({
     data: {
-        records: [], // list of processing records
+        batches: [], // list of root batches
         queryNo: '',
         loading: false
     },
@@ -82,10 +82,11 @@ Page({
     async listAll() {
         this.setData({ loading: true })
         try {
-            const res = await api.request('/api/v1/processing')
-            this.setData({ records: res.data || [] })
+            // User requested to show "Initial Batches" (Root Batches)
+            const res = await api.request('/api/v1/batches?rootOnly=true')
+            this.setData({ batches: res.data || [] })
             if (!res.data || res.data.length === 0) {
-                wx.showToast({ title: '暂无记录', icon: 'none' })
+                wx.showToast({ title: '暂无源头批次', icon: 'none' })
             }
         } catch (err) {
             console.error(err)
@@ -102,23 +103,34 @@ Page({
     },
 
     async query() {
-        if (!this.data.queryNo) return wx.showToast({ title: '请输入批次号', icon: 'none' })
+        const q = this.data.queryNo
+        if (!q) return wx.showToast({ title: '请输入批次号', icon: 'none' })
 
         this.setData({ loading: true })
         try {
-            // The API currently searches by batchNo (output) or parentBatchNo
-            // For simplicity in UI, we search by batchNo first
-            const res = await api.request(`/api/v1/processing?batchNo=${this.data.queryNo}`)
-            this.setData({ records: res.data || [] })
-            wx.setStorageSync(LAST_QUERY_KEY, this.data.queryNo)
-            if (!res.data || res.data.length === 0) {
-                wx.showToast({ title: '未找到记录', icon: 'none' })
+            // API doesn't have a fuzzy search for batches, so we try exact match first
+            // If it's a root batch, it will be in the list, but if we want to find a specific one:
+            const res = await api.request(`/api/v1/batches/${q}`)
+            if (res.data) {
+                this.setData({ batches: [res.data] })
+            } else {
+                this.setData({ batches: [] })
+                wx.showToast({ title: '未找到批次', icon: 'none' })
             }
         } catch (err) {
             console.error(err)
-            wx.showToast({ title: '查询失败', icon: 'none' })
+            // Fallback: maybe it's not found
+            this.setData({ batches: [] })
+            wx.showToast({ title: '查询失败或未找到', icon: 'none' })
         } finally {
             this.setData({ loading: false })
+            wx.setStorageSync(LAST_QUERY_KEY, q)
         }
     },
+
+    viewTrace(e) {
+        const batchNo = e.currentTarget.dataset.batch
+        if (!batchNo) return
+        wx.navigateTo({ url: `/pages/batch/trace/index?batchNo=${encodeURIComponent(batchNo)}` })
+    }
 })

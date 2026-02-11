@@ -11,46 +11,35 @@
             <button class="btn-small" bindtap="query">查询</button>
         </view>
         <!-- 核心操作区 -->
-        <view class="action-area" style="padding: 10rpx 0 30rpx; text-align: center;">
-            <button class="btn btn-primary" style="width: 90%; height: 100rpx; font-size: 36rpx; margin: 0 auto; display: flex; align-items: center; justify-content: center; padding: 0;" bindtap="onScanStart">
-                扫码开工
-            </button>
-            <view style="font-size: 24rpx; color: #999; margin-top: 10rpx;">推荐使用扫码直接进入产线作业模式</view>
+        <view class="proc-hero">
+            <button class="btn btn-primary btn-hero" bindtap="onScanStart">扫码开工</button>
+            <view class="proc-hint">推荐使用扫码直接进入产线作业模式</view>
         </view>
-        <view class="btn-group" style="margin-bottom: 20rpx; display: flex; justify-content: space-between;">
-            <button class="btn btn-outline" style="width: 48%; font-size: 28rpx;" bindtap="startCreate">
-                手工录入记录
-            </button>
-            <button class="btn btn-outline" style="width: 48%; font-size: 28rpx;" bindtap="refreshList">
-                刷新列表
-            </button>
+        <view class="btn-group" style="margin-bottom: 20rpx;">
+            <button class="btn btn-outline" bindtap="startCreate">手工录入记录</button>
+            <button class="btn btn-outline" bindtap="refreshList">刷新列表</button>
         </view>
-        <!-- 列表内容 -->
-        <view class="list" wx:if="{{records && records.length > 0}}">
-            <view class="list-item" wx:for="{{records}}" wx:key="id" style="background: #f8f9fa; border: 2rpx solid #eee; margin-bottom: 20rpx; border-radius: 12rpx; padding: 24rpx; display: flex; align-items: flex-start; justify-content: space-between;">
-                <view class="list-main" style="flex: 1;">
-                    <view class="list-title" style="font-size: 30rpx; font-weight: 500; display: flex; align-items: center;">
-                        {{item.processType || '未命名工艺'}}
-                        <text style="font-size: 22rpx; color: #999; margin-left: 10rpx; font-weight: normal;">
-                            #{{item.id}}
+        <!-- 列表内容 (源头批次) -->
+        <view class="list" wx:if="{{batches && batches.length > 0}}">
+            <view class="list-item proc-list-item" wx:for="{{batches}}" wx:key="id" bindtap="viewTrace" data-batch="{{item.batchNo}}">
+                <view class="list-main">
+                    <view class="list-title proc-list-title">
+                        {{item.name}}
+                        <text style="font-size: 24rpx; color: var(--text-sub); font-weight: normal; margin-left: 10rpx;">
+                            {{item.category}}
                         </text>
                     </view>
-                    <view class="list-sub" style="margin-top: 10rpx; color: #666; font-size: 26rpx;">
-                        原料: {{item.parentBatchNo}}
-                        <view wx:if="{{item.batchNo}}" style="margin-top: 4rpx;">
-                            ➡ 产出: {{item.batchNo}}
-                        </view>
-                    </view>
-                    <view class="list-meta" style="margin-top: 12rpx; font-size: 24rpx; color: #999;">
-                        工厂: {{item.factory || '-'}} · 操作人: {{item.operator || '-'}}
+                    <view class="list-sub proc-list-sub">
+                        <view>批次号: {{item.batchNo}}</view>
+                        <view style="margin-top: 4rpx;">产地: {{item.origin}}</view>
                     </view>
                 </view>
-                <view style="font-size: 22rpx; color: #999; display: flex; align-items: center; background: #eee; padding: 6rpx 12rpx; border-radius: 8rpx; margin-left: 20rpx; height: fit-content;">
-                    <text style="margin-right: 6rpx;">🔒</text>
-                    已锁定
+                <view class="proc-list-right">
+                    <view class="proc-list-pill">溯源 &gt;</view>
+                    <view class="proc-list-meta">{{item.quantity}} {{item.unit}}</view>
                 </view>
             </view>
         </view>
-        <view class="empty" wx:if="{{(!records || records.length === 0) && !loading}}">暂无记录</view>
+        <view class="empty" wx:if="{{(!batches || batches.length === 0) && !loading}}">暂无源头批次</view>
     </view>
 </view>

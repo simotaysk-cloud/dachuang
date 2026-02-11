@@ -14,7 +14,12 @@ import java.util.Map;
 public class DashboardStatsDTO {
     private long totalHerbTypes;
     private long totalBatches;
+    private long totalRootBatches;
+    private long totalLeafBatches;
+    private long totalTerminalQrcodes;
     private long totalProcessingRecords;
+    private long totalShipments;
+    private long totalShipmentEvents;
     private List<Map<String, Object>> originDist;
     private List<Map<String, Object>> processTypeDist;
 

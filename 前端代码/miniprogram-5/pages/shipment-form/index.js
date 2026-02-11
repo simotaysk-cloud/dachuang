@@ -5,6 +5,7 @@ const LAST_QUERY_KEY = 'shipmentLastQueryBatchNo'
 
 Page({
     data: {
+        batchLocked: false,
         form: {
             batchNo: '',
             distributorName: '',
@@ -20,26 +21,33 @@ Page({
             return wx.redirectTo({ url: '/pages/index/index' })
         }
         const batchNo = options.batchNo ? decodeURIComponent(String(options.batchNo)) : ''
+        const batchLocked = String(options.lockedBatch || '') === '1'
+        this.setData({ batchLocked })
         if (batchNo) this.setData({ 'form.batchNo': batchNo })
     },
 
     onInput(e) {
         const { field } = e.currentTarget.dataset
+        if (field === 'batchNo' && this.data.batchLocked) return
         this.setData({ [`form.${field}`]: e.detail.value })
     },
 
     async create() {
+        const batchNo = (this.data.form.batchNo || '').trim()
+        const distributorName = (this.data.form.distributorName || '').trim()
+        if (!batchNo) return wx.showToast({ title: '请先填写批次号', icon: 'none' })
+        if (!distributorName) return wx.showToast({ title: '请先填写收货方', icon: 'none' })
+
         try {
             const payload = {
-                items: [{ batchNo: this.data.form.batchNo }],
-                distributorName: this.data.form.distributorName,
+                items: [{ batchNo }],
+                distributorName,
                 carrier: this.data.form.carrier,
                 trackingNo: this.data.form.trackingNo,
                 remarks: this.data.form.remarks
             }
             await api.request('/api/v1/shipments', 'POST', payload)
-            const q = (this.data.form.batchNo || '').trim()
-            if (q) wx.setStorageSync(LAST_QUERY_KEY, q)
+            wx.setStorageSync(LAST_QUERY_KEY, batchNo)
             wx.setStorageSync(REFRESH_KEY, true)
             wx.showToast({ title: '创建成功' })
             setTimeout(() => wx.navigateBack(), 300)
@@ -52,4 +60,3 @@ Page({
         wx.navigateBack()
     }
 })
-

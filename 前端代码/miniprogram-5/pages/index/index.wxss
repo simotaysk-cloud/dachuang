@@ -33,6 +33,16 @@
   margin-bottom: 14rpx;
 }
 
+.menu-icon-dashboard {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 20rpx;
+  margin-bottom: 10rpx;
+  font-size: 28rpx;
+  background: #4f46e5;
+  color: #fff;
+}
+
 .menu-label {
   font-size: 26rpx;
   color: var(--primary-color);

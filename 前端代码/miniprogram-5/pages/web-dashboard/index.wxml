@@ -1,1 +1,122 @@
-<web-view src="{{url}}"></web-view>
+<view class="page-container">
+  <view class="header">
+    <view class="title">数据看板</view>
+    <view class="desc">展示批次、末端二维码、物流与上链关键指标</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">核心指标</view>
+    <view class="stat-grid">
+      <view class="stat-item">
+        <view class="stat-value">{{stats.totalBatches}}</view>
+        <view class="stat-label">批次总数</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{stats.totalRootBatches}}</view>
+        <view class="stat-label">原始批次</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{stats.totalLeafBatches}}</view>
+        <view class="stat-label">末端子批次</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{stats.totalTerminalQrcodes}}</view>
+        <view class="stat-label">末端二维码</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{stats.totalProcessingRecords}}</view>
+        <view class="stat-label">加工记录</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{stats.totalShipments}}</view>
+        <view class="stat-label">发运单</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{stats.totalShipmentEvents}}</view>
+        <view class="stat-label">物流事件</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{traceabilityRateText}}%</view>
+        <view class="stat-label">可追溯率</view>
+      </view>
+    </view>
+    <view class="btn-group" style="margin-top: 20rpx;">
+      <button class="btn btn-outline" bindtap="loadStats" loading="{{loading}}">刷新</button>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">完整性统计</view>
+    <view class="list">
+      <view class="list-item proc-list-item">
+        <view class="list-main">
+          <view class="list-title proc-list-title">种植</view>
+          <view class="list-sub proc-list-sub">{{stats.integrityStats.planting || 0}}</view>
+        </view>
+      </view>
+      <view class="list-item proc-list-item">
+        <view class="list-main">
+          <view class="list-title proc-list-title">加工</view>
+          <view class="list-sub proc-list-sub">{{stats.integrityStats.processing || 0}}</view>
+        </view>
+      </view>
+      <view class="list-item proc-list-item">
+        <view class="list-main">
+          <view class="list-title proc-list-title">质检</view>
+          <view class="list-sub proc-list-sub">{{stats.integrityStats.inspection || 0}}</view>
+        </view>
+      </view>
+      <view class="list-item proc-list-item">
+        <view class="list-main">
+          <view class="list-title proc-list-title">上链</view>
+          <view class="list-sub proc-list-sub">{{stats.integrityStats.blockchain || 0}}</view>
+        </view>
+      </view>
+      <view class="list-item proc-list-item">
+        <view class="list-main">
+          <view class="list-title proc-list-title">末端二维码</view>
+          <view class="list-sub proc-list-sub">{{stats.integrityStats.terminalQr || 0}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">工艺分布</view>
+    <view class="empty" wx:if="{{!stats.processTypeDist || stats.processTypeDist.length === 0}}">暂无数据</view>
+    <view class="list" wx:if="{{stats.processTypeDist && stats.processTypeDist.length > 0}}">
+      <view class="list-item proc-list-item" wx:for="{{stats.processTypeDist}}" wx:key="name">
+        <view class="list-main">
+          <view class="list-title proc-list-title">{{item.name}}</view>
+        </view>
+        <view class="list-action">{{item.value}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">产地分布</view>
+    <view class="empty" wx:if="{{!stats.originDist || stats.originDist.length === 0}}">暂无数据</view>
+    <view class="list" wx:if="{{stats.originDist && stats.originDist.length > 0}}">
+      <view class="list-item proc-list-item" wx:for="{{stats.originDist}}" wx:key="name">
+        <view class="list-main">
+          <view class="list-title proc-list-title">{{item.name || '-'}}</view>
+        </view>
+        <view class="list-action">{{item.value}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">最近上链记录</view>
+    <view class="empty" wx:if="{{!stats.recentBlockchainRecords || stats.recentBlockchainRecords.length === 0}}">暂无数据</view>
+    <view class="list" wx:if="{{stats.recentBlockchainRecords && stats.recentBlockchainRecords.length > 0}}">
+      <view class="list-item proc-list-item" wx:for="{{stats.recentBlockchainRecords}}" wx:key="txHash">
+        <view class="list-main">
+          <view class="list-title proc-list-title">{{item.batchNo}}</view>
+          <view class="list-sub proc-list-sub">{{item.txShort}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
