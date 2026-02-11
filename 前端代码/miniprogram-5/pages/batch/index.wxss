@@ -22,34 +22,17 @@
     font-weight: 600;
 }
 
-/* Modal Styling */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+/* Modal (base styles are in app.wxss) */
+.modal-scroll {
+    width: 90%;
+    max-width: none;
+    max-height: 85vh;
+    overflow-y: auto;
+    display: block;
 }
 
-.modal-content {
-    width: 80%;
-    background: #fff;
-    border-radius: 20rpx;
-    padding: 40rpx;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.modal-header {
-    font-size: 32rpx;
-    font-weight: bold;
-    margin-bottom: 30rpx;
+.batch-modal-center {
+    text-align: center;
 }
 
 .qr-container {
@@ -72,12 +55,7 @@
     margin-top: 20rpx;
     font-size: 24rpx;
     color: #7f8c8d;
-    font-family: monospace;
-}
-
-.modal-footer {
-    width: 100%;
-    margin-top: 40rpx;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 .footer-actions {

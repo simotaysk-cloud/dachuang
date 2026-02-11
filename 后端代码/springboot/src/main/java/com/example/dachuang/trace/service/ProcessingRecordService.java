@@ -40,7 +40,7 @@ public class ProcessingRecordService {
             String parentNo = record.getParentBatchNo().trim();
             String childNo = record.getBatchNo();
             Batch child = batchService.deriveBatch(parentNo, childNo, "PROCESSING", record.getProcessType(),
-                    record.getDetails());
+                    record.getDetails(), record.getLineName(), record.getOperator());
             // LOCK LOGIC: Immediately lock GS1 data for derived batches to prevent
             // tampering
             batchService.lockGs1ByBatchNo(child.getBatchNo());

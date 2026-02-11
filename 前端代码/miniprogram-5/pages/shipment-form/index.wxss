@@ -1,3 +1,7 @@
 /* pages/shipment-form/index.wxss */
 /* Common styles are in app.wxss */
 
+.input-locked {
+  background: #f5f5f5;
+  color: #666;
+}

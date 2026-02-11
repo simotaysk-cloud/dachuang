@@ -18,6 +18,8 @@ import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.request.Transaction;
 import org.web3j.protocol.core.methods.response.EthGasPrice;
 import org.web3j.protocol.core.methods.response.EthCall;
+import org.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
+import org.web3j.protocol.core.methods.response.Log;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.RawTransactionManager;
@@ -35,6 +37,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class EvmBlockchainClient {
+    private static final String ANCHORED_EVENT_TOPIC = "0xaedca9a405143e6b6f9037a03b227546ec9c40c94c17ab19633e21abd56bde82";
 
     @Value("${app.blockchain.evm.rpc-url:}")
     private String rpcUrl;
@@ -153,6 +156,60 @@ public class EvmBlockchainClient {
             } catch (Exception ignored) {
             }
         }
+    }
+
+    public String readAnchoredHashFromTx(String txHash) {
+        if (!isConfigured()) {
+            throw new BusinessException(500, "EVM blockchain is not configured (rpc-url/private-key/contract-address)");
+        }
+        if (txHash == null || txHash.isBlank()) {
+            return "";
+        }
+
+        Web3j web3j = Web3j.build(new HttpService(rpcUrl));
+        try {
+            EthGetTransactionReceipt receiptResp = web3j.ethGetTransactionReceipt(txHash).send();
+            if (receiptResp == null || receiptResp.getTransactionReceipt().isEmpty()) {
+                return "";
+            }
+
+            var receipt = receiptResp.getTransactionReceipt().get();
+            List<Log> logs = receipt.getLogs();
+            if (logs == null || logs.isEmpty()) {
+                return "";
+            }
+
+            for (Log log : logs) {
+                if (log == null) continue;
+                if (log.getAddress() == null || !log.getAddress().equalsIgnoreCase(contractAddress)) continue;
+                List<String> topics = log.getTopics();
+                if (topics == null || topics.isEmpty()) continue;
+                if (!ANCHORED_EVENT_TOPIC.equalsIgnoreCase(topics.get(0))) continue;
+
+                String hash = extractDataHashFromAnchoredEventData(log.getData());
+                if (!hash.isBlank()) return hash;
+            }
+            return "";
+        } catch (Exception e) {
+            throw new BusinessException(502, "EVM read failed (tx receipt parsing error)");
+        } finally {
+            try {
+                web3j.shutdown();
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    private static String extractDataHashFromAnchoredEventData(String data) {
+        if (data == null) return "";
+        String hex = data.startsWith("0x") ? data.substring(2) : data;
+        // Anchored(string batchNo, bytes32 dataHash, address indexed sender, uint256 timestamp)
+        // Non-indexed payload starts with:
+        // word0: string offset, word1: bytes32 dataHash, word2: timestamp ...
+        if (hex.length() < 128) return "";
+        String hashHex = hex.substring(64, 128).toLowerCase(Locale.ROOT);
+        if (hashHex.matches("^0+$")) return "";
+        return "sha256:" + hashHex;
     }
 
     private BigInteger resolveGasPrice(Web3j web3j) {

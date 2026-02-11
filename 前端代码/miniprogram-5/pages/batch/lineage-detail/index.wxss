@@ -1,0 +1,57 @@
+/* pages/batch/lineage-detail/index.wxss */
+/* This page intentionally reuses common styles from app.wxss: page-container, card, section-title, readonly-*. */
+
+.header-card {
+    align-items: center;
+    text-align: center;
+}
+
+.header-title {
+    font-size: 34rpx;
+    font-weight: 700;
+    color: var(--primary-color);
+    line-height: 1.3;
+}
+
+.header-sub {
+    margin-top: 10rpx;
+    font-size: 24rpx;
+    color: var(--text-sub);
+}
+
+.pill-row {
+    margin-top: 18rpx;
+    display: flex;
+    justify-content: center;
+}
+
+.pill {
+    display: inline-block;
+    font-size: 22rpx;
+    padding: 8rpx 18rpx;
+    border-radius: 999rpx;
+    background: rgba(24, 144, 255, 0.12);
+    color: #1890ff;
+}
+
+.mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.readonly-row:last-child {
+    margin-bottom: 0;
+}
+
+.desc-box {
+    padding: 22rpx 20rpx;
+    border: 2rpx solid var(--border-color);
+    border-radius: 16rpx;
+    background: #fff;
+}
+
+.desc-text {
+    font-size: 26rpx;
+    color: var(--text-sub);
+    line-height: 1.7;
+    word-break: break-all;
+}

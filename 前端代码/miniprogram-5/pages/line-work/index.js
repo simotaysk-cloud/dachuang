@@ -161,7 +161,7 @@ Page({
             const confirm = await new Promise((resolve) => {
                 wx.showModal({
                     title: '确认完工结算？',
-                    content: '⚠️ 警告：结算将生成新批次并【永久锁定】数据（数量/单位不可更改）。请确保所有工序已录入无误。',
+                    content: '注意：结算将生成新批次并【永久锁定】数据（数量/单位不可更改）。请确保所有工序已录入无误。',
                     confirmText: '确定锁定',
                     confirmColor: '#e74c3c',
                     success: (res) => resolve(res.confirm)

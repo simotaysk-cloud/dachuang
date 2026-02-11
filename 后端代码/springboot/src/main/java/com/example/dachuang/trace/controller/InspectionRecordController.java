@@ -39,8 +39,9 @@ public class InspectionRecordController {
                 request.getChildBatchNo(),
                 "INSPECTION",
                 request.getResult(),
-                request.getDetails()
-        );
+                request.getDetails(),
+                null,
+                null);
 
         InspectionRecord record = InspectionRecord.builder()
                 .batchNo(derived.getBatchNo())
