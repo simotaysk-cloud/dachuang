@@ -11,7 +11,7 @@ Page({
             name: '',
             phone: ''
         },
-        roles: ['ADMIN', 'FARMER', 'FACTORY', 'LOGISTICS', 'REGULATOR'],
+        roles: ['ADMIN', 'FARMER', 'MANUFACTURER', 'MERCHANT', 'FACTORY', 'LOGISTICS', 'QUALITY', 'REGULATOR'],
         showModal: false,
         isEdit: false,
         editId: null

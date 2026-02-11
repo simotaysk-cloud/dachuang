@@ -1,17 +1,15 @@
 const api = require('../../utils/api')
 
-const REMEMBER_USERNAME_KEY = 'loginRememberUsername'
-const REMEMBER_PASSWORD_KEY = 'loginRememberPassword'
+const REMEMBER_LOGIN_KEY = 'loginRememberCredentials'
 const SAVED_USERNAME_KEY = 'loginSavedUsername'
 const SAVED_PASSWORD_KEY = 'loginSavedPassword'
 
 Page({
     data: {
-        baseUrl: api.baseUrl,
         username: '',
         password: '',
-        rememberUsername: false,
-        rememberPassword: false
+        rememberLogin: false,
+        baseUrl: ''
     },
 
     onLoad() {
@@ -19,17 +17,15 @@ Page({
             const info = wx.getAppBaseInfo()
             if (info && info.platform === 'devtools') {
                 api.setBaseUrl('http://192.168.31.157:8091')
-                this.setData({ baseUrl: api.baseUrl })
             }
         } catch (e) {
             // ignore
         }
         api.init()
-        const rememberUsername = !!wx.getStorageSync(REMEMBER_USERNAME_KEY)
-        const rememberPassword = !!wx.getStorageSync(REMEMBER_PASSWORD_KEY)
-        const username = rememberUsername ? (wx.getStorageSync(SAVED_USERNAME_KEY) || '') : ''
-        const password = (rememberUsername && rememberPassword) ? (wx.getStorageSync(SAVED_PASSWORD_KEY) || '') : ''
-        this.setData({ rememberUsername, rememberPassword: rememberUsername && rememberPassword, username, password })
+        const rememberLogin = !!wx.getStorageSync(REMEMBER_LOGIN_KEY)
+        const username = rememberLogin ? (wx.getStorageSync(SAVED_USERNAME_KEY) || '') : ''
+        const password = rememberLogin ? (wx.getStorageSync(SAVED_PASSWORD_KEY) || '') : ''
+        this.setData({ rememberLogin, username, password, baseUrl: api.baseUrl })
     },
 
     onInput(e) {
@@ -38,55 +34,33 @@ Page({
         this.setData({ [field]: value })
     },
 
-    onRememberUsernameChange(e) {
-        const rememberUsername = !!e.detail.value
-        // If user disables remembering username, also disable remembering password.
-        this.setData({ rememberUsername, rememberPassword: rememberUsername ? this.data.rememberPassword : false })
-        wx.setStorageSync(REMEMBER_USERNAME_KEY, rememberUsername)
-        if (!rememberUsername) {
+    onRememberLoginChange(e) {
+        const rememberLogin = !!e.detail.value
+        this.setData({ rememberLogin })
+        wx.setStorageSync(REMEMBER_LOGIN_KEY, rememberLogin)
+        if (!rememberLogin) {
             wx.removeStorageSync(SAVED_USERNAME_KEY)
-            wx.setStorageSync(REMEMBER_PASSWORD_KEY, false)
-            wx.removeStorageSync(SAVED_PASSWORD_KEY)
-        }
-    },
-
-    onRememberPasswordChange(e) {
-        const rememberPassword = !!e.detail.value
-        // Remembering password implies remembering username.
-        if (rememberPassword && !this.data.rememberUsername) {
-            this.setData({ rememberUsername: true })
-            wx.setStorageSync(REMEMBER_USERNAME_KEY, true)
-        }
-        this.setData({ rememberPassword })
-        wx.setStorageSync(REMEMBER_PASSWORD_KEY, rememberPassword)
-        if (!rememberPassword) {
             wx.removeStorageSync(SAVED_PASSWORD_KEY)
         }
     },
 
     onBaseUrlInput(e) {
-        const url = (e.detail.value || '').trim()
-        this.setData({ baseUrl: url })
-        // Avoid breaking all requests while user is typing an incomplete URL.
-        if (/^https?:\/\//.test(url)) {
-            api.setBaseUrl(url)
+        this.setData({ baseUrl: e.detail.value || '' })
+    },
+
+    async saveBaseUrlAndCheck() {
+        const next = String(this.data.baseUrl || '').trim()
+        if (!next) {
+            wx.showToast({ title: '请输入后端URL', icon: 'none' })
+            return
         }
-    },
-
-    goIndex() {
-        wx.reLaunch({ url: '/pages/index/index' })
-    },
-
-    async checkHealth() {
+        api.setBaseUrl(next)
+        this.setData({ baseUrl: api.baseUrl })
         try {
-            wx.showLoading({ title: '检测中...' })
-            const res = await api.checkHealth({ quiet: true })
-            wx.hideLoading()
-            wx.showToast({ title: res?.data?.status ? `健康: ${res.data.status}` : '后端可用', icon: 'none' })
+            await api.checkHealth({ quiet: true })
+            wx.showToast({ title: '保存成功', icon: 'none' })
         } catch (err) {
-            wx.hideLoading()
-            const msg = (err && (err.message || err.errMsg)) ? (err.message || err.errMsg) : ''
-            wx.showToast({ title: msg.includes('domain') ? '域名未配置(合法域名)' : '无法连接后端', icon: 'none' })
+            wx.showToast({ title: '已保存，连通失败', icon: 'none' })
         }
     },
 
@@ -103,11 +77,12 @@ Page({
             wx.hideLoading()
 
             if (loginRes?.data?.token) {
-                if (this.data.rememberUsername) {
+                if (this.data.rememberLogin) {
                     wx.setStorageSync(SAVED_USERNAME_KEY, username)
-                }
-                if (this.data.rememberPassword) {
                     wx.setStorageSync(SAVED_PASSWORD_KEY, password)
+                } else {
+                    wx.removeStorageSync(SAVED_USERNAME_KEY)
+                    wx.removeStorageSync(SAVED_PASSWORD_KEY)
                 }
                 this.redirectByRole(loginRes.data.role)
             }

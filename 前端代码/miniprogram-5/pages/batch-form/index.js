@@ -1,4 +1,5 @@
 const api = require('../../utils/api')
+const { guardFeatureAccess } = require('../../utils/rbac')
 
 const REFRESH_KEY = 'batchNeedRefresh'
 
@@ -28,6 +29,7 @@ Page({
     },
 
     onLoad(options) {
+        if (!guardFeatureAccess(api.role, 'BATCH')) return
         this.setData({ role: api.role || '' })
         this.init(options || {})
     },
@@ -150,4 +152,3 @@ Page({
         wx.navigateBack()
     }
 })
-

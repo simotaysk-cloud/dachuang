@@ -1,4 +1,5 @@
 const api = require('../../utils/api')
+const { guardFeatureAccess } = require('../../utils/rbac')
 
 const LAST_BATCH_KEY = 'lastPlantingBatchNo'
 const REFRESH_KEY = 'plantingNeedRefresh'
@@ -17,6 +18,7 @@ Page({
     },
 
     onLoad() {
+        if (!guardFeatureAccess(api.role, 'PLANTING')) return
         this.init()
     },
 
