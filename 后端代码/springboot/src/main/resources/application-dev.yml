@@ -36,7 +36,7 @@ wx:
 app:
   blockchain:
     mode: ${APP_BLOCKCHAIN_MODE:MOCK}
-    auto-anchor-on-batch-create: ${APP_BLOCKCHAIN_AUTO_ANCHOR:false}
+    auto-anchor-on-batch-create: ${APP_BLOCKCHAIN_AUTO_ANCHOR:true}
     evm:
       rpc-url: ${EVM_RPC_URL:}
       chain-id: ${EVM_CHAIN_ID:11155111}
