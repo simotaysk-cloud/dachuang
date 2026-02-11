@@ -1,14 +1,16 @@
+const config = require('./config.js')
+
 function getDefaultBaseUrl() {
     try {
         const info = wx.getAppBaseInfo()
         if (info && info.platform === 'devtools') {
-            return 'http://127.0.0.1:8091'
+            // 工具里优先使用 config 配置，如果想强制本机也可改为 127.0.0.1
+            return config.apiBaseUrl
         }
     } catch (e) {
         // ignore
     }
-    // Real device preview cannot access 127.0.0.1 on PC; use LAN IP (can be overridden in login page).
-    return 'http://192.168.1.64:8091'
+    return config.apiBaseUrl
 }
 
 function normalizeRole(role) {
@@ -18,23 +20,6 @@ function normalizeRole(role) {
 function normalizeBaseUrl(url) {
     let u = String(url || '').trim()
     if (!u) return u
-    // Upgrade legacy defaults to the new dev port (8091).
-    if (/:8081(\/|$)/.test(u)) u = u.replace(/:8081(\/|$)/, ':8091$1')
-
-    if (u === 'http://192.168.0.251:8091' || u === 'http://192.168.43.176:8091') return 'http://192.168.1.64:8091'
-
-    // Replace old IPs with new IP
-    const oldIPs = ['192.168.0.251', '192.168.31.157', '192.168.43.176']
-    oldIPs.forEach(ip => {
-        if (u.includes(ip)) u = u.replace(ip, '192.168.1.64')
-    })
-
-    // Ensure port 8091 is present for development IPs if no port is specified
-    const hasPort = u.split('://')[1]?.includes(':') || (!u.includes('://') && u.includes(':'))
-    if ((u.includes('192.168.1.64') || u.includes('127.0.0.1')) && !hasPort) {
-        const ip = u.includes('192.168.1.64') ? '192.168.1.64' : '127.0.0.1'
-        u = u.replace(ip, ip + ':8091')
-    }
 
     // Ensure protocol is present
     if (u && !u.startsWith('http')) {
@@ -45,7 +30,7 @@ function normalizeBaseUrl(url) {
 }
 
 const api = {
-    baseUrl: normalizeBaseUrl(wx.getStorageSync('baseUrl') || getDefaultBaseUrl()),
+    baseUrl: normalizeBaseUrl(getDefaultBaseUrl()),
     token: wx.getStorageSync('token') || '',
     role: normalizeRole(wx.getStorageSync('role') || ''),
 

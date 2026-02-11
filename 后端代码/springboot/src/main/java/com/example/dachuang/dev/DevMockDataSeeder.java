@@ -55,6 +55,7 @@ public class DevMockDataSeeder implements CommandLineRunner {
         private final InspectionRecordRepository inspectionRecordRepository;
         private final LogisticsRecordRepository logisticsRecordRepository;
         private final ShipmentRepository shipmentRepository;
+        private final ShipmentItemRepository shipmentItemRepository;
         private final ShipmentEventRepository shipmentEventRepository;
 
         private final BatchService batchService;
@@ -90,8 +91,53 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 seedLegacyLogistics();
                 seedShipmentsAndEvents();
                 seedBlockchain();
+                seedStressTest();
 
                 log.info("Mock data seed completed.");
+        }
+
+        private void seedStressTest() {
+                log.info("Seeding stress test data...");
+                String batchA = "STRESS-BATCH-A";
+                String batchB = "STRESS-BATCH-B";
+
+                // Create batches if not exist
+                if (batchRepository.findByBatchNo(batchA).isEmpty()) {
+                        Batch b = Batch.builder().batchNo(batchA).ownerUserId(1L).name("Stress A")
+                                        .quantity(BigDecimal.valueOf(1000)).unit("kg").status("PROCESSING").build();
+                        batchService.createBatch(b);
+                }
+                if (batchRepository.findByBatchNo(batchB).isEmpty()) {
+                        Batch b = Batch.builder().batchNo(batchB).ownerUserId(1L).name("Stress B")
+                                        .quantity(BigDecimal.valueOf(1000)).unit("kg").status("PROCESSING").build();
+                        batchService.createBatch(b);
+                }
+
+                // 1. One Batch -> Multiple Shipments
+                for (int i = 0; i < 5; i++) {
+                        String shipNo = "STRESS-SH-A-" + i;
+                        if (shipmentRepository.findByShipmentNo(shipNo).isEmpty()) {
+                                Shipment s = Shipment.builder().shipmentNo(shipNo).distributorName("Dist A")
+                                                .carrier("SF").status("CREATED").build();
+                                shipmentRepository.save(s);
+                                shipmentItemRepository.save(ShipmentItem.builder().shipmentNo(shipNo).batchNo(batchA)
+                                                .quantity(BigDecimal.valueOf(10)).unit("kg").build());
+                                log.info("Created stress shipment: {}", shipNo);
+                        }
+                }
+
+                // 2. Multiple Batches -> One Shipment
+                String shipNoParams = "STRESS-SH-MIX";
+                if (shipmentRepository.findByShipmentNo(shipNoParams).isEmpty()) {
+                        Shipment s = Shipment.builder().shipmentNo(shipNoParams).distributorName("Dist Mix")
+                                        .carrier("SF").status("CREATED").build();
+                        shipmentRepository.save(s);
+                        shipmentItemRepository.save(ShipmentItem.builder().shipmentNo(shipNoParams).batchNo(batchA)
+                                        .quantity(BigDecimal.valueOf(50)).unit("kg").build());
+                        shipmentItemRepository.save(ShipmentItem.builder().shipmentNo(shipNoParams).batchNo(batchB)
+                                        .quantity(BigDecimal.valueOf(50)).unit("kg").build());
+                        log.info("Created stress mixed shipment: {}", shipNoParams);
+                }
         }
 
         private void seedUsers() {
@@ -316,7 +362,9 @@ public class DevMockDataSeeder implements CommandLineRunner {
         private CreateShipmentRequest createShipmentRequest(String batchNo, String distributorName, String carrier,
                         String trackingNo, String remarks) {
                 CreateShipmentRequest r = new CreateShipmentRequest();
-                r.setBatchNo(batchNo);
+                CreateShipmentRequest.Item item = new CreateShipmentRequest.Item();
+                item.setBatchNo(batchNo);
+                r.setItems(List.of(item));
                 r.setDistributorName(distributorName);
                 r.setCarrier(carrier);
                 r.setTrackingNo(trackingNo);
@@ -350,24 +398,36 @@ public class DevMockDataSeeder implements CommandLineRunner {
         }
 
         private void purgeDemoData() {
-                log.warn("Purging DEMO-* mock data (app.mock-data.force=true)...");
+                log.warn("Purging DEMO-* and STRESS-* mock data (app.mock-data.force=true)...");
 
                 // child tables first
                 jdbcTemplate.update("""
                                 delete from shipment_events
-                                where shipment_no in (select shipment_no from shipments where batch_no like 'DEMO-%')
+                                where shipment_no in (
+                                    select s.shipment_no from shipments s
+                                    join shipment_items si on s.shipment_no = si.shipment_no
+                                    where si.batch_no like 'DEMO-%' or si.batch_no like 'STRESS-%'
+                                )
                                 """);
-                jdbcTemplate.update("delete from shipments where batch_no like 'DEMO-%'");
-
-                jdbcTemplate.update("delete from logistics_records where batch_no like 'DEMO-%'");
-                jdbcTemplate.update("delete from inspection_records where batch_no like 'DEMO-%'");
-                jdbcTemplate.update("delete from processing_records where batch_no like 'DEMO-%'");
-                jdbcTemplate.update("delete from planting_records where batch_no like 'DEMO-%'");
+                jdbcTemplate.update(
+                                "delete from shipment_items where batch_no like 'DEMO-%' or batch_no like 'STRESS-%'");
+                jdbcTemplate.update(
+                                "delete from shipments where shipment_no not in (select shipment_no from shipment_items)");
 
                 jdbcTemplate.update(
-                                "delete from batch_lineages where parent_batch_no like 'DEMO-%' or child_batch_no like 'DEMO-%'");
-                jdbcTemplate.update("delete from blockchain_records where batch_no like 'DEMO-%'");
-                jdbcTemplate.update("delete from batches where batch_no like 'DEMO-%'");
+                                "delete from logistics_records where batch_no like 'DEMO-%' or batch_no like 'STRESS-%'");
+                jdbcTemplate.update(
+                                "delete from inspection_records where batch_no like 'DEMO-%' or batch_no like 'STRESS-%'");
+                jdbcTemplate.update(
+                                "delete from processing_records where batch_no like 'DEMO-%' or batch_no like 'STRESS-%'");
+                jdbcTemplate.update(
+                                "delete from planting_records where batch_no like 'DEMO-%' or batch_no like 'STRESS-%'");
+
+                jdbcTemplate.update(
+                                "delete from batch_lineages where parent_batch_no like 'DEMO-%' or child_batch_no like 'DEMO-%' or parent_batch_no like 'STRESS-%' or child_batch_no like 'STRESS-%'");
+                jdbcTemplate.update(
+                                "delete from blockchain_records where batch_no like 'DEMO-%' or batch_no like 'STRESS-%'");
+                jdbcTemplate.update("delete from batches where batch_no like 'DEMO-%' or batch_no like 'STRESS-%'");
 
                 // Users seeded here (keep admin/farmer managed by DataInitializer).
                 jdbcTemplate.update(
