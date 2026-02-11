@@ -1,4 +1,4 @@
-const DEFAULT_API_BASE_URL = 'http://192.168.1.64:8091'
+const DEFAULT_API_BASE_URL = 'http://192.168.31.157:8091'
 
 let config = {
     apiBaseUrl: DEFAULT_API_BASE_URL,
@@ -19,15 +19,6 @@ try {
 }
 
 function getDefaultBaseUrl() {
-    try {
-        const info = wx.getAppBaseInfo()
-        if (info && info.platform === 'devtools') {
-            // In WeChat devtools, backend usually runs on the same machine.
-            return 'http://127.0.0.1:8091'
-        }
-    } catch (e) {
-        // ignore
-    }
     return config.apiBaseUrl
 }
 
