@@ -18,7 +18,7 @@ Page({
         try {
             const info = wx.getAppBaseInfo()
             if (info && info.platform === 'devtools') {
-                api.setBaseUrl('http://127.0.0.1:8091')
+                api.setBaseUrl('http://192.168.31.157:8091')
                 this.setData({ baseUrl: api.baseUrl })
             }
         } catch (e) {

@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Random;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -27,7 +26,6 @@ public class BulkSeederService {
     private final BatchRepository batchRepository;
     private final PlantingRecordRepository plantingRecordRepository;
     private final ProcessingRecordRepository processingRecordRepository;
-    private final LogisticsRecordRepository logisticsRecordRepository;
     private final BatchLineageRepository batchLineageRepository;
     private final UserRepository userRepository;
     private final BlockchainRecordRepository blockchainRecordRepository;
@@ -144,15 +142,5 @@ public class BulkSeederService {
                 .details("通过式热风循环烘干柜")
                 .build());
 
-        // 6. Logistics
-        logisticsRecordRepository.save(LogisticsRecord.builder()
-                .batchNo(savedProc.getBatchNo())
-                .fromLocation(origin + "加工中心")
-                .toLocation("全国分销网点")
-                .trackingNo("SF" + UUID.randomUUID().toString().substring(0, 10).toUpperCase())
-                .location("转运仓库")
-                .status("IN_TRANSIT")
-                .updateTime(LocalDateTime.now().minusHours(random.nextInt(48)))
-                .build());
     }
 }

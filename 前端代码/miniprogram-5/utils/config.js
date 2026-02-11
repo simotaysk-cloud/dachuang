@@ -1,5 +1,5 @@
 const config = {
-    apiBaseUrl: 'http://127.0.0.1:8091',
+    apiBaseUrl: 'http://192.168.31.157:8091',
     debug: true
 }
 
