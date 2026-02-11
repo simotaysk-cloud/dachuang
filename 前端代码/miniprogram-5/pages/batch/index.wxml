@@ -29,9 +29,8 @@
                             ({{item.batchNo}})
                         </text>
                     </view>
-                    <view class="list-sub proc-list-sub">
-                        产地: {{item.origin || '-'}} · 状态: {{item.status || '-'}}
-                    </view>
+                        产地: {{item.origin || '-'}}
+
                     <view class="list-meta" wx:if="{{item.quantity}}">
                         库存: {{item.quantity}}{{item.unit}}
                         <text wx:if="{{item.gs1Locked}}">（已锁定）</text>
@@ -72,8 +71,7 @@
             <input class="input" placeholder="例如：根茎类" value="{{form.category}}" data-field="category" bindinput="onInput" disabled="{{!!form.id}}" />
             <view class="field-label">产地</view>
             <input class="input" placeholder="例如：吉林省抚松县" value="{{form.origin}}" data-field="origin" bindinput="onInput" disabled="{{!!form.id}}" />
-            <view class="field-label">当前状态</view>
-            <input class="input" placeholder="例如：PLANTING" value="{{form.status}}" data-field="status" bindinput="onInput" disabled="{{!!form.id}}" />
+
             <!-- 库存与GS1 -->
             <view class="sub-title" style="margin-top:20rpx;">收获重量/库存与GS1</view>
             <view class="stat-row">

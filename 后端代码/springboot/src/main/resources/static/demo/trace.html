@@ -1,8 +1,13 @@
 <!doctype html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
   <title>中药溯源查询</title>
   <style>
     :root {
@@ -16,7 +21,9 @@
       --ok: #15803d;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -59,7 +66,9 @@
     }
 
     @media (max-width: 640px) {
-      .search { grid-template-columns: 1fr; }
+      .search {
+        grid-template-columns: 1fr;
+      }
     }
 
     .input {
@@ -93,8 +102,13 @@
       color: var(--muted);
     }
 
-    .tip.ok { color: var(--ok); }
-    .tip.error { color: var(--danger); }
+    .tip.ok {
+      color: var(--ok);
+    }
+
+    .tip.error {
+      color: var(--danger);
+    }
 
     .card {
       margin-top: 12px;
@@ -117,7 +131,9 @@
     }
 
     @media (max-width: 760px) {
-      .grid { grid-template-columns: 1fr; }
+      .grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     .kv {
@@ -195,6 +211,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="container">
     <div class="header">
@@ -362,7 +379,7 @@
       appendKv(batchGrid, '药材名称', b.name);
       appendKv(batchGrid, '类别', b.category);
       appendKv(batchGrid, '产地', b.origin);
-      appendKv(batchGrid, '状态', b.status);
+
       appendKv(batchGrid, '数量', (b.quantity || b.quantity === 0) ? (b.quantity + ' ' + text(b.unit)) : '-');
       appendKv(batchGrid, '隐形防伪码', b.minCode);
       appendKv(batchGrid, 'GS1 批号', b.gs1LotNo);
@@ -376,7 +393,7 @@
         lineageBatches.forEach((node, idx) => {
           const lines = [
             '名称：' + text(node.name),
-            '状态：' + text(node.status),
+
             '产地：' + text(node.origin),
             '批次：' + text(node.batchNo)
           ];
@@ -496,4 +513,5 @@
     }
   </script>
 </body>
+
 </html>

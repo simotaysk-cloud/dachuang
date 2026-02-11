@@ -23,6 +23,7 @@
     "pages/user-mgmt/index",
     "pages/web-dashboard/index"
   ],
+  "subPackages": [],
   "window": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "Weixin",
