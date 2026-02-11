@@ -19,7 +19,6 @@
     "pages/shipment-form/index",
     "pages/security/index",
     "pages/line-work/index",
-    "pages/trace/index",
     "pages/logs/logs",
     "pages/user-mgmt/index",
     "pages/web-dashboard/index"

@@ -1,55 +1,56 @@
-/* pages/line-work/index.wxss */
-
 .steps {
-  margin-top: 18rpx;
-  border-top: 2rpx solid var(--border-color);
+  margin-top: 14rpx;
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  gap: 12rpx;
+  border-top: 2rpx solid #e8eef5;
+  padding-top: 12rpx;
 }
 
 .steps-compact {
-  border-top: none;
-  margin-top: 10rpx;
+  margin-top: 8rpx;
+  border-top: 0;
+  padding-top: 0;
 }
 
 .step {
-  padding: 22rpx 0;
-  border-bottom: 2rpx solid #f6f7f9;
+  padding: 16rpx 0;
+  border-bottom: 2rpx solid #edf2f7;
 }
 
 .step-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10rpx;
 }
 
 .step-title {
-  font-size: 30rpx;
+  font-size: 27rpx;
+  line-height: 1.35;
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--primary-color);
 }
 
 .step-sub {
-  font-size: 24rpx;
+  margin-top: 4rpx;
+  font-size: 21rpx;
   color: var(--text-sub);
-  margin-top: 6rpx;
 }
 
 .step-lock {
-  font-size: 22rpx;
-  color: #999;
-  display: flex;
-  align-items: center;
-  background: #f0f0f0;
-  padding: 6rpx 12rpx;
-  border-radius: 8rpx;
   flex: none;
+  padding: 6rpx 12rpx;
+  border-radius: 999rpx;
+  border: 2rpx solid rgba(47, 79, 111, 0.2);
+  background: rgba(47, 79, 111, 0.08);
+  color: var(--primary-color);
+  font-size: 20rpx;
 }
 
 .field-label {
-  font-size: 24rpx;
+  margin-top: 18rpx;
+  margin-bottom: 8rpx;
+  font-size: 22rpx;
   color: var(--text-sub);
-  margin-top: 24rpx;
-  margin-bottom: 10rpx;
 }

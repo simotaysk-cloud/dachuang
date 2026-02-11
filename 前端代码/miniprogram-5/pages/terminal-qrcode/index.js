@@ -1,4 +1,5 @@
 const api = require('../../utils/api')
+const { guardFeatureAccess } = require('../../utils/rbac')
 
 Page({
   data: {
@@ -16,10 +17,7 @@ Page({
   },
 
   onLoad() {
-    if (api.role === 'FARMER') {
-      wx.showToast({ title: '无权限', icon: 'none' })
-      return wx.redirectTo({ url: '/pages/index/index' })
-    }
+    if (!guardFeatureAccess(api.role, 'TERMINAL_QRCODE')) return
     this.setData({ role: api.role || '' })
     this.loadRoots()
     this.loadLeafBatches()

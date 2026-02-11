@@ -1,8 +1,7 @@
 <view class="page-container">
     <view class="header login-header">
-        <image class="login-logo" src="/assets/logo.png" mode="aspectFit" />
-        <view class="title">账号登录</view>
-        <view class="desc">商户/生产者登录</view>
+        <view class="title">智汇本草</view>
+        <view class="desc">账号登录</view>
     </view>
 
     <view class="card">
@@ -11,29 +10,23 @@
         <input class="input" placeholder="例如：admin" data-field="username" bindinput="onInput" value="{{username}}" />
         <view class="field-label">密码</view>
         <input class="input" placeholder="默认：123456" password data-field="password" bindinput="onInput" value="{{password}}" />
-        <view class="picker-row" style="margin-bottom: 18rpx;">
-            <view class="picker-label">记住账号</view>
-            <switch checked="{{rememberUsername}}" bindchange="onRememberUsernameChange" />
-        </view>
-        <view class="picker-row" style="margin-bottom: 24rpx;" wx:if="{{rememberUsername}}">
-            <view class="picker-label">记住密码（不推荐）</view>
-            <switch checked="{{rememberPassword}}" bindchange="onRememberPasswordChange" />
+        <view class="picker-row" style="margin-bottom: 24rpx;">
+            <view class="picker-label">记住账号密码</view>
+            <switch checked="{{rememberLogin}}" bindchange="onRememberLoginChange" />
         </view>
         <button class="btn btn-primary" bindtap="handleLogin">登录</button>
         <view class="meta" style="text-align:center;">登录即代表您同意《用户服务协议》</view>
     </view>
 
     <view class="card">
-        <view class="section-title">环境配置</view>
-        <view class="field-label">后端地址（Base URL）</view>
-        <input class="input" placeholder="例如：http://192.168.31.157:8091" value="{{baseUrl}}" bindinput="onBaseUrlInput" />
-        <view class="meta">
-            真机预览时 `127.0.0.1` 指向手机自身；且需要在小程序后台配置 request 合法域名（建议使用 https 域名）。
-        </view>
-        <view class="btn-group" style="margin-top: 10rpx;">
-            <button class="btn btn-outline" bindtap="goIndex">返回首页</button>
-            <button class="btn btn-primary" bindtap="checkHealth">测试连通</button>
-        </view>
+        <view class="section-title">后端URL配置</view>
+        <input
+            class="input"
+            placeholder="例如：http://192.168.31.157:8091"
+            value="{{baseUrl}}"
+            bindinput="onBaseUrlInput"
+        />
+        <button class="btn btn-primary" bindtap="saveBaseUrlAndCheck">保存并测试</button>
     </view>
 
     <view class="login-footer meta">Version 1.0.2</view>

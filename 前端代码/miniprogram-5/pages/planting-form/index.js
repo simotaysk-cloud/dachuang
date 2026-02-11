@@ -1,4 +1,5 @@
 const api = require('../../utils/api')
+const { guardFeatureAccess } = require('../../utils/rbac')
 
 const OPERATION_OPTIONS = ['播种', '施肥', '灌溉', '除草', '病虫害防治', '采收', '其他']
 const KEY_OPERATIONS = ['施肥', '灌溉', '除草', '病虫害防治', '采收', '播种']
@@ -42,6 +43,7 @@ Page({
     },
 
     onLoad(options) {
+        if (!guardFeatureAccess(api.role, 'PLANTING')) return
         this.init(options || {})
     },
 

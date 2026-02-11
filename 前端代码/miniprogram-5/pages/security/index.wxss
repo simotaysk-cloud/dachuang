@@ -1,18 +1,16 @@
-/* pages/security/index.wxss */
-
 .result-card-scroll {
   max-height: 520rpx;
   border: 2rpx solid var(--border-color);
-  border-radius: 16rpx;
-  padding: 18rpx 20rpx;
-  background: #f8f9fa;
+  border-radius: 14rpx;
+  padding: 16rpx 18rpx;
+  background: #f7fbff;
   box-sizing: border-box;
 }
 
 .result-card-text {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-size: 24rpx;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-size: 23rpx;
   color: var(--text-main);
-  line-height: 1.7;
+  line-height: 1.65;
   word-break: break-all;
 }
