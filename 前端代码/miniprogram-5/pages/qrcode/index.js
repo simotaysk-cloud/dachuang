@@ -1,4 +1,5 @@
 const api = require('../../utils/api')
+const { guardFeatureAccess } = require('../../utils/rbac')
 
 Page({
   data: {
@@ -8,10 +9,7 @@ Page({
   },
 
   onLoad(options) {
-    if (api.role === 'FARMER') {
-      wx.showToast({ title: '无权限（农户仅可使用种植相关模块）', icon: 'none' })
-      return wx.redirectTo({ url: '/pages/index/index' })
-    }
+    if (!guardFeatureAccess(api.role, 'QRCODE')) return
 
     const batchNo = options.batchNo ? decodeURIComponent(String(options.batchNo)) : ''
     if (!batchNo) {
@@ -48,7 +46,7 @@ Page({
   },
 
   goTrace() {
-    wx.navigateTo({ url: `/pages/trace/index?batchNo=${encodeURIComponent(this.data.batchNo)}` })
+    wx.navigateTo({ url: `/pages/batch/trace/index?batchNo=${encodeURIComponent(this.data.batchNo)}` })
   },
 
   back() {

@@ -144,6 +144,7 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 createUserIfMissing("factory1", "123456", "FACTORY", "李四", "13800000003");
                 createUserIfMissing("regulator1", "123456", "REGULATOR", "王五", "13800000004");
                 createUserIfMissing("logistics1", "123456", "LOGISTICS", "赵六", "13800000005");
+                createUserIfMissing("quality1", "123456", "QUALITY", "周七", "13800000006");
         }
 
         private void createUserIfMissing(String username, String password, String role, String name, String phone) {

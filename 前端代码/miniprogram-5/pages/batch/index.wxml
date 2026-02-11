@@ -37,10 +37,6 @@
                         <text wx:if="{{item.gs1Locked}}">（已锁定）</text>
                     </view>
                 </view>
-                <view class="list-action">
-                    <view class="btn-icon" catchtap="showQrCode" data-item="{{item}}">QR</view>
-                    <view class="btn-text">编辑</view>
-                </view>
             </view>
         </view>
         <view class="empty" wx:if="{{(!batches || batches.length === 0) && !loading}}">暂无批次数据</view>

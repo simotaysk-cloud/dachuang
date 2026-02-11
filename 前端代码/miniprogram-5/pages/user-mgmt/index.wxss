@@ -1,41 +1,48 @@
-/* pages/user-mgmt/index.wxss */
-
 .role-tag {
-  font-size: 20rpx;
-  padding: 6rpx 14rpx;
+  display: inline-block;
+  margin-right: 10rpx;
+  padding: 6rpx 12rpx;
   border-radius: 999rpx;
-  margin-right: 14rpx;
   border: 2rpx solid var(--border-color);
+  background: rgba(47, 79, 111, 0.05);
   color: var(--primary-color);
-  background: rgba(44, 62, 80, 0.05);
+  font-size: 19rpx;
 }
 
 .role-tag.ADMIN {
-  border-color: var(--accent-color);
-  color: var(--accent-color);
-  background: rgba(192, 57, 43, 0.06);
+  border-color: rgba(199, 70, 54, 0.32);
+  background: rgba(199, 70, 54, 0.1);
+  color: #b13d2f;
 }
 
 .role-tag.FARMER {
-  border-color: #27ae60;
-  color: #27ae60;
-  background: rgba(39, 174, 96, 0.08);
+  border-color: rgba(47, 133, 90, 0.32);
+  background: rgba(47, 133, 90, 0.1);
+  color: #216644;
 }
 
-.role-tag.FACTORY {
-  border-color: #2980b9;
-  color: #2980b9;
-  background: rgba(41, 128, 185, 0.08);
+.role-tag.FACTORY,
+.role-tag.MANUFACTURER,
+.role-tag.MERCHANT {
+  border-color: rgba(31, 74, 114, 0.3);
+  background: rgba(31, 74, 114, 0.1);
+  color: #1f4a72;
 }
 
 .role-tag.LOGISTICS {
-  border-color: #8e44ad;
-  color: #8e44ad;
-  background: rgba(142, 68, 173, 0.08);
+  border-color: rgba(42, 102, 144, 0.32);
+  background: rgba(42, 102, 144, 0.1);
+  color: #2a6690;
+}
+
+.role-tag.QUALITY {
+  border-color: rgba(15, 118, 110, 0.32);
+  background: rgba(15, 118, 110, 0.1);
+  color: #0f766e;
 }
 
 .role-tag.REGULATOR {
-  border-color: #f39c12;
-  color: #f39c12;
-  background: rgba(243, 156, 18, 0.10);
+  border-color: rgba(146, 109, 48, 0.3);
+  background: rgba(146, 109, 48, 0.1);
+  color: #8b5e34;
 }

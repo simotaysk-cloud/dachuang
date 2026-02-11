@@ -3,11 +3,10 @@
   height: 520rpx;
   margin-top: 20rpx;
   border: 2rpx solid var(--border-color);
-  border-radius: 16rpx;
-  background: #fff;
+  border-radius: 14rpx;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
 }
 
 .batch-modal-center {
   text-align: center;
 }
-

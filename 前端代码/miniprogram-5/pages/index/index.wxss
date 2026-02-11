@@ -1,58 +1,99 @@
+.home-page {
+  padding-top: 30rpx;
+}
+
+.home-header {
+  margin-bottom: 22rpx;
+}
+
+.home-card {
+  margin-bottom: 22rpx;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14rpx;
+}
+
+.card-head .section-title {
+  margin-bottom: 0;
+}
+
+.sync-badge {
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  border: 2rpx solid var(--border-color);
+  background: #f8fafc;
+  font-size: 20rpx;
+  color: var(--text-sub);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12rpx;
+}
+
+.stat-cell {
+  text-align: center;
+  padding: 12rpx 10rpx;
+  border-radius: 12rpx;
+  border: 2rpx solid var(--border-color);
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+}
+
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 30rpx;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14rpx;
 }
 
 .menu-item {
-  background: #fff;
-  height: 180rpx;
+  min-height: 172rpx;
   border-radius: 16rpx;
+  border: 2rpx solid #d6e2ed;
+  background: #f7fbff;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 2rpx solid var(--border-color);
+  padding: 14rpx 10rpx;
+  box-sizing: border-box;
 }
 
 .menu-item:active {
-  background: #f0f0f0;
+  background: #f1f7fd;
+  border-color: #d1dfeb;
 }
 
 .menu-icon {
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: 999rpx;
-  background: rgba(44, 62, 80, 0.08);
+  width: auto;
+  height: auto;
+  border: 0;
+  background: transparent;
   color: var(--primary-color);
   font-size: 34rpx;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 14rpx;
-}
-
-.menu-icon-dashboard {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 20rpx;
   margin-bottom: 10rpx;
-  font-size: 28rpx;
-  background: #4f46e5;
-  color: #fff;
 }
 
 .menu-label {
-  font-size: 26rpx;
+  font-size: 23rpx;
+  line-height: 1.4;
+  text-align: center;
   color: var(--primary-color);
-  font-weight: 500;
+  font-weight: 650;
 }
 
 .footer {
-  margin-top: 60rpx;
+  margin-top: 24rpx;
+  padding: 18rpx 0 28rpx;
   text-align: center;
-  font-size: 22rpx;
-  color: #999;
-  padding-bottom: 40rpx;
+  font-size: 21rpx;
+  color: var(--text-light);
 }

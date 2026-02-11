@@ -1,34 +1,8 @@
-/* pages/batch/index.wxss */
-
-.list-action {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 10rpx;
-}
-
-.btn-icon {
-    font-size: 20rpx;
-    background: #1abc9c;
-    color: #fff;
-    padding: 4rpx 12rpx;
-    border-radius: 6rpx;
-    font-weight: bold;
-}
-
-.btn-text {
-    font-size: 24rpx;
-    color: var(--accent-color);
-    font-weight: 600;
-}
-
-/* Modal (base styles are in app.wxss) */
 .modal-scroll {
-    width: 90%;
-    max-width: none;
-    max-height: 85vh;
+    width: 100%;
+    max-width: 700rpx;
+    max-height: 88vh;
     overflow-y: auto;
-    display: block;
 }
 
 .batch-modal-center {
@@ -38,12 +12,15 @@
 .qr-container {
     width: 400rpx;
     height: 400rpx;
-    background: #f8f9fa;
+    margin: 0 auto;
+    border-radius: 14rpx;
+    border: 2rpx solid var(--border-color);
+    background: #f7fbff;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 12rpx;
     padding: 20rpx;
+    box-sizing: border-box;
 }
 
 .qr-image {
@@ -52,15 +29,14 @@
 }
 
 .batch-hint {
-    margin-top: 20rpx;
-    font-size: 24rpx;
-    color: #7f8c8d;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    margin-top: 16rpx;
+    color: var(--text-sub);
+    font-size: 22rpx;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 .footer-actions {
+    margin-top: 24rpx;
     display: flex;
-    justify-content: space-between;
-    margin-top: 30rpx;
     gap: 10rpx;
 }

@@ -1,4 +1,5 @@
 const api = require('../../utils/api')
+const { guardFeatureAccess } = require('../../utils/rbac')
 
 Page({
     data: {
@@ -22,6 +23,7 @@ Page({
     },
 
     onLoad() {
+        if (!guardFeatureAccess(api.role, 'DASHBOARD')) return
         this.loadStats()
     },
 

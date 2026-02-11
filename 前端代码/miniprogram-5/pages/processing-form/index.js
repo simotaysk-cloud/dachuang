@@ -1,4 +1,5 @@
 const api = require('../../utils/api')
+const { guardFeatureAccess } = require('../../utils/rbac')
 
 const REFRESH_KEY = 'processingNeedRefresh'
 const LAST_QUERY_KEY = 'processingLastQueryNo'
@@ -26,10 +27,7 @@ Page({
     },
 
     onLoad(options) {
-        if (api.role === 'FARMER') {
-            wx.showToast({ title: '无权限（农户仅可使用种植相关模块）', icon: 'none' })
-            return wx.redirectTo({ url: '/pages/index/index' })
-        }
+        if (!guardFeatureAccess(api.role, 'PROCESSING')) return
         this.init(options || {})
     },
 
@@ -126,4 +124,3 @@ Page({
         wx.navigateBack()
     }
 })
-
