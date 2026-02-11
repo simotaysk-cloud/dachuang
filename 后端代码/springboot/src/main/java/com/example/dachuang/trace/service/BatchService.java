@@ -15,8 +15,14 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -119,7 +125,7 @@ public class BatchService {
     }
 
     public Batch deriveBatch(String parentBatchNo, String childBatchNo, String stage, String processType,
-            String details) {
+            String details, String lineName, String operator) {
         Batch parent = getBatchByNo(parentBatchNo);
 
         String outputNo = childBatchNo;
@@ -161,6 +167,8 @@ public class BatchService {
                     .childBatchNo(child.getBatchNo())
                     .stage(stage)
                     .processType(processType)
+                    .lineName(lineName)
+                    .operator(operator)
                     .details(details)
                     .build());
         }
@@ -170,6 +178,62 @@ public class BatchService {
 
     public List<BatchLineage> getChildren(String parentBatchNo) {
         return batchLineageRepository.findAllByParentBatchNo(parentBatchNo);
+    }
+
+    public List<String> getLeafDescendantBatchNos(String rootBatchNo) {
+        getBatchByNo(rootBatchNo);
+
+        LinkedHashSet<String> leaves = new LinkedHashSet<>();
+        Deque<String> queue = new ArrayDeque<>();
+        queue.add(rootBatchNo);
+
+        while (!queue.isEmpty()) {
+            String parent = queue.poll();
+            List<BatchLineage> children = batchLineageRepository.findAllByParentBatchNo(parent);
+            if (children.isEmpty()) {
+                if (!rootBatchNo.equals(parent)) {
+                    leaves.add(parent);
+                }
+                continue;
+            }
+
+            for (BatchLineage edge : children) {
+                if (edge.getChildBatchNo() != null && !edge.getChildBatchNo().isBlank()) {
+                    queue.add(edge.getChildBatchNo());
+                }
+            }
+        }
+
+        return new ArrayList<>(leaves);
+    }
+
+    public List<String> getAllLeafBatchNos() {
+        List<Batch> leaves = batchRepository.findLeafBatches();
+        List<String> batchNos = new ArrayList<>(leaves.size());
+        for (Batch leaf : leaves) {
+            if (leaf != null && leaf.getBatchNo() != null && !leaf.getBatchNo().isBlank()) {
+                batchNos.add(leaf.getBatchNo());
+            }
+        }
+        return batchNos;
+    }
+
+    public String getRootAncestorBatchNo(String batchNo) {
+        if (batchNo == null || batchNo.isBlank()) {
+            return "";
+        }
+        String current = batchNo;
+        Set<String> visited = new HashSet<>();
+        while (true) {
+            if (!visited.add(current)) {
+                return current;
+            }
+            BatchLineage parentEdge = getParentEdge(current);
+            if (parentEdge == null || parentEdge.getParentBatchNo() == null || parentEdge.getParentBatchNo().isBlank()) {
+                return current;
+            }
+            current = parentEdge.getParentBatchNo();
+        }
     }
 
     public BatchLineage getParentEdge(String childBatchNo) {

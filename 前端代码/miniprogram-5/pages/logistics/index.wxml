@@ -10,17 +10,21 @@
             <input class="input-inline" placeholder="输入批次号查询发运单" value="{{shipmentQueryBatchNo}}" bindinput="onShipmentQueryInput" />
             <button class="btn-small" bindtap="listShipments">查询</button>
         </view>
+        <view class="proc-hero">
+            <button class="btn btn-primary btn-hero" bindtap="onScanStart">扫码发运</button>
+            <view class="proc-hint">扫码带入批次号，填写发运信息并创建发运单</view>
+        </view>
         <view class="btn-group" style="margin-bottom: 20rpx;">
-            <button class="btn btn-primary" bindtap="startCreateShipment">新建发运单</button>
+            <button class="btn btn-outline" bindtap="startCreateShipment">手工创建</button>
             <button class="btn btn-outline" bindtap="listShipments">刷新列表</button>
         </view>
         <!-- 列表内容 -->
         <view class="list" wx:if="{{shipments && shipments.length > 0}}">
-            <view class="list-item" wx:for="{{shipments}}" wx:key="id" bindtap="viewShipmentDetail" data-item="{{item}}">
+            <view class="list-item proc-list-item" wx:for="{{shipments}}" wx:key="id" bindtap="viewShipmentDetail" data-item="{{item}}">
                 <view class="list-main">
-                    <view class="list-title">单号: {{item.shipmentNo}}</view>
-                    <view class="list-sub">
-                        批次: {{item.batchNo}} ➡ 目的地: {{item.distributorName || '-'}}
+                    <view class="list-title proc-list-title">单号: {{item.shipmentNo}}</view>
+                    <view class="list-sub proc-list-sub">
+                        批次: {{item.batchNo}} 目的地: {{item.distributorName || '-'}}
                     </view>
                     <view class="list-meta">
                         承运: {{item.carrier || '-'}} · 状态: {{item.status || '-'}}
@@ -37,17 +41,17 @@
     <view class="card" wx:if="{{currentShipment}}">
         <view class="section-title">物流轨迹: {{currentShipment.shipmentNo}}</view>
         <view class="list" wx:if="{{events && events.length > 0}}">
-            <view class="list-item" wx:for="{{events}}" wx:key="id">
+            <view class="list-item proc-list-item" wx:for="{{events}}" wx:key="id">
                 <view class="list-main">
-                    <view class="list-title">{{item.status}} @ {{item.location}}</view>
-                    <view class="list-sub">{{item.details || ''}}</view>
+                    <view class="list-title proc-list-title">
+                        {{item.status}} @ {{item.location}}
+                    </view>
+                    <view class="list-sub proc-list-sub">{{item.details || ''}}</view>
                     <view class="list-meta">{{item.eventTime}}</view>
                 </view>
             </view>
         </view>
-        <view class="section-title" style="margin-top:30rpx; border-top:1rpx solid #eee; padding-top:20rpx;">
-            添加新轨迹
-        </view>
+        <view class="section-title proc-divider-title">添加新轨迹</view>
         <input class="input" placeholder="位置 (location)" value="{{shipmentEventForm.location}}" data-field="location" bindinput="onShipmentEventInput" />
         <input class="input" placeholder="状态 (如 IN_TRANSIT, DELIVERED)" value="{{shipmentEventForm.status}}" data-field="status" bindinput="onShipmentEventInput" />
         <input class="input" placeholder="说明 (details)" value="{{shipmentEventForm.details}}" data-field="details" bindinput="onShipmentEventInput" />

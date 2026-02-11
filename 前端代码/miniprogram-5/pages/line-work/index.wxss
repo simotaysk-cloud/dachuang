@@ -1,25 +1,27 @@
 /* pages/line-work/index.wxss */
 
-.code-box {
-  font-family: monospace;
-  background: #f8f9fa;
-  border: 2rpx dashed var(--border-color);
-  border-radius: 16rpx;
-  padding: 24rpx;
-  text-align: center;
-  font-size: 30rpx;
-  letter-spacing: 2rpx;
-  margin-top: 10rpx;
-}
-
 .steps {
   margin-top: 18rpx;
   border-top: 2rpx solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.steps-compact {
+  border-top: none;
+  margin-top: 10rpx;
 }
 
 .step {
   padding: 22rpx 0;
   border-bottom: 2rpx solid #f6f7f9;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .step-title {
@@ -34,38 +36,15 @@
   margin-top: 6rpx;
 }
 
-/* Modal */
-.modal-mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.45);
+.step-lock {
+  font-size: 22rpx;
+  color: #999;
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 999;
-  padding: 30rpx;
-  box-sizing: border-box;
-}
-
-.modal {
-  width: 100%;
-  max-width: 680rpx;
-  background: var(--card-bg);
-  border-radius: 20rpx;
-  padding: 30rpx;
-  box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.15);
-  box-sizing: border-box;
-}
-
-.modal-title {
-  font-size: 34rpx;
-  font-weight: 700;
-  color: var(--primary-color);
-  text-align: center;
-  margin-bottom: 22rpx;
+  background: #f0f0f0;
+  padding: 6rpx 12rpx;
+  border-radius: 8rpx;
+  flex: none;
 }
 
 .field-label {

@@ -14,27 +14,30 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(
-        name = "batch_lineages",
-        indexes = {
+@Table(name = "batch_lineages", indexes = {
                 @Index(name = "idx_lineage_parent_batch_no", columnList = "parent_batch_no")
-        }
-)
+})
 public class BatchLineage extends BaseEntity {
 
-    @Column(nullable = false, length = 64)
-    @NotBlank(message = "parentBatchNo cannot be blank")
-    private String parentBatchNo;
+        @Column(nullable = false, length = 64)
+        @NotBlank(message = "parentBatchNo cannot be blank")
+        private String parentBatchNo;
 
-    @Column(nullable = false, unique = true, length = 64)
-    @NotBlank(message = "childBatchNo cannot be blank")
-    private String childBatchNo;
+        @Column(nullable = false, unique = true, length = 64)
+        @NotBlank(message = "childBatchNo cannot be blank")
+        private String childBatchNo;
 
-    @Column(length = 32)
-    private String stage; // e.g. PROCESSING
-    @Column(length = 64)
-    private String processType; // optional detail of divergence reason
+        @Column(length = 32)
+        private String stage; // e.g. PROCESSING
+        @Column(length = 64)
+        private String processType; // optional detail of divergence reason
 
-    @Column(length = 1000)
-    private String details;
+        @Column(length = 64)
+        private String lineName;
+
+        @Column(length = 64)
+        private String operator;
+
+        @Column(length = 1000)
+        private String details;
 }

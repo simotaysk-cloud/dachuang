@@ -24,11 +24,15 @@
                                 <view class="process-tag">{{item.processType || '加工'}}</view>
                                 <view class="node-title">
                                     {{item.childName}}
-                                    <text style="float:right; color:#999;">→</text>
+                                    <view class="detail-btn" catchtap="viewDetail" data-item="{{item}}">
+                                        详情
+                                    </view>
+                                    <text style="color:#999;">→</text>
                                 </view>
+                                <!-- Details moved to separate page -->
                                 <view class="node-sub" catchtap="copy" data-text="{{item.childBatchNo}}">
                                     {{item.childBatchNo}}
-                                    <text class="icon-copy">📄</text>
+                                    <text class="icon-copy">复制</text>
                                 </view>
                                 <view class="node-desc">{{item.details || '无详情'}}</view>
                             </view>

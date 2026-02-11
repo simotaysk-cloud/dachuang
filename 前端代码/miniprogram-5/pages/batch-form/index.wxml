@@ -37,7 +37,7 @@
             </view>
         </view>
         <view class="meta" wx:if="{{form.gs1Locked}}" style="color:orange;">
-            ⚠️ GS1信息已锁定，不可修改数量与单位
+            注意：GS1信息已锁定，不可修改数量与单位
         </view>
         <view class="field-label" style="margin-top:20rpx;">备注</view>
         <textarea class="textarea" placeholder="更多描述..." value="{{form.description}}" data-field="description" bindinput="onInput" />

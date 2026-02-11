@@ -1,63 +1,57 @@
 <view class="page-container">
     <view class="header">
-        <view class="title">质检报告/派生</view>
-        <view class="desc">发布质检报告，或按等级派生新批次</view>
+        <view class="title">{{id ? '质检记录详情' : '质检录入'}}</view>
+        <view class="desc">{{id ? '查看或修正质检信息' : '提交后将生成新批次并生成新二维码'}}</view>
     </view>
 
-    <view class="card">
-        <view class="section-title">模式选择</view>
-        <view class="chip-row">
-            <view class="chip {{mode === 'SIMPLE' ? 'chip-active' : ''}}" bindtap="switchMode" data-mode="SIMPLE">
-                普通报告
-            </view>
-            <view class="chip {{mode === 'DERIVE' ? 'chip-active' : ''}}" bindtap="switchMode" data-mode="DERIVE">
-                分级派生
-            </view>
-        </view>
-    </view>
+        <view class="card" wx:if="{{!id}}">
+            <view class="section-title">质检信息</view>
+            <view class="field-label">被检批次号</view>
+        <input class="input {{parentLocked ? 'input-locked' : ''}}" placeholder="扫码或手工输入上游批次号" value="{{createForm.parentBatchNo}}" data-field="parentBatchNo" bindinput="onCreateInput" disabled="{{parentLocked}}" />
 
-    <view class="card" wx:if="{{mode === 'SIMPLE'}}">
-        <view class="section-title">{{form.id ? '编辑报告' : '新建报告'}}</view>
-        <view class="readonly-row" wx:if="{{form.id}}">
-            <view class="readonly-label">记录ID</view>
-            <view class="readonly-value">#{{form.id}}</view>
-        </view>
-        <view class="field-label">批次号</view>
-        <input class="input" placeholder="输入被检批次号" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />
         <view class="field-label">检测结果</view>
-        <input class="input" placeholder="例如：合格、优级" value="{{form.result}}" data-field="result" bindinput="onInput" />
-        <view class="field-label">报告链接</view>
-        <input class="input" placeholder="PDF/图片 URL" value="{{form.reportUrl}}" data-field="reportUrl" bindinput="onInput" />
+        <input class="input" placeholder="例如：合格 / 优级 / 不合格" value="{{createForm.result}}" data-field="result" bindinput="onCreateInput" />
+
+        <view class="field-label">报告链接（可选）</view>
+        <input class="input" placeholder="PDF/图片 URL" value="{{createForm.reportUrl}}" data-field="reportUrl" bindinput="onCreateInput" />
+
         <view class="field-label">质检员</view>
-        <input class="input" placeholder="姓名" value="{{form.inspector}}" data-field="inspector" bindinput="onInput" />
+        <input class="input" placeholder="姓名" value="{{createForm.inspector}}" data-field="inspector" bindinput="onCreateInput" />
+
+        <view class="field-label">备注说明（可选）</view>
+        <textarea class="textarea" placeholder="备注信息..." value="{{createForm.details}}" data-field="details" bindinput="onCreateInput" />
+
         <view class="btn-group">
-            <button class="btn btn-primary" bindtap="save">发布/保存</button>
-            <button class="btn btn-warn" wx:if="{{form.id}}" bindtap="remove">撤回</button>
+            <button class="btn btn-primary" bindtap="submitAndGenQr">提交并生成二维码</button>
+            <button class="btn btn-outline" bindtap="cancel">返回</button>
         </view>
     </view>
 
-    <view class="card" wx:if="{{mode === 'DERIVE'}}">
-        <view class="section-title">分级派生</view>
-        <view class="field-label">上游批次号</view>
-        <input class="input" placeholder="原料批次" value="{{deriveForm.parentBatchNo}}" data-field="parentBatchNo" bindinput="onDeriveInput" />
-        <view class="field-label">派生新批次号</view>
-        <input class="input" placeholder="留空自动生成" value="{{deriveForm.childBatchNo}}" data-field="childBatchNo" bindinput="onDeriveInput" />
-        <view class="field-label">结论/等级</view>
-        <input class="input" placeholder="例如：GRADE_A" value="{{deriveForm.result}}" data-field="result" bindinput="onDeriveInput" />
-        <view class="field-label">报告/凭证链接</view>
-        <input class="input" placeholder="URL" value="{{deriveForm.reportUrl}}" data-field="reportUrl" bindinput="onDeriveInput" />
-        <view class="field-label">质检员</view>
-        <input class="input" placeholder="姓名" value="{{deriveForm.inspector}}" data-field="inspector" bindinput="onDeriveInput" />
-        <view class="field-label">备注说明</view>
-        <textarea class="textarea" placeholder="分级理由..." value="{{deriveForm.details}}" data-field="details" bindinput="onDeriveInput" />
-        <view class="btn-group">
-            <button class="btn btn-primary" bindtap="derive">派生并发布</button>
+    <view class="card" wx:if="{{id}}">
+        <view class="section-title">记录信息</view>
+        <view class="readonly-row">
+            <view class="readonly-label">记录ID</view>
+            <view class="readonly-value">#{{record.id}}</view>
         </view>
-    </view>
+        <view class="readonly-row">
+            <view class="readonly-label">批次号</view>
+            <view class="readonly-value">{{record.batchNo}}</view>
+        </view>
 
-    <view class="card">
-        <view class="section-title">返回</view>
-        <button class="btn btn-outline" bindtap="cancel">返回列表</button>
+        <view class="field-label">检测结果</view>
+        <input class="input" placeholder="例如：合格 / 优级 / 不合格" value="{{record.result}}" data-field="result" bindinput="onRecordInput" />
+
+        <view class="field-label">报告链接（可选）</view>
+        <input class="input" placeholder="PDF/图片 URL" value="{{record.reportUrl}}" data-field="reportUrl" bindinput="onRecordInput" />
+
+        <view class="field-label">质检员</view>
+        <input class="input" placeholder="姓名" value="{{record.inspector}}" data-field="inspector" bindinput="onRecordInput" />
+
+        <view class="btn-group">
+            <button class="btn btn-primary" bindtap="viewQr">查看二维码</button>
+            <button class="btn btn-outline" bindtap="saveRecord">保存修改</button>
+        </view>
+        <button class="btn btn-warn" style="margin-top:20rpx;" bindtap="revokeRecord">撤回记录</button>
+        <button class="btn btn-outline" style="margin-top:20rpx;" bindtap="cancel">返回</button>
     </view>
 </view>
-

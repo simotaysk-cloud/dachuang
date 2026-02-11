@@ -14,7 +14,8 @@ public class InspectionDeriveRequest {
     private String result;
 
     private String reportUrl;
+
+    @NotBlank(message = "inspector cannot be blank")
     private String inspector;
     private String details;
 }
-
