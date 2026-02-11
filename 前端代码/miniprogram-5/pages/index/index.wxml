@@ -19,7 +19,7 @@
   <view class="card">
     <view class="section-title">环境配置</view>
     <view class="field-label">后端地址（Base URL）</view>
-    <input class="input" placeholder="例如：http://127.0.0.1:8091" value="{{baseUrl}}" bindinput="onBaseUrlInput" />
+    <input class="input" placeholder="例如：http://192.168.31.157:8091" value="{{baseUrl}}" bindinput="onBaseUrlInput" />
     <view class="btn-group">
       <button class="btn btn-primary" bindtap="checkHealth">刷新状态</button>
       <button class="btn btn-outline" bindtap="goLogin">账号登录</button>

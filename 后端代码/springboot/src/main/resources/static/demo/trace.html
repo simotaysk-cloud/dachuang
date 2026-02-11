@@ -238,11 +238,6 @@
     </div>
 
     <div class="card">
-      <h2 class="card-title">发运单及轨迹事件</h2>
-      <div id="shipmentsList" class="list"></div>
-    </div>
-
-    <div class="card">
       <h2 class="card-title">区块链存证</h2>
       <div id="blockchainGrid" class="grid"></div>
       <div id="txLinkWrap" style="margin-top:10px;"></div>
@@ -357,11 +352,10 @@
       const processingList = byId('processingList');
       const inspectionList = byId('inspectionList');
       const logisticsList = byId('logisticsList');
-      const shipmentsList = byId('shipmentsList');
       const blockchainGrid = byId('blockchainGrid');
       const txLinkWrap = byId('txLinkWrap');
 
-      [batchGrid, lineageList, plantingList, processingList, inspectionList, logisticsList, shipmentsList, blockchainGrid, txLinkWrap].forEach(clearNode);
+      [batchGrid, lineageList, plantingList, processingList, inspectionList, logisticsList, blockchainGrid, txLinkWrap].forEach(clearNode);
 
       const b = data.batch || {};
       appendKv(batchGrid, '批次号', b.batchNo);
@@ -444,38 +438,6 @@
             '终点：' + text(r.toLocation),
             '物流单号：' + text(r.trackingNo)
           ]);
-        });
-      }
-
-      const shipments = Array.isArray(data.shipmentsWithEvents) ? data.shipmentsWithEvents : [];
-      if (shipments.length === 0) {
-        appendEmpty(shipmentsList, '无发运单记录');
-      } else {
-        shipments.forEach((s) => {
-          const shipment = s.shipment || {};
-          const events = Array.isArray(s.events) ? s.events : [];
-
-          const lines = [
-            '发运单号：' + text(shipment.shipmentNo),
-            '收货方：' + text(shipment.distributorName),
-            '承运商：' + text(shipment.carrier),
-            '运单号：' + text(shipment.trackingNo),
-            '状态：' + text(shipment.status),
-            '备注：' + text(shipment.remarks),
-            '创建时间：' + formatTime(shipment.createdAt)
-          ];
-
-          if (events.length === 0) {
-            lines.push('轨迹事件：无');
-          } else {
-            const eventLines = events.map((e, idx) => {
-              return (idx + 1) + '. ' + formatTime(e.eventTime) + ' | ' + text(e.location) + ' | ' + text(e.status) + (e.details ? (' | ' + e.details) : '');
-            });
-            lines.push('轨迹事件：');
-            lines.push(eventLines.join('\n'));
-          }
-
-          appendItem(shipmentsList, '发运单', lines);
         });
       }
 

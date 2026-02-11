@@ -79,7 +79,8 @@ public class BlockchainService {
     }
 
     public BlockchainRecord getRecord(String batchNo) {
-        return blockchainRecordRepository.findByBatchNo(batchNo).orElse(null);
+        BlockchainRecord r = blockchainRecordRepository.findByBatchNo(batchNo).orElse(null);
+        return normalizeForDisplay(r);
     }
 
     public VerifyResult verifyOnChain(String batchNo, String data) {
@@ -121,5 +122,53 @@ public class BlockchainService {
 
     public record VerifyResult(String mode, String expectedHash, String onChainHash, boolean match,
             String contractAddress) {
+    }
+
+    public BlockchainRecord normalizeForDisplay(BlockchainRecord record) {
+        if (record == null) {
+            return null;
+        }
+
+        BlockchainRecord view = BlockchainRecord.builder()
+                .batchNo(record.getBatchNo())
+                .txHash(record.getTxHash())
+                .dataHash(record.getDataHash())
+                .mode(record.getMode())
+                .txUrl(record.getTxUrl())
+                .build();
+        view.setId(record.getId());
+        view.setCreatedAt(record.getCreatedAt());
+        view.setUpdatedAt(record.getUpdatedAt());
+
+        if (!BlockchainMode.EVM.name().equalsIgnoreCase(view.getMode())) {
+            return view;
+        }
+
+        EvmBlockchainClient.TxQueryResult tx = evmBlockchainClient.queryTransaction(view.getTxHash());
+        switch (tx.state()) {
+            case CONFIRMED:
+                return view;
+            case PENDING:
+                view.setMode("EVM_PENDING");
+                view.setTxUrl("");
+                return view;
+            case FAILED:
+                view.setMode("EVM_FAILED");
+                view.setTxUrl("");
+                return view;
+            case NOT_FOUND:
+                view.setMode("EVM_NOT_FOUND");
+                view.setTxUrl("");
+                return view;
+            case INVALID_HASH:
+                view.setMode("EVM_INVALID");
+                view.setTxUrl("");
+                return view;
+            case UNVERIFIED:
+            default:
+                view.setMode("EVM_UNVERIFIED");
+                view.setTxUrl("");
+                return view;
+        }
     }
 }

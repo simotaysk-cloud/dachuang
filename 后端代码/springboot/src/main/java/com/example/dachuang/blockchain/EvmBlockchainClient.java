@@ -19,6 +19,7 @@ import org.web3j.protocol.core.methods.request.Transaction;
 import org.web3j.protocol.core.methods.response.EthGasPrice;
 import org.web3j.protocol.core.methods.response.EthCall;
 import org.web3j.protocol.core.methods.response.EthGetTransactionReceipt;
+import org.web3j.protocol.core.methods.response.EthTransaction;
 import org.web3j.protocol.core.methods.response.Log;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.http.HttpService;
@@ -106,6 +107,52 @@ public class EvmBlockchainClient {
             return new AnchorResult(txHash, txUrl, dataHashHex);
         } catch (Exception e) {
             throw new BusinessException(502, "EVM tx failed");
+        } finally {
+            try {
+                web3j.shutdown();
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    public TxQueryResult queryTransaction(String txHash) {
+        if (txHash == null || txHash.isBlank()) {
+            return new TxQueryResult(TxState.INVALID_HASH, false, false, "");
+        }
+        String normalized = txHash.trim();
+        if (!normalized.matches("^0x[0-9a-fA-F]{64}$")) {
+            return new TxQueryResult(TxState.INVALID_HASH, false, false, "");
+        }
+        if (!isConfigured()) {
+            return new TxQueryResult(TxState.UNVERIFIED, false, false, "");
+        }
+
+        Web3j web3j = Web3j.build(new HttpService(rpcUrl));
+        try {
+            EthTransaction txResp = web3j.ethGetTransactionByHash(normalized).send();
+            if (txResp == null || txResp.getTransaction().isEmpty()) {
+                return new TxQueryResult(TxState.NOT_FOUND, false, false, normalized);
+            }
+
+            var tx = txResp.getTransaction().get();
+            boolean mined = tx.getBlockHash() != null && !tx.getBlockHash().isBlank()
+                    && tx.getBlockNumber() != null;
+
+            EthGetTransactionReceipt receiptResp = web3j.ethGetTransactionReceipt(normalized).send();
+            boolean receiptPresent = receiptResp != null && receiptResp.getTransactionReceipt().isPresent();
+            boolean success = false;
+            if (receiptPresent) {
+                var receipt = receiptResp.getTransactionReceipt().get();
+                String status = receipt.getStatus();
+                success = "0x1".equalsIgnoreCase(status) || "1".equals(status);
+            }
+
+            if (!receiptPresent || !mined) {
+                return new TxQueryResult(TxState.PENDING, true, false, normalized);
+            }
+            return new TxQueryResult(success ? TxState.CONFIRMED : TxState.FAILED, true, success, normalized);
+        } catch (Exception e) {
+            return new TxQueryResult(TxState.UNVERIFIED, false, false, normalized);
         } finally {
             try {
                 web3j.shutdown();
@@ -260,5 +307,17 @@ public class EvmBlockchainClient {
     }
 
     public record AnchorResult(String txHash, String txUrl, String dataHash) {
+    }
+
+    public enum TxState {
+        CONFIRMED,
+        FAILED,
+        PENDING,
+        NOT_FOUND,
+        INVALID_HASH,
+        UNVERIFIED
+    }
+
+    public record TxQueryResult(TxState state, boolean found, boolean success, String txHash) {
     }
 }
