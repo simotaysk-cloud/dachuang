@@ -1,4 +1,5 @@
 const api = require('../../../utils/api')
+const { normalizeRole, guardFeatureAccess } = require('../../../utils/rbac')
 
 Page({
     data: {
@@ -15,7 +16,13 @@ Page({
     },
 
     onLoad() {
-        // No special load needed
+        if (!guardFeatureAccess(api.role, 'BATCH')) return
+        const role = normalizeRole(api.role)
+        if (role !== 'ADMIN' && role !== 'MANUFACTURER' && role !== 'FACTORY') {
+            wx.showToast({ title: '无权限', icon: 'none' })
+            wx.reLaunch({ url: '/pages/index/index' })
+            return
+        }
     },
 
     onInput(e) {

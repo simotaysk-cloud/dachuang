@@ -1,11 +1,19 @@
 .stat-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16rpx;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12rpx;
+}
+
+.stat-grid .stat-item {
+  min-width: 0;
 }
 
 .list-action {
-  font-size: 28rpx;
-  color: var(--primary-color);
+  font-size: 24rpx;
   font-weight: 600;
+  color: var(--primary-color);
+  padding: 4rpx 10rpx;
+  border-radius: 999rpx;
+  border: 2rpx solid var(--border-color);
+  background: #f5f8fc;
 }

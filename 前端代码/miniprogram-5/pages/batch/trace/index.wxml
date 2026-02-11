@@ -1,47 +1,40 @@
-<view class="page-container">
-    <view class="header">
+<view class="page-container trace-page">
+    <view class="header trace-header">
         <view class="title">批次溯源图谱</view>
         <view class="desc">当前节点：{{currentBatchNo}}</view>
     </view>
-    <view class="tree-container">
-        <!-- Root Node -->
-        <view class="node-wrapper">
-            <view class="node root">
-                <view class="node-content">
-                    <view class="node-title">{{rootBatch.name || '未知名称'}}</view>
-                    <view class="node-sub">{{rootBatch.batchNo}}</view>
-                    <view class="tag success">{{rootBatch.status}}</view>
+
+    <view class="card trace-card">
+        <view class="section-title">当前批次</view>
+        <view class="trace-root">
+            <view class="trace-root-title">{{rootBatch.name || '未知名称'}}</view>
+            <view class="trace-root-batch" bindtap="copy" data-text="{{rootBatch.batchNo}}">
+                {{rootBatch.batchNo || '-'}}
+            </view>
+            <view class="trace-root-status">{{rootBatch.status || '未知状态'}}</view>
+        </view>
+    </view>
+
+    <view class="card trace-card">
+        <view class="section-title">下游节点</view>
+        <view class="empty-tree" wx:if="{{!tree || tree.length === 0}}">暂无后续加工记录</view>
+
+        <view class="trace-timeline" wx:if="{{tree && tree.length > 0}}">
+            <view class="trace-item" wx:for="{{tree}}" wx:key="childBatchNo" bindtap="traceChild" data-batch="{{item.childBatchNo}}">
+                <view class="trace-item-head">
+                    <view class="process-tag">{{item.processType || '加工'}}</view>
+                    <view class="detail-btn" catchtap="viewDetail" data-item="{{item}}">详情</view>
                 </view>
+
+                <view class="trace-item-title">{{item.childName || '-'}}</view>
+
+                <view class="trace-item-batch" catchtap="copy" data-text="{{item.childBatchNo}}">
+                    {{item.childBatchNo || '-'}}
+                    <text class="icon-copy">复制</text>
+                </view>
+
+                <view class="trace-item-desc">{{item.details || '无详情'}}</view>
             </view>
-            <!-- Recursive Children -->
-            <view class="children" wx:if="{{tree && tree.length > 0}}">
-                <view class="connector-v"></view>
-                <block wx:for="{{tree}}" wx:key="childBatchNo">
-                    <view class="child-branch">
-                        <view class="connector-h"></view>
-                        <view class="node child" bindtap="traceChild" data-batch="{{item.childBatchNo}}">
-                            <view class="node-content">
-                                <view class="process-tag">{{item.processType || '加工'}}</view>
-                                <view class="node-title">
-                                    {{item.childName}}
-                                    <view class="detail-btn" catchtap="viewDetail" data-item="{{item}}">
-                                        详情
-                                    </view>
-                                    <text style="color:#999;">→</text>
-                                </view>
-                                <!-- Details moved to separate page -->
-                                <view class="node-sub" catchtap="copy" data-text="{{item.childBatchNo}}">
-                                    {{item.childBatchNo}}
-                                    <text class="icon-copy">复制</text>
-                                </view>
-                                <view class="node-desc">{{item.details || '无详情'}}</view>
-                            </view>
-                        </view>
-                        <!-- Support deeper levels if needed, for now 1 level deep demo -->
-                    </view>
-                </block>
-            </view>
-            <view class="empty-tree" wx:else>暂无后续加工记录</view>
         </view>
     </view>
 </view>

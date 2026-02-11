@@ -1,4 +1,5 @@
 const api = require('../../../utils/api')
+const { guardFeatureAccess } = require('../../../utils/rbac')
 
 Page({
     data: {
@@ -9,6 +10,7 @@ Page({
     },
 
     onLoad(options) {
+        if (!guardFeatureAccess(api.role, 'BATCH')) return
         if (options.batchNo) {
             this.setData({ currentBatchNo: options.batchNo })
             this.loadData(options.batchNo)

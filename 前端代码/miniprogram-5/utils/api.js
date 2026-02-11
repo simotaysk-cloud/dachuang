@@ -1,4 +1,5 @@
 const DEFAULT_API_BASE_URL = 'http://192.168.31.157:8091'
+const BASE_URL_STORAGE_KEY = 'baseUrl'
 
 let config = {
     apiBaseUrl: DEFAULT_API_BASE_URL,
@@ -22,6 +23,14 @@ function getDefaultBaseUrl() {
     return config.apiBaseUrl
 }
 
+function getStoredBaseUrl() {
+    try {
+        return wx.getStorageSync(BASE_URL_STORAGE_KEY) || ''
+    } catch (err) {
+        return ''
+    }
+}
+
 function normalizeRole(role) {
     return String(role || '').trim().toUpperCase()
 }
@@ -39,7 +48,7 @@ function normalizeBaseUrl(url) {
 }
 
 const api = {
-    baseUrl: normalizeBaseUrl(getDefaultBaseUrl()),
+    baseUrl: normalizeBaseUrl(getStoredBaseUrl() || getDefaultBaseUrl() || DEFAULT_API_BASE_URL),
     token: wx.getStorageSync('token') || '',
     role: normalizeRole(wx.getStorageSync('role') || ''),
 
@@ -49,8 +58,9 @@ const api = {
 
     setBaseUrl(url) {
         const u = normalizeBaseUrl(url)
+        if (!u) return
         this.baseUrl = u
-        wx.setStorageSync('baseUrl', u)
+        wx.setStorageSync(BASE_URL_STORAGE_KEY, u)
     },
 
     setToken(token) {

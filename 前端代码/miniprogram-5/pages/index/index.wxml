@@ -1,80 +1,83 @@
-<view class="page-container">
-  <view class="header">
+<view class="page-container home-page">
+  <view class="header home-header">
     <view class="title">智汇本草</view>
     <view class="desc">中药材全过程溯源管理系统</view>
   </view>
-  <view class="card">
-    <view class="section-title">系统状态</view>
-    <view class="stat-row">
-      <view class="stat-item">
+
+  <view class="card home-card">
+    <view class="card-head">
+      <view class="section-title">概览</view>
+    </view>
+    <view class="stats-grid">
+      <view class="stat-cell">
         <view class="stat-value">{{healthStatus}}</view>
-        <view class="stat-label">服务健康</view>
+        <view class="stat-label">服务状态</view>
       </view>
-      <view class="stat-item">
+      <view class="stat-cell">
         <view class="stat-value">{{token ? '已登录' : '未登录'}}</view>
         <view class="stat-label">身份认证</view>
       </view>
     </view>
   </view>
-  <view class="card">
-    <view class="section-title">环境配置</view>
-    <view class="field-label">后端地址（Base URL）</view>
-    <input class="input" placeholder="例如：http://192.168.31.157:8091" value="{{baseUrl}}" bindinput="onBaseUrlInput" />
+
+  <view class="card home-card">
+    <view class="section-title">后端URL配置</view>
+    <input
+      class="input"
+      placeholder="例如：http://192.168.31.157:8091"
+      value="{{baseUrl}}"
+      bindinput="onBaseUrlInput"
+    />
     <view class="btn-group">
-      <button class="btn btn-primary" bindtap="checkHealth">刷新状态</button>
-      <button class="btn btn-outline" bindtap="goLogin">账号登录</button>
+      <button class="btn btn-primary" bindtap="saveBaseUrlAndCheck">保存并测试</button>
     </view>
   </view>
-  <view class="card">
+
+  <view class="card home-card">
     <view class="section-title">功能入口</view>
     <view class="menu-grid">
-      <view class="menu-item" bindtap="navTo" data-url="/pages/batch/index">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/batch/index" wx:if="{{menuAccess.batch}}">
         <view class="menu-icon">批</view>
         <view class="menu-label">批次管理</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/planting/index" wx:if="{{role !== 'MANUFACTURER'}}">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/planting/index" wx:if="{{menuAccess.planting}}">
         <view class="menu-icon">种</view>
         <view class="menu-label">种植录入</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/processing/index" wx:if="{{role !== 'FARMER'}}">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/processing/index" wx:if="{{menuAccess.processing}}">
         <view class="menu-icon">加</view>
-        <view class="menu-label">加工登记</view>
+        <view class="menu-label">加工处理</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/logistics/index" wx:if="{{role !== 'FARMER' && role !== 'MANUFACTURER'}}">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/logistics/index" wx:if="{{menuAccess.logistics}}">
         <view class="menu-icon">物</view>
         <view class="menu-label">物流追踪</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/inspection/index" wx:if="{{role !== 'FARMER' && role !== 'MANUFACTURER'}}">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/inspection/index" wx:if="{{menuAccess.inspection}}">
         <view class="menu-icon">检</view>
         <view class="menu-label">质检中心</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/security/index" wx:if="{{role !== 'FARMER' && role !== 'MANUFACTURER'}}">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/security/index" wx:if="{{menuAccess.security}}">
         <view class="menu-icon">防</view>
         <view class="menu-label">安全防伪</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/trace/index" wx:if="{{role !== 'FARMER' && role !== 'MANUFACTURER'}}">
-        <view class="menu-icon">溯</view>
-        <view class="menu-label">溯源查询</view>
-      </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/terminal-qrcode/index" wx:if="{{role !== 'FARMER' && role !== 'MANUFACTURER'}}">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/terminal-qrcode/index" wx:if="{{menuAccess.terminalQrcode}}">
         <view class="menu-icon">码</view>
         <view class="menu-label">末端二维码</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/web-dashboard/index" wx:if="{{role === 'ADMIN'}}">
-        <view class="menu-icon menu-icon-dashboard">看</view>
+      <view class="menu-item" bindtap="navTo" data-url="/pages/web-dashboard/index" wx:if="{{menuAccess.dashboard}}">
+        <view class="menu-icon">看</view>
         <view class="menu-label">数据看板</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/logs/logs" wx:if="{{role !== 'FARMER'}}">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/logs/logs" wx:if="{{menuAccess.logs}}">
         <view class="menu-icon">志</view>
         <view class="menu-label">操作日志</view>
       </view>
-      <view class="menu-item" bindtap="navTo" data-url="/pages/user-mgmt/index" wx:if="{{role === 'ADMIN'}}">
+      <view class="menu-item" bindtap="navTo" data-url="/pages/user-mgmt/index" wx:if="{{menuAccess.userMgmt}}">
         <view class="menu-icon">用</view>
         <view class="menu-label">用户管理</view>
       </view>
     </view>
   </view>
-  <view class="footer">
-    <text>© 2026 大创比赛 - 云智本草团队</text>
-  </view>
+
+  <view class="footer">© 2026 云智本草团队</view>
 </view>

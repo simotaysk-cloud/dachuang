@@ -1,19 +1,79 @@
-<view class="page-container">
-  <view class="header">
+<view class="page-container log-page">
+  <view class="header log-header">
     <view class="title">操作日志</view>
-    <view class="desc">开发期：查看小程序本地日志</view>
+    <view class="desc">全流程时间线</view>
   </view>
-
-  <view class="card">
-    <view class="section-title">最近日志</view>
-    <view class="empty" wx:if="{{!logs || logs.length === 0}}">暂无日志</view>
-    <view class="list" wx:if="{{logs && logs.length > 0}}">
-      <view class="list-item proc-list-item" wx:for="{{logs}}" wx:key="timeStamp" wx:for-item="log">
-        <view class="list-main">
-          <view class="list-title proc-list-title">#{{index + 1}}</view>
-          <view class="list-sub proc-list-sub">{{log.date}}</view>
-        </view>
+  <view class="card log-card">
+    <view class="card-head">
+      <view class="section-title">概览</view>
+      <view class="sync-badge">同步 {{lastSyncAt}}</view>
+    </view>
+    <view class="stats-grid">
+      <view class="stat-cell">
+        <view class="stat-value">{{stats.total}}</view>
+        <view class="stat-label">总条数</view>
       </view>
+      <view class="stat-cell">
+        <view class="stat-value">{{stats.batch}}</view>
+        <view class="stat-label">批次</view>
+      </view>
+      <view class="stat-cell">
+        <view class="stat-value">{{stats.planting}}</view>
+        <view class="stat-label">种植</view>
+      </view>
+      <view class="stat-cell">
+        <view class="stat-value">{{stats.processing}}</view>
+        <view class="stat-label">加工</view>
+      </view>
+      <view class="stat-cell">
+        <view class="stat-value">{{stats.inspection}}</view>
+        <view class="stat-label">质检</view>
+      </view>
+      <view class="stat-cell">
+        <view class="stat-value">{{stats.logistics}}</view>
+        <view class="stat-label">物流</view>
+      </view>
+    </view>
+  </view>
+  <view class="card log-card">
+    <view class="section-title">筛选</view>
+    <view class="filter-top-row">
+      <view class="filter-select">
+        <view class="filter-label">模块</view>
+        <picker range="{{filterOptions}}" value="{{filterIndex}}" bindchange="onFilterChange">
+          <view class="filter-value">{{filterOptions[filterIndex]}}</view>
+        </picker>
+      </view>
+      <button class="btn-refresh" loading="{{refreshing}}" bindtap="reload">刷新</button>
+    </view>
+    <view class="search-group">
+      <input class="search-input" placeholder="输入批次号或关键词" value="{{keyword}}" bindinput="onKeywordInput" />
+      <view class="search-actions">
+        <button class="search-btn search-btn-primary" bindtap="search">查询</button>
+        <button class="search-btn search-btn-muted" bindtap="clearSearch">清空</button>
+      </view>
+    </view>
+  </view>
+  <view class="card log-card">
+    <view class="section-title">明细</view>
+    <view class="empty" wx:if="{{loading}}">正在加载...</view>
+    <view class="empty" wx:if="{{!loading && (!logs || logs.length === 0)}}">暂无日志</view>
+    <view class="timeline" wx:if="{{!loading && logs && logs.length > 0}}">
+      <view class="log-item mod-{{item.module.toLowerCase()}}" wx:for="{{logs}}" wx:key="id" wx:for-item="item" bindtap="openDetail" data-id="{{item.id}}">
+        <view class="log-top">
+          <text class="log-title">{{item.title}}</text>
+          <text class="log-tag">{{item.moduleLabel}}</text>
+        </view>
+        <view class="log-meta">{{item.timeText}}</view>
+        <view class="log-sub">批次：{{item.batchNo}}  操作人：{{item.operator}}</view>
+      </view>
+    </view>
+  </view>
+  <view class="mask" wx:if="{{detailVisible}}" bindtap="closeDetail">
+    <view class="detail-modal" catchtap="noop">
+      <view class="section-title">日志详情</view>
+      <view class="detail-text">{{detailText}}</view>
+      <button class="btn btn-primary" bindtap="closeDetail" style="margin-top: 18rpx;">关闭</button>
     </view>
   </view>
 </view>

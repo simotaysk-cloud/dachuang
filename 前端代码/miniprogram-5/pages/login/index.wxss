@@ -1,18 +1,19 @@
-/* pages/login/index.wxss */
 .login-header {
   text-align: center;
+  margin-bottom: 20rpx;
 }
 
-.login-logo {
-  width: 140rpx;
-  height: 140rpx;
-  margin: 10rpx auto 24rpx;
-  display: block;
+.login-header .title {
+  font-size: 42rpx;
+}
+
+.login-header .desc {
+  margin-top: 10rpx;
 }
 
 .login-footer {
-  margin-top: 10rpx;
+  margin-top: 12rpx;
   text-align: center;
-  padding-bottom: 40rpx;
+  padding-bottom: 30rpx;
+  color: var(--text-light);
 }
-
