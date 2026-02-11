@@ -53,7 +53,6 @@ public class DevMockDataSeeder implements CommandLineRunner {
         private final PlantingRecordRepository plantingRecordRepository;
         private final ProcessingRecordRepository processingRecordRepository;
         private final InspectionRecordRepository inspectionRecordRepository;
-        private final LogisticsRecordRepository logisticsRecordRepository;
         private final ShipmentRepository shipmentRepository;
         private final ShipmentItemRepository shipmentItemRepository;
         private final ShipmentEventRepository shipmentEventRepository;
@@ -88,7 +87,6 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 seedPlantingRecords();
                 seedProcessingRecords();
                 seedInspectionBranching();
-                seedLegacyLogistics();
                 seedShipmentsAndEvents();
                 seedBlockchain();
                 seedStressTest();
@@ -296,28 +294,6 @@ public class DevMockDataSeeder implements CommandLineRunner {
                                 .build());
                 jdbcTemplate.update("update inspection_records set created_at = ? where batch_no = ?",
                                 baseTime, INSP_B_REWORK_BATCH_NO);
-        }
-
-        private void seedLegacyLogistics() {
-                logisticsRecordRepository.save(LogisticsRecord.builder()
-                                .batchNo(INSP_A_GRADE_A_BATCH_NO)
-                                .fromLocation("甘肃-岷县仓")
-                                .toLocation("兰州中转仓")
-                                .trackingNo("LEGACY-TRACK-0001")
-                                .location("甘肃-岷县仓")
-                                .status("已出库")
-                                .updateTime(LocalDateTime.of(2026, 2, 7, 9, 10))
-                                .build());
-
-                logisticsRecordRepository.save(LogisticsRecord.builder()
-                                .batchNo(INSP_A_GRADE_A_BATCH_NO)
-                                .fromLocation("甘肃-岷县仓")
-                                .toLocation("兰州中转仓")
-                                .trackingNo("LEGACY-TRACK-0001")
-                                .location("兰州中转仓")
-                                .status("到站")
-                                .updateTime(LocalDateTime.of(2026, 2, 7, 18, 30))
-                                .build());
         }
 
         private void seedShipmentsAndEvents() {
