@@ -1,0 +1,13 @@
+.qr-preview {
+  width: 100%;
+  height: 520rpx;
+  margin-top: 20rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 16rpx;
+  background: #fff;
+}
+
+.batch-modal-center {
+  text-align: center;
+}
+

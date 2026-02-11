@@ -8,10 +8,10 @@
     <view class="section-title">最近日志</view>
     <view class="empty" wx:if="{{!logs || logs.length === 0}}">暂无日志</view>
     <view class="list" wx:if="{{logs && logs.length > 0}}">
-      <view class="list-item" wx:for="{{logs}}" wx:key="timeStamp" wx:for-item="log">
+      <view class="list-item proc-list-item" wx:for="{{logs}}" wx:key="timeStamp" wx:for-item="log">
         <view class="list-main">
-          <view class="list-title">#{{index + 1}}</view>
-          <view class="list-sub">{{log.date}}</view>
+          <view class="list-title proc-list-title">#{{index + 1}}</view>
+          <view class="list-sub proc-list-sub">{{log.date}}</view>
         </view>
       </view>
     </view>

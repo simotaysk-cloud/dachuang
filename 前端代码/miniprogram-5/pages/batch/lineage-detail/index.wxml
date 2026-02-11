@@ -1,0 +1,46 @@
+<view class="page-container">
+    <view class="card header-card">
+        <view class="header-title">{{info.childName || '未知名称'}}</view>
+        <view class="header-sub">
+            批次号：<text class="mono">{{info.childBatchNo || '-'}}</text>
+        </view>
+        <view class="pill-row">
+            <view class="pill">{{info.stage || '未知阶段'}}</view>
+        </view>
+    </view>
+
+    <view class="card">
+        <view class="section-title">加工信息</view>
+        <view class="readonly-row">
+            <view class="readonly-label">工艺类型</view>
+            <view class="readonly-value">{{info.processType || '-'}}</view>
+        </view>
+        <view class="readonly-row">
+            <view class="readonly-label">生产产线</view>
+            <view class="readonly-value">{{info.lineName || '-'}}</view>
+        </view>
+        <view class="readonly-row">
+            <view class="readonly-label">操作人员</view>
+            <view class="readonly-value">{{info.operator || '-'}}</view>
+        </view>
+        <view class="readonly-row">
+            <view class="readonly-label">操作时间</view>
+            <view class="readonly-value">{{info.createdAtFormatted || '-'}}</view>
+        </view>
+    </view>
+
+    <view class="card">
+        <view class="section-title">详细描述</view>
+        <view class="desc-box">
+            <text class="desc-text">{{info.details || '暂无描述'}}</text>
+        </view>
+    </view>
+
+    <view class="card">
+        <view class="section-title">来源信息</view>
+        <view class="readonly-row">
+            <view class="readonly-label">父批次号</view>
+            <view class="readonly-value mono">{{info.parentBatchNo || '-'}}</view>
+        </view>
+    </view>
+</view>

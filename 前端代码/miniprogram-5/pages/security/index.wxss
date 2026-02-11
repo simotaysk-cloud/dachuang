@@ -1,1 +1,18 @@
 /* pages/security/index.wxss */
+
+.result-card-scroll {
+  max-height: 520rpx;
+  border: 2rpx solid var(--border-color);
+  border-radius: 16rpx;
+  padding: 18rpx 20rpx;
+  background: #f8f9fa;
+  box-sizing: border-box;
+}
+
+.result-card-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 24rpx;
+  color: var(--text-main);
+  line-height: 1.7;
+  word-break: break-all;
+}

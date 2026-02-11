@@ -13,13 +13,13 @@
 
         <view class="empty" wx:if="{{!users || users.length === 0}}">暂无用户</view>
         <view class="list" wx:if="{{users && users.length > 0}}">
-            <view class="list-item" wx:for="{{users}}" wx:key="id">
+            <view class="list-item proc-list-item" wx:for="{{users}}" wx:key="id">
                 <view class="list-main">
-                    <view class="list-title">
+                    <view class="list-title proc-list-title">
                         <text class="role-tag {{item.role}}">{{item.role}}</text>
                         {{item.username}}
                     </view>
-                    <view class="list-sub">昵称: {{item.nickname || '-'}}</view>
+                    <view class="list-sub proc-list-sub">昵称: {{item.nickname || '-'}}</view>
                     <view class="list-meta">姓名: {{item.name || '-'}} · 电话: {{item.phone || '-'}}</view>
                 </view>
                 <view class="list-actions">
@@ -32,7 +32,7 @@
 
     <view class="modal-mask" wx:if="{{showModal}}">
         <view class="modal">
-            <view class="section-title">{{isEdit ? '编辑用户' : '新增用户'}}</view>
+            <view class="modal-title">{{isEdit ? '编辑用户' : '新增用户'}}</view>
             <view class="field-label">用户名</view>
             <input class="input" placeholder="用户名" value="{{form.username}}" data-field="username" bindinput="onInput" disabled="{{isEdit}}" />
             <view class="field-label">密码</view>

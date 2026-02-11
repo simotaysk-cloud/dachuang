@@ -15,6 +15,15 @@ Page({
     },
 
     onLoad() {
+        try {
+            const info = wx.getAppBaseInfo()
+            if (info && info.platform === 'devtools') {
+                api.setBaseUrl('http://127.0.0.1:8091')
+                this.setData({ baseUrl: api.baseUrl })
+            }
+        } catch (e) {
+            // ignore
+        }
         api.init()
         const rememberUsername = !!wx.getStorageSync(REMEMBER_USERNAME_KEY)
         const rememberPassword = !!wx.getStorageSync(REMEMBER_PASSWORD_KEY)

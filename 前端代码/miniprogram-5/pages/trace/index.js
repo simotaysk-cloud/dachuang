@@ -93,7 +93,7 @@ Page({
                     time: r.createdAt,
                     timeDisplay: formatTime(r.createdAt),
                     details: `${r.fieldName} | 操作人: ${r.operator}\n${r.details}`,
-                    icon: '🌱',
+                    icon: '种',
                     imageUrl: r.imageUrl
                 })
             })
@@ -110,7 +110,7 @@ Page({
                     time: r.createdAt,
                     timeDisplay: formatTime(r.createdAt),
                     details: `${r.factory} | 操作人: ${r.operator}\n${r.details}`,
-                    icon: '⚙️',
+                    icon: '加',
                     imageUrl: r.imageUrl
                 })
             })
@@ -126,7 +126,7 @@ Page({
                     time: r.createdAt,
                     timeDisplay: formatTime(r.createdAt),
                     details: `结论: ${r.result} | 质检员: ${r.inspector}`,
-                    icon: '🛡️',
+                    icon: '检',
                     isHighlight: true
                 })
             })
@@ -144,7 +144,7 @@ Page({
                             time: e.eventTime,
                             timeDisplay: formatTime(e.eventTime),
                             details: `位置: ${e.location} | 状态: ${e.status}`,
-                            icon: '🚚'
+                            icon: '物'
                         })
                     })
                 }

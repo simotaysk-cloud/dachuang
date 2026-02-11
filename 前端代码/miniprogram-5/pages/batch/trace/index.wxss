@@ -27,6 +27,23 @@
     font-size: 30rpx;
     font-weight: 600;
     color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.detail-btn {
+    padding: 10rpx 20rpx;
+    /* Increase hit area */
+    background: #f0f0f0;
+    border-radius: 30rpx;
+    font-size: 22rpx;
+    margin-left: 20rpx;
+    margin-right: auto;
+    /* Push away from right arrow */
+    z-index: 10;
+    /* Ensure on top */
+    color: #666;
 }
 
 .node-sub {
@@ -34,6 +51,12 @@
     color: #666;
     margin-top: 6rpx;
     font-family: monospace;
+}
+
+.icon-copy {
+    margin-left: 10rpx;
+    font-size: 22rpx;
+    color: #999;
 }
 
 .node-desc {

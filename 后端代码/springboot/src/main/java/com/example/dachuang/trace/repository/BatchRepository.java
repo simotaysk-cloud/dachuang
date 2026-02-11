@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.List;
 import java.util.Map;
 
 public interface BatchRepository extends JpaRepository<Batch, Long> {
@@ -18,6 +17,15 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
 
     @Query("SELECT b FROM Batch b WHERE b.batchNo NOT IN (SELECT bl.childBatchNo FROM BatchLineage bl)")
     List<Batch> findRootBatches();
+
+    @Query("SELECT b FROM Batch b WHERE b.batchNo NOT IN (SELECT bl.parentBatchNo FROM BatchLineage bl)")
+    List<Batch> findLeafBatches();
+
+    @Query("SELECT COUNT(b) FROM Batch b WHERE b.batchNo NOT IN (SELECT bl.childBatchNo FROM BatchLineage bl)")
+    long countRootBatches();
+
+    @Query("SELECT COUNT(b) FROM Batch b WHERE b.batchNo NOT IN (SELECT bl.parentBatchNo FROM BatchLineage bl)")
+    long countLeafBatches();
 
     @Query("SELECT COUNT(DISTINCT b.name) FROM Batch b")
     long countDistinctHerbNames();

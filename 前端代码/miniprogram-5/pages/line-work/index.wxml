@@ -6,7 +6,7 @@
     <!-- 手动输入入口 -->
     <view class="card" wx:if="{{!batchNo}}">
         <view class="section-title">手工录入批次</view>
-        <view class="desc" style="margin-bottom: 30rpx;">请输入完整的溯源批次号进入作业模式</view>
+        <view class="proc-hint" style="margin-bottom: 30rpx; margin-top: 0;">请输入完整的溯源批次号进入作业模式</view>
         <input class="input" placeholder="例如：BATCH2023..." bindinput="onManualInput" />
         <button class="btn btn-primary" bindtap="submitManualBatch">开始作业</button>
     </view>
@@ -23,18 +23,13 @@
             <view class="section-title">本次已录入工序</view>
             <view class="meta">共 {{sessionRecords.length}} 条</view>
             <view class="empty" wx:if="{{sessionRecords.length === 0}}">请点击“添加工序”开始记录</view>
-            <view class="steps" wx:if="{{sessionRecords.length > 0}}" style="border-top: none; margin-top: 10rpx;">
-                <view class="step-item" wx:for="{{sessionRecords}}" wx:key="id" style="background: #f8f9fa; border: 2rpx solid #eee; border-radius: 12rpx; padding: 24rpx; margin-bottom: 20rpx; display: flex; align-items: center; justify-content: space-between;">
+            <view class="steps steps-compact" wx:if="{{sessionRecords.length > 0}}">
+                <view class="step-item proc-list-item" wx:for="{{sessionRecords}}" wx:key="id">
                     <view>
-                        <view class="step-title" style="font-size: 30rpx; font-weight: 500;">
-                            {{item.processType || '-'}}
-                        </view>
-                        <view class="step-sub" style="font-size: 24rpx; color: #999; margin-top: 8rpx;">
-                            {{item.operator || '-'}} · {{item.lineName || '-'}}
-                        </view>
+                        <view class="step-title">{{item.processType || '-'}}</view>
+                        <view class="step-sub">{{item.operator || '-'}} · {{item.lineName || '-'}}</view>
                     </view>
-                    <view style="font-size: 22rpx; color: #999; display: flex; align-items: center; background: #eee; padding: 6rpx 12rpx; border-radius: 8rpx;">
-                        <text style="margin-right: 6rpx;">🔒</text>
+                    <view class="step-lock">
                         已锁定
                     </view>
                 </view>
@@ -52,7 +47,7 @@
         </view>
         <!-- Add Step Modal -->
         <view class="modal-mask" wx:if="{{showAddModal}}">
-            <view class="modal card">
+            <view class="modal">
                 <view class="modal-title">添加工序</view>
                 <view class="field-label">工艺名称</view>
                 <input class="input" placeholder="如：清洗、烘干、取样" value="{{addForm.processType}}" data-form="add" data-field="processType" bindinput="onModalInput" />
@@ -70,7 +65,7 @@
         </view>
         <!-- Settle Modal -->
         <view class="modal-mask" wx:if="{{showSettleModal}}">
-            <view class="modal card">
+            <view class="modal">
                 <view class="modal-title">完工结算</view>
                 <view class="field-label">下游状态（可选，默认自动生成）</view>
                 <input class="input" placeholder="例如：研磨完成、切片完成、包装完成" value="{{settleForm.statusLabel}}" data-form="settle" data-field="statusLabel" bindinput="onModalInput" />

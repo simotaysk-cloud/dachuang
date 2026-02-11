@@ -7,7 +7,7 @@
     <view class="card">
         <view class="section-title">发运信息</view>
         <view class="field-label">成品批次号</view>
-        <input class="input" placeholder="输入批次号" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />
+        <input class="input {{batchLocked ? 'input-locked' : ''}}" placeholder="输入批次号" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" disabled="{{batchLocked}}" />
         <view class="field-label">收货方/经销商</view>
         <input class="input" placeholder="例如：某连锁药店" value="{{form.distributorName}}" data-field="distributorName" bindinput="onInput" />
         <view class="field-label">承运商</view>
@@ -22,4 +22,3 @@
         </view>
     </view>
 </view>
-
