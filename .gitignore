@@ -21,3 +21,10 @@ miniprogram_npm/
 tools/
 env/
 *.zip
+
+# Portable environment (large binaries)
+后端代码/springboot/jdk-17.0.9+8/
+后端代码/springboot/apache-maven-3.9.6/
+
+# Logs
+**/*.log

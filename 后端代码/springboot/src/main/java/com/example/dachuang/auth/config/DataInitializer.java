@@ -25,6 +25,7 @@ public class DataInitializer implements CommandLineRunner {
         private final com.example.dachuang.trace.repository.ProcessingRecordRepository processingRecordRepository;
         private final com.example.dachuang.trace.repository.InspectionRecordRepository inspectionRecordRepository;
         private final com.example.dachuang.trace.repository.ShipmentRepository shipmentRepository;
+        private final com.example.dachuang.trace.repository.ShipmentItemRepository shipmentItemRepository;
         private final com.example.dachuang.trace.repository.ShipmentEventRepository shipmentEventRepository;
         private final com.example.dachuang.trace.repository.BatchLineageRepository batchLineageRepository;
         private final com.example.dachuang.trace.service.Gs1Service gs1Service;
@@ -184,12 +185,16 @@ public class DataInitializer implements CommandLineRunner {
                         if (shipmentRepository.findByShipmentNo(shipmentNo).isEmpty()) {
                                 shipmentRepository.save(com.example.dachuang.trace.entity.Shipment.builder()
                                                 .shipmentNo(shipmentNo)
-                                                .batchNo(processBatchNo)
                                                 .distributorName("北京大药房")
                                                 .carrier("顺丰冷链")
                                                 .trackingNo("SF1234567890")
                                                 .status("DELIVERED")
                                                 .remarks("加急配送")
+                                                .build());
+
+                                shipmentItemRepository.save(com.example.dachuang.trace.entity.ShipmentItem.builder()
+                                                .shipmentNo(shipmentNo)
+                                                .batchNo(processBatchNo)
                                                 .build());
 
                                 shipmentEventRepository.save(com.example.dachuang.trace.entity.ShipmentEvent.builder()
@@ -327,12 +332,16 @@ public class DataInitializer implements CommandLineRunner {
                         String sShipmentNo = "SH-TRX-2024001";
                         shipmentRepository.save(com.example.dachuang.trace.entity.Shipment.builder()
                                         .shipmentNo(sShipmentNo)
-                                        .batchNo(sanqiProcBatchNo)
                                         .distributorName("广州药材市场")
                                         .carrier("京东物流")
                                         .trackingNo("JD2024998877")
                                         .status("IN_TRANSIT")
                                         .remarks("高价值货物，注意防潮")
+                                        .build());
+
+                        shipmentItemRepository.save(com.example.dachuang.trace.entity.ShipmentItem.builder()
+                                        .shipmentNo(sShipmentNo)
+                                        .batchNo(sanqiProcBatchNo)
                                         .build());
 
                         shipmentEventRepository.save(com.example.dachuang.trace.entity.ShipmentEvent.builder()

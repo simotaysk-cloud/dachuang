@@ -6,7 +6,9 @@ import com.example.dachuang.trace.dto.CreateShipmentRequest;
 import com.example.dachuang.trace.dto.LogisticsWebhookDTO;
 import com.example.dachuang.trace.entity.Shipment;
 import com.example.dachuang.trace.entity.ShipmentEvent;
+import com.example.dachuang.trace.entity.ShipmentItem;
 import com.example.dachuang.trace.repository.ShipmentEventRepository;
+import com.example.dachuang.trace.repository.ShipmentItemRepository;
 import com.example.dachuang.trace.repository.ShipmentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,24 +25,42 @@ public class ShipmentService {
 
     private final ShipmentRepository shipmentRepository;
     private final ShipmentEventRepository shipmentEventRepository;
+    private final ShipmentItemRepository shipmentItemRepository;
     private final BatchService batchService;
 
     private static final SecureRandom RANDOM = new SecureRandom();
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.BASIC_ISO_DATE; // yyyyMMdd
 
     public Shipment create(CreateShipmentRequest request) {
-        batchService.getBatchByNo(request.getBatchNo());
+        // Validate all batches exist
+        for (CreateShipmentRequest.Item item : request.getItems()) {
+            batchService.getBatchByNo(item.getBatchNo());
+        }
+
         String shipmentNo = generateShipmentNo();
         Shipment shipment = Shipment.builder()
                 .shipmentNo(shipmentNo)
-                .batchNo(request.getBatchNo())
                 .distributorName(request.getDistributorName())
                 .carrier(request.getCarrier())
                 .trackingNo(request.getTrackingNo())
                 .status("CREATED")
                 .remarks(request.getRemarks())
                 .build();
-        return shipmentRepository.save(shipment);
+
+        Shipment savedShipment = shipmentRepository.save(shipment);
+
+        // Save items
+        for (CreateShipmentRequest.Item item : request.getItems()) {
+            ShipmentItem shipmentItem = ShipmentItem.builder()
+                    .shipmentNo(shipmentNo)
+                    .batchNo(item.getBatchNo())
+                    .quantity(item.getQuantity())
+                    .unit(item.getUnit())
+                    .build();
+            shipmentItemRepository.save(shipmentItem);
+        }
+
+        return savedShipment;
     }
 
     public List<Shipment> list(String batchNo) {

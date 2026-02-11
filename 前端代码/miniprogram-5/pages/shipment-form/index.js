@@ -30,7 +30,14 @@ Page({
 
     async create() {
         try {
-            await api.request('/api/v1/shipments', 'POST', this.data.form)
+            const payload = {
+                items: [{ batchNo: this.data.form.batchNo }],
+                distributorName: this.data.form.distributorName,
+                carrier: this.data.form.carrier,
+                trackingNo: this.data.form.trackingNo,
+                remarks: this.data.form.remarks
+            }
+            await api.request('/api/v1/shipments', 'POST', payload)
             const q = (this.data.form.batchNo || '').trim()
             if (q) wx.setStorageSync(LAST_QUERY_KEY, q)
             wx.setStorageSync(REFRESH_KEY, true)
