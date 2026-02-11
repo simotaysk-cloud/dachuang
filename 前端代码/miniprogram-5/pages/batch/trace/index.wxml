@@ -11,7 +11,7 @@
             <view class="trace-root-batch" bindtap="copy" data-text="{{rootBatch.batchNo}}">
                 {{rootBatch.batchNo || '-'}}
             </view>
-            <view class="trace-root-status">{{rootBatch.status || '未知状态'}}</view>
+
         </view>
     </view>
 
