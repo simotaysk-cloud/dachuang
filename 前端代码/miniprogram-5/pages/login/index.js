@@ -13,14 +13,6 @@ Page({
     },
 
     onLoad() {
-        try {
-            const info = wx.getAppBaseInfo()
-            if (info && info.platform === 'devtools') {
-                api.setBaseUrl('http://192.168.31.157:8091')
-            }
-        } catch (e) {
-            // ignore
-        }
         api.init()
         const rememberLogin = !!wx.getStorageSync(REMEMBER_LOGIN_KEY)
         const username = rememberLogin ? (wx.getStorageSync(SAVED_USERNAME_KEY) || '') : ''
@@ -56,11 +48,12 @@ Page({
         }
         api.setBaseUrl(next)
         this.setData({ baseUrl: api.baseUrl })
+        const insecure = String(api.baseUrl || '').toLowerCase().startsWith('http://')
         try {
             await api.checkHealth({ quiet: true })
-            wx.showToast({ title: '保存成功', icon: 'none' })
+            wx.showToast({ title: insecure ? '已保存，正式版请用HTTPS' : '保存成功', icon: 'none' })
         } catch (err) {
-            wx.showToast({ title: '已保存，连通失败', icon: 'none' })
+            wx.showToast({ title: insecure ? '已保存(HTTP)，连通失败' : '已保存，连通失败', icon: 'none' })
         }
     },
 

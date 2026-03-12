@@ -37,7 +37,10 @@ Page({
     api.setBaseUrl(next)
     this.setData({ baseUrl: api.baseUrl })
     await this.checkHealth()
-    wx.showToast({ title: '已保存', icon: 'none' })
+    const tip = String(api.baseUrl || '').toLowerCase().startsWith('http://')
+      ? '已保存，正式版请用HTTPS'
+      : '已保存'
+    wx.showToast({ title: tip, icon: 'none' })
   },
 
   async checkHealth() {

@@ -22,7 +22,7 @@
         <view class="section-title">后端URL配置</view>
         <input
             class="input"
-            placeholder="例如：http://192.168.31.157:8091"
+            placeholder="例如：https://cpuzhbc.cn"
             value="{{baseUrl}}"
             bindinput="onBaseUrlInput"
         />
