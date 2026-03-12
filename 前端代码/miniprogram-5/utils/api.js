@@ -1,5 +1,10 @@
-const DEFAULT_API_BASE_URL = 'http://192.168.31.157:8091'
+const DEFAULT_API_BASE_URL = 'https://cpuzhbc.cn'
 const BASE_URL_STORAGE_KEY = 'baseUrl'
+const INVALID_BASE_URLS = new Set([
+    'https://api.example.com',
+    'http://api.example.com',
+    'http://146.56.231.239:8091'
+])
 
 let config = {
     apiBaseUrl: DEFAULT_API_BASE_URL,
@@ -25,7 +30,11 @@ function getDefaultBaseUrl() {
 
 function getStoredBaseUrl() {
     try {
-        return wx.getStorageSync(BASE_URL_STORAGE_KEY) || ''
+        const value = normalizeBaseUrl(wx.getStorageSync(BASE_URL_STORAGE_KEY) || '')
+        if (!value || INVALID_BASE_URLS.has(value)) {
+            return ''
+        }
+        return value
     } catch (err) {
         return ''
     }
@@ -41,7 +50,8 @@ function normalizeBaseUrl(url) {
 
     // Ensure protocol is present
     if (u && !u.startsWith('http')) {
-        u = 'http://' + u
+        // 生产默认优先 https，减少上架时因 http 被拦截
+        u = 'https://' + u
     }
 
     return u
