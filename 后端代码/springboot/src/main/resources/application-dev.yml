@@ -34,6 +34,7 @@ wx:
 # - mode=MOCK: generate fake txHash/dataHash
 # - mode=EVM: send real transaction to an EVM-compatible chain (testnet recommended)
 app:
+  public-base-url: ${APP_PUBLIC_BASE_URL:"http://146.56.231.239:8091"}
   blockchain:
     mode: ${APP_BLOCKCHAIN_MODE:MOCK}
     auto-anchor-on-batch-create: ${APP_BLOCKCHAIN_AUTO_ANCHOR:true}

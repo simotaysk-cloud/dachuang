@@ -1,19 +1,71 @@
+.login-bg {
+  position: relative;
+  overflow: hidden;
+  padding-top: 100rpx;
+}
+
+/* 装饰性水墨晕染效果 */
+.ink-blob {
+  position: absolute;
+  top: -100rpx;
+  right: -100rpx;
+  width: 400rpx;
+  height: 400rpx;
+  background: radial-gradient(circle, rgba(46, 125, 50, 0.05) 0%, transparent 70%);
+  filter: blur(40px);
+  z-index: -1;
+}
+
 .login-header {
   text-align: center;
-  margin-bottom: 20rpx;
+  margin-bottom: 60rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo-icon {
+  width: 140rpx;
+  height: 140rpx;
+  margin-bottom: 30rpx;
+  filter: drop-shadow(0 10rpx 15rpx rgba(46, 125, 50, 0.15));
 }
 
 .login-header .title {
-  font-size: 42rpx;
+  font-size: 52rpx;
+  font-weight: 800;
+  letter-spacing: 4rpx;
+  color: var(--primary-color);
 }
 
 .login-header .desc {
-  margin-top: 10rpx;
+  margin-top: 16rpx;
+  font-size: 26rpx;
+  color: var(--text-light);
+  letter-spacing: 2rpx;
+}
+
+.input-group {
+  margin-bottom: 30rpx;
+}
+
+.login-agreement {
+  margin-top: 40rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: var(--text-light);
+}
+
+.config-card {
+  margin-top: 40rpx;
+  opacity: 0.8;
+  transform: scale(0.95);
 }
 
 .login-footer {
-  margin-top: 12rpx;
+  margin-top: 60rpx;
   text-align: center;
-  padding-bottom: 30rpx;
+  padding-bottom: 60rpx;
   color: var(--text-light);
+  font-size: 24rpx;
 }

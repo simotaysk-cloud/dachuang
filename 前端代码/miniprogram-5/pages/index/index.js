@@ -7,6 +7,8 @@ Page({
     baseUrl: api.baseUrl,
     token: api.token,
     role: api.role,
+    username: api.username,
+    roleName: api.getRoleName(api.role),
     menuAccess: getMenuAccess(api.role)
   },
 
@@ -20,6 +22,8 @@ Page({
       baseUrl: api.baseUrl,
       token: api.token,
       role: api.role,
+      username: api.username,
+      roleName: api.getRoleName(api.role),
       menuAccess: getMenuAccess(api.role)
     })
   },

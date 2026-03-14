@@ -1,9 +1,8 @@
-const DEFAULT_API_BASE_URL = 'https://cpuzhbc.cn'
+const DEFAULT_API_BASE_URL = 'http://146.56.231.239:8091'
 const BASE_URL_STORAGE_KEY = 'baseUrl'
 const INVALID_BASE_URLS = new Set([
     'https://api.example.com',
-    'http://api.example.com',
-    'http://146.56.231.239:8091'
+    'http://api.example.com'
 ])
 
 let config = {
@@ -61,6 +60,7 @@ const api = {
     baseUrl: normalizeBaseUrl(getStoredBaseUrl() || getDefaultBaseUrl() || DEFAULT_API_BASE_URL),
     token: wx.getStorageSync('token') || '',
     role: normalizeRole(wx.getStorageSync('role') || ''),
+    username: wx.getStorageSync('username') || '',
 
     init() {
         console.log('Current API Base URL:', this.baseUrl)
@@ -82,6 +82,11 @@ const api = {
         const r = normalizeRole(role)
         this.role = r
         wx.setStorageSync('role', r)
+    },
+
+    setUsername(username) {
+        this.username = username
+        wx.setStorageSync('username', username)
     },
 
     request(path, method = 'GET', data = undefined, options = {}) {
@@ -147,7 +152,25 @@ const api = {
         if (res?.data?.role) {
             this.setRole(res.data.role)
         }
+        if (username) {
+            this.setUsername(username)
+        }
         return res
+    },
+
+    getRoleName(role) {
+        const r = normalizeRole(role || this.role)
+        const map = {
+            'ADMIN': '系统管理员',
+            'FARMER': '种植户',
+            'MANUFACTURER': '加工企业',
+            'FACTORY': '加工工厂',
+            'LOGISTICS': '物流配送商',
+            'QUALITY': '质检员',
+            'REGULATOR': '监管部门',
+            'USER': '普通用户'
+        }
+        return map[r] || '未知身份'
     },
 
     // Health
