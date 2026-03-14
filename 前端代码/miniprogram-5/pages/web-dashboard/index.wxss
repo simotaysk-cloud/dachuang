@@ -1,19 +1,228 @@
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12rpx;
+.dashboard-page {
+  padding-bottom: 50rpx;
 }
 
-.stat-grid .stat-item {
-  min-width: 0;
+.node-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 600rpx;
+  background: radial-gradient(circle at 70% 20%, rgba(77, 182, 172, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: -1;
 }
 
-.list-action {
-  font-size: 24rpx;
-  font-weight: 600;
-  color: var(--primary-color);
-  padding: 4rpx 10rpx;
+/* 核心指标 */
+.metrics-section {
+  padding-top: 30rpx;
+}
+
+.trace-badge {
+  font-size: 22rpx;
+  color: var(--text-sub);
+  background: rgba(255, 255, 255, 0.5);
+  padding: 6rpx 20rpx;
   border-radius: 999rpx;
-  border: 2rpx solid var(--border-color);
-  background: #f5f8fc;
+}
+
+.trace-badge .highlight {
+  color: var(--primary-color);
+  font-weight: 800;
+  font-size: 26rpx;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30rpx;
+  margin: 30rpx 0;
+}
+
+.metric-item {
+  background: rgba(255, 255, 255, 0.4);
+  padding: 30rpx;
+  border-radius: var(--radius-md);
+  text-align: center;
+  border: 1rpx solid rgba(255, 255, 255, 0.8);
+}
+
+.metric-value {
+  font-size: 44rpx;
+  font-weight: 800;
+  color: var(--primary-color);
+  font-family: 'Outfit', sans-serif;
+}
+
+.metric-label {
+  font-size: 22rpx;
+  color: var(--text-light);
+  margin-top: 8rpx;
+}
+
+.sync-btn {
+  width: 100%;
+  border-radius: 12rpx;
+}
+
+/* 完整性 */
+.integrity-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20rpx;
+  margin-top: 24rpx;
+}
+
+.int-cell {
+  background: var(--surface-muted);
+  padding: 24rpx 10rpx;
+  border-radius: 16rpx;
+  text-align: center;
+  border: 1rpx solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.int-cell.active {
+  background: rgba(46, 125, 50, 0.05);
+  border-color: rgba(46, 125, 50, 0.2);
+}
+
+.int-icon {
+  font-size: 36rpx;
+  margin-bottom: 10rpx;
+}
+
+.int-label {
+  font-size: 18rpx;
+  color: var(--text-sub);
+}
+
+.int-val {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-top: 4rpx;
+}
+
+/* 分布图表模拟 */
+.distribution-row {
+  display: flex;
+  gap: 24rpx;
+  margin-top: 2rpx;
+}
+
+.dist-card {
+  flex: 1;
+}
+
+.dist-list {
+  margin-top: 20rpx;
+}
+
+.dist-item {
+  margin-bottom: 16rpx;
+}
+
+.d-name {
+  font-size: 20rpx;
+  color: var(--text-sub);
+  margin-bottom: 6rpx;
+  display: block;
+}
+
+.d-bar-bg {
+  height: 8rpx;
+  background: var(--surface-muted);
+  border-radius: 4rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+.d-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: var(--primary-color);
+  border-radius: 4rpx;
+}
+
+.d-bar-bg.cyan .d-bar {
+  background: var(--accent-color);
+}
+
+.d-val {
+  font-size: 18rpx;
+  color: var(--text-light);
+  margin-top: 4rpx;
+  display: block;
+  text-align: right;
+}
+
+/* 区块链列表 */
+.chain-status {
+  font-size: 20rpx;
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.dot-live {
+  width: 10rpx;
+  height: 10rpx;
+  background: #4CAF50;
+  border-radius: 50%;
+  box-shadow: 0 0 10rpx #4CAF50;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.blockchain-list {
+  margin-top: 20rpx;
+}
+
+.tx-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.tx-batch {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.tx-hash {
+  font-size: 20rpx;
+  color: var(--text-light);
+  font-family: monospace;
+  margin-top: 4rpx;
+}
+
+.tx-tag {
+  font-size: 20rpx;
+  color: #2E7D32;
+  background: rgba(46, 125, 50, 0.08);
+  padding: 4rpx 14rpx;
+  border-radius: 6rpx;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60rpx 0;
+  color: var(--text-light);
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  opacity: 0.2;
 }

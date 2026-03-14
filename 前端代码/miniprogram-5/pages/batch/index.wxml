@@ -1,116 +1,149 @@
-<view class="page-container">
+<view class="page-container batch-page">
     <view class="header">
         <view class="title">批次管理</view>
-        <view class="desc">管理所有中药材的溯源身份批次</view>
+        <view class="desc">中药材溯源身份与全生命周期档案</view>
     </view>
+
     <!-- 列表展示 -->
-    <view class="card">
+    <view class="card glass-card">
         <view class="section-title">批次列表</view>
-        <view class="search-bar search-bar-paired">
-            <input class="input-inline" placeholder="输入 ID 或 批次号查询" value="{{queryNo}}" bindinput="onQueryInput" />
-            <button class="btn-small" bindtap="query">查询</button>
+        
+        <view class="search-section">
+            <view class="search-bar">
+                <input class="input-inline" placeholder="输入药材名或批次号查询" value="{{queryNo}}" bindinput="onQueryInput" />
+                <button class="btn-small search-btn" bindtap="query">立即查询</button>
+            </view>
         </view>
-        <view class="btn-group" style="margin-bottom: 20rpx;">
+
+        <view class="action-grid">
             <button class="btn btn-primary" bindtap="startCreate" wx:if="{{role !== 'MANUFACTURER'}}">
-                新建批次
+                + 新建生产批次
             </button>
-            <button class="btn btn-primary" bindtap="startExternalRegistration" wx:if="{{role === 'MANUFACTURER'}}" style="background-color: #e67e22; border-color: #e67e22;">
+            <button class="btn btn-primary" bindtap="startExternalRegistration" wx:if="{{role === 'MANUFACTURER'}}" style="background: linear-gradient(135deg, #FF9800, #F57C00);">
                 登记外源原料
             </button>
-            <button class="btn btn-outline" bindtap="listAll">刷新列表</button>
+            <button class="btn btn-outline" bindtap="listAll">同步数据</button>
         </view>
-        <!-- 列表内容 -->
-        <view class="list" wx:if="{{batches && batches.length > 0}}">
-            <view class="list-item proc-list-item" wx:for="{{batches}}" wx:key="id" bindtap="editFromList" data-item="{{item}}">
-                <view class="list-main">
-                    <view class="list-title proc-list-title">
-                        {{item.name}}
-                        <text style="font-size:24rpx; color:#999; font-weight:normal;">
-                            ({{item.batchNo}})
-                        </text>
-                    </view>
-                        产地: {{item.origin || '-'}}
 
-                    <view class="list-meta" wx:if="{{item.quantity}}">
-                        库存: {{item.quantity}}{{item.unit}}
-                        <text wx:if="{{item.gs1Locked}}">（已锁定）</text>
+        <!-- 列表内容 -->
+        <view class="list-container" wx:if="{{batches && batches.length > 0}}">
+            <view class="batch-item glass-card" wx:for="{{batches}}" wx:key="id" bindtap="editFromList" data-item="{{item}}">
+                <view class="batch-main">
+                    <view class="batch-title">
+                        <text class="tag-primary">药材</text>
+                        {{item.name}}
+                    </view>
+                    <view class="batch-info">
+                        <view class="info-row">
+                            <text class="label">批次编号：</text>
+                            <text class="value">{{item.batchNo}}</text>
+                        </view>
+                        <view class="info-row">
+                            <text class="label">原产地：</text>
+                            <text class="value">{{item.origin || '待完善'}}</text>
+                        </view>
+                    </view>
+                    <view class="batch-footer">
+                        <view class="stock-info" wx:if="{{item.quantity}}">
+                            可用库存: <text class="stock-value">{{item.quantity}} {{item.unit}}</text>
+                        </view>
+                        <view class="status-tag locked" wx:if="{{item.gs1Locked}}">
+                            <icon type="success" size="12" color="#2E7D32"></icon>
+                            数字化身份已锁定
+                        </view>
                     </view>
                 </view>
+                <view class="arrow-icon">></view>
             </view>
         </view>
-        <view class="empty" wx:if="{{(!batches || batches.length === 0) && !loading}}">暂无批次数据</view>
+        
+        <view class="empty-state" wx:if="{{(!batches || batches.length === 0) && !loading}}">
+            <image src="/assets/logo.png" mode="aspectFit" class="empty-img"></image>
+            <view>暂无相关的批次档案数据</view>
+        </view>
     </view>
-    <!-- QR Code Modal -->
+
+    <!-- 二维码弹窗 -->
     <view class="modal-mask" wx:if="{{showQrModal}}" bindtap="hideQrModal">
-        <view class="modal batch-modal-center" catchtap="return">
+        <view class="modal glass-card batch-modal-center" catchtap="return">
             <view class="modal-title">溯源二维码</view>
-            <view class="qr-container">
+            <view class="qr-box">
                 <image class="qr-image" src="data:image/png;base64,{{qrCodeBase64}}" mode="aspectFit" />
             </view>
-            <view class="batch-hint">{{currentBatchNo}}</view>
-            <view class="btn-group" style="margin-top: 20rpx;">
-                <button class="btn btn-primary" bindtap="saveQrCode">保存到相册</button>
+            <view class="batch-no-display">{{currentBatchNo}}</view>
+            <view class="modal-actions">
+                <button class="btn btn-primary" bindtap="saveQrCode">保存到系统相册</button>
                 <button class="btn btn-outline" bindtap="hideQrModal">关闭</button>
             </view>
         </view>
     </view>
-    <!-- 编辑/新增表单 (弹窗或折叠卡片) -->
-    <!-- 编辑/新增表单 (弹窗) -->
-    <view class="modal-mask" wx:if="{{showForm}}">
-        <view class="modal modal-scroll" catchtap="return">
-            <view class="modal-title">{{form.id ? '批次详情' : '新建批次'}}</view>
-            <view class="readonly-row" wx:if="{{form.id}}">
-                <view class="readonly-label">内部ID</view>
-                <view class="readonly-value">#{{form.id}}</view>
-            </view>
-            <view class="field-label">批次号 (BatchNo)</view>
-            <input class="input" placeholder="留空自动生成 (推荐，农户创建批次用)" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" disabled="{{true}}" />
-            <view class="field-label">药材名称</view>
-            <input class="input" placeholder="例如：长白山人参" value="{{form.name}}" data-field="name" bindinput="onInput" disabled="{{!!form.id}}" />
-            <view class="field-label">类别</view>
-            <input class="input" placeholder="例如：根茎类" value="{{form.category}}" data-field="category" bindinput="onInput" disabled="{{!!form.id}}" />
-            <view class="field-label">产地</view>
-            <input class="input" placeholder="例如：吉林省抚松县" value="{{form.origin}}" data-field="origin" bindinput="onInput" disabled="{{!!form.id}}" />
 
-            <!-- 库存与GS1 -->
-            <view class="sub-title" style="margin-top:20rpx;">收获重量/库存与GS1</view>
-            <view class="stat-row">
-                <view class="stat-item">
-                    <view class="field-label">数量 (可后补)</view>
-                    <input class="input input-compact" type="digit" value="{{form.quantity}}" data-field="quantity" bindinput="onInput" disabled="{{!!form.id}}" />
+    <!-- 编辑/新增表单弹窗 -->
+    <view class="modal-mask" wx:if="{{showForm}}">
+        <view class="modal glass-card modal-scroll" catchtap="return">
+            <view class="modal-title">{{form.id ? '药材批次档案' : '录入新批次'}}</view>
+            
+            <view class="form-section">
+                <view class="readonly-row" wx:if="{{form.id}}">
+                    <view class="readonly-label">系统内部识别码</view>
+                    <view class="readonly-value">#{{form.id}}</view>
                 </view>
-                <view class="stat-item">
-                    <view class="field-label">单位</view>
-                    <input class="input input-compact" value="{{form.unit}}" data-field="unit" bindinput="onInput" disabled="{{!!form.id}}" />
+
+                <view class="field-label">批次编号 (由系统自动分配)</view>
+                <input class="input" placeholder="自动生成" value="{{form.batchNo}}" disabled="{{true}}" />
+
+                <view class="field-label">药材通用名</view>
+                <input class="input" placeholder="例如：当归 / 人参" value="{{form.name}}" data-field="name" bindinput="onInput" disabled="{{!!form.id}}" />
+
+                <view class="field-label">药材类别</view>
+                <input class="input" placeholder="例如：根茎类 / 叶类" value="{{form.category}}" data-field="category" bindinput="onInput" disabled="{{!!form.id}}" />
+
+                <view class="field-label">产地信息</view>
+                <input class="input" placeholder="具体到县/乡/村" value="{{form.origin}}" data-field="origin" bindinput="onInput" disabled="{{!!form.id}}" />
+
+                <view class="sub-title">库存与数字化标识</view>
+                <view class="stat-row">
+                    <view class="stat-item">
+                        <view class="field-label">收获/入库数量</view>
+                        <input class="input" type="digit" value="{{form.quantity}}" data-field="quantity" bindinput="onInput" disabled="{{!!form.id}}" />
+                    </view>
+                    <view class="stat-item">
+                        <view class="field-label">计量单位</view>
+                        <input class="input" value="{{form.unit}}" data-field="unit" bindinput="onInput" disabled="{{!!form.id}}" />
+                    </view>
                 </view>
-            </view>
-            <view class="meta" wx:if="{{form.gs1Locked && !form.id}}" style="color:orange;">
-                注意：GS1信息已锁定，不可修改数量与单位
-            </view>
-            <view class="field-label" style="margin-top:20rpx;">
-                来源凭证/图片 {{role === 'MANUFACTURER' ? '(必填)' : '(可选)'}}
-            </view>
-            <view class="image-uploader" bindtap="{{form.id ? '' : 'chooseImage'}}" style="opacity: {{form.id ? 0.8 : 1}};">
-                <image wx:if="{{form.imageUrl}}" class="image-uploader-img" src="{{form.imageUrl}}" mode="aspectFill" />
-                <view wx:else style="color:#999;">{{form.id ? '无图片' : '+ 上传'}}</view>
-            </view>
-            <view class="field-label">备注</view>
-            <textarea class="textarea" placeholder="更多描述..." value="{{form.description}}" data-field="description" bindinput="onInput" disabled="{{!!form.id}}" />
-            <view class="footer-actions">
-                <!-- View Mode -->
-                <block wx:if="{{form.id}}">
-                    <button class="btn btn-outline" bindtap="cancelEdit">关闭</button>
-                    <button class="btn btn-primary" bindtap="viewTrace">查看溯源图</button>
-                </block>
-                <!-- Edit Mode (New) -->
-                <block wx:else>
-                    <button class="btn btn-outline" bindtap="cancelEdit">取消</button>
-                    <button class="btn btn-primary" bindtap="save">保存</button>
-                </block>
-            </view>
-            <view wx:if="{{form.id && !form.gs1Locked}}" style="margin-top:30rpx; border-top:1rpx solid #eee; padding-top:20rpx;">
-                <button class="btn btn-warn" bindtap="lockGs1">锁定GS1 (打印贴标后)</button>
-                <view class="desc" style="text-align:center;">锁定后将无法修改数量，并生成最终条码</view>
+
+                <view class="tips orange" wx:if="{{form.gs1Locked && !form.id}}">
+                    ※ 该批次数字化信息已锁定，不可修改数量与单位
+                </view>
+
+                <view class="field-label">产地实景/来源凭证</view>
+                <view class="image-uploader-tcm" bindtap="{{form.id ? '' : 'chooseImage'}}">
+                    <image wx:if="{{form.imageUrl}}" class="uploader-img" src="{{form.imageUrl}}" mode="aspectFill" />
+                    <view wx:else class="uploader-placeholder">
+                        <view class="plus">+</view>
+                        <view>上传图片</view>
+                    </view>
+                </view>
+
+                <view class="field-label">补充备注</view>
+                <textarea class="textarea" placeholder="关于该批次的其他详细描述..." value="{{form.description}}" data-field="description" bindinput="onInput" disabled="{{!!form.id}}" />
+                
+                <view class="footer-actions">
+                    <block wx:if="{{form.id}}">
+                        <button class="btn btn-outline" bindtap="cancelEdit">返回列表</button>
+                        <button class="btn btn-primary" bindtap="viewTrace">开启可视化溯源</button>
+                    </block>
+                    <block wx:else>
+                        <button class="btn btn-outline" bindtap="cancelEdit">暂不录入</button>
+                        <button class="btn btn-primary" bindtap="save">确认提交</button>
+                    </block>
+                </view>
+
+                <view wx:if="{{form.id && !form.gs1Locked}}" class="lock-section">
+                    <button class="btn btn-warn" bindtap="lockGs1">锁定批次信息</button>
+                    <view class="lock-hint">锁定后将正式生成防伪条码，数量信息将不可变更</view>
+                </view>
             </view>
         </view>
     </view>

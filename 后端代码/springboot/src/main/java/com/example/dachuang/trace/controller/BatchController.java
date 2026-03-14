@@ -8,6 +8,7 @@ import com.example.dachuang.trace.service.QrCodeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.util.UriUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +28,9 @@ public class BatchController {
 
     private final BatchService batchService;
     private final QrCodeService qrCodeService;
+
+    @Value("${app.public-base-url:}")
+    private String publicBaseUrl;
 
     @GetMapping
     public Result<List<Batch>> getAll(@RequestParam(defaultValue = "false") boolean rootOnly) {
@@ -182,6 +186,9 @@ public class BatchController {
     }
 
     private String resolveBaseUrl(HttpServletRequest request) {
+        if (publicBaseUrl != null && !publicBaseUrl.isBlank()) {
+            return publicBaseUrl;
+        }
         String forwardedProto = request.getHeader("X-Forwarded-Proto");
         String forwardedHost = request.getHeader("X-Forwarded-Host");
         String forwardedPort = request.getHeader("X-Forwarded-Port");

@@ -1,45 +1,68 @@
-<view class="page-container">
+<view class="page-container processing-page">
+    <view class="ink-blob-bottom"></view>
+    
     <view class="header">
         <view class="title">加工处理</view>
-        <view class="desc">记录药材的烘干、切片、包装等工厂环节</view>
+        <view class="desc">记录药材烘干、切片、包装等生产流程环节</view>
     </view>
-    <!-- 筛选与操作 -->
-    <view class="card">
-        <view class="section-title">加工记录列表</view>
-        <view class="search-bar">
-            <input class="input-inline" placeholder="输入产出批次号查询" value="{{queryNo}}" bindinput="onQueryInput" />
-            <button class="btn-small" bindtap="query">查询</button>
+
+    <!-- 核心操作区 -->
+    <view class="card glass-card proc-hero-section">
+        <view class="section-title">作业指令</view>
+        <view class="scan-area" bindtap="onScanStart">
+            <view class="scan-visual">
+                <view class="scan-line"></view>
+                <view class="scan-icon">🔍</view>
+            </view>
+            <view class="scan-text">
+                <view class="main-text">扫码开工</view>
+                <view class="sub-text">点击扫描药材批次码 进入数字化产线</view>
+            </view>
         </view>
-        <!-- 核心操作区 -->
-        <view class="proc-hero">
-            <button class="btn btn-primary btn-hero" bindtap="onScanStart">扫码开工</button>
-            <view class="proc-hint">推荐使用扫码直接进入产线作业模式</view>
-        </view>
-        <view class="btn-group" style="margin-bottom: 20rpx;">
+        
+        <view class="btn-grid-secondary">
             <button class="btn btn-outline" bindtap="startCreate">手工录入记录</button>
-            <button class="btn btn-outline" bindtap="refreshList">刷新列表</button>
+            <button class="btn btn-outline" bindtap="refreshList">同步同步列表</button>
         </view>
-        <!-- 列表内容 (源头批次) -->
-        <view class="list" wx:if="{{batches && batches.length > 0}}">
-            <view class="list-item proc-list-item" wx:for="{{batches}}" wx:key="id" bindtap="viewTrace" data-batch="{{item.batchNo}}">
-                <view class="list-main">
-                    <view class="list-title proc-list-title">
+    </view>
+
+    <!-- 筛选与列表 -->
+    <view class="card glass-card">
+        <view class="section-divider">
+            <view class="section-title">待处理源头批次</view>
+            <view class="count-badge" wx:if="{{batches.length}}">共 {{batches.length}} 项</view>
+        </view>
+
+        <view class="search-section">
+            <view class="search-bar">
+                <input class="input-inline" placeholder="输入批次号或药材名" value="{{queryNo}}" bindinput="onQueryInput" />
+                <button class="btn-small search-btn" bindtap="query">检索</button>
+            </view>
+        </view>
+
+        <!-- 列表内容 -->
+        <view class="list-container" wx:if="{{batches && batches.length > 0}}">
+            <view class="proc-item glass-card" wx:for="{{batches}}" wx:key="id" bindtap="viewTrace" data-batch="{{item.batchNo}}">
+                <view class="proc-main">
+                    <view class="proc-title">
+                        <text class="tag-cyan">{{item.category || '原材'}}</text>
                         {{item.name}}
-                        <text style="font-size: 24rpx; color: var(--text-sub); font-weight: normal; margin-left: 10rpx;">
-                            {{item.category}}
-                        </text>
                     </view>
-                    <view class="list-sub proc-list-sub">
-                        <view>批次号: {{item.batchNo}}</view>
-                        <view style="margin-top: 4rpx;">产地: {{item.origin}}</view>
+                    <view class="proc-meta">
+                        <view class="meta-row">批次：{{item.batchNo}}</view>
+                        <view class="meta-row">来源：{{item.origin}}</view>
                     </view>
                 </view>
-                <view class="proc-list-right">
-                    <view class="proc-list-pill">溯源 &gt;</view>
-                    <view class="proc-list-meta">{{item.quantity}} {{item.unit}}</view>
+                <view class="proc-right">
+                    <view class="proc-quantity">{{item.quantity}} <text class="unit">{{item.unit}}</text></view>
+                    <view class="trace-link">全流程溯源 &gt;</view>
                 </view>
             </view>
         </view>
-        <view class="empty" wx:if="{{(!batches || batches.length === 0) && !loading}}">暂无源头批次</view>
+        
+        <view class="empty-state" wx:if="{{(!batches || batches.length === 0) && !loading}}">
+            <view class="empty-icon-box">🍃</view>
+            <view>暂无待加工的源头批次数据</view>
+        </view>
     </view>
 </view>

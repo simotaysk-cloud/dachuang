@@ -5,6 +5,7 @@ import com.example.dachuang.trace.service.QrCodeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.util.UriUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,9 @@ import java.nio.charset.StandardCharsets;
 public class PublicController {
 
     private final QrCodeService qrCodeService;
+
+    @Value("${app.public-base-url:}")
+    private String publicBaseUrl;
 
     @GetMapping("/qr-code/{batchNo}")
     public Result<String> getQrCode(@PathVariable String batchNo, HttpServletRequest request) {
@@ -38,6 +42,9 @@ public class PublicController {
     }
 
     private String resolveBaseUrl(HttpServletRequest request) {
+        if (publicBaseUrl != null && !publicBaseUrl.isBlank()) {
+            return publicBaseUrl;
+        }
         String forwardedProto = request.getHeader("X-Forwarded-Proto");
         String forwardedHost = request.getHeader("X-Forwarded-Host");
         String forwardedPort = request.getHeader("X-Forwarded-Port");

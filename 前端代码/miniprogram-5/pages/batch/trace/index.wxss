@@ -1,124 +1,220 @@
 .trace-page {
-    padding-top: 30rpx;
+  padding-bottom: 60rpx;
 }
 
-.trace-header {
-    margin-bottom: 22rpx;
+.node-bg-trace {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 800rpx;
+  background: radial-gradient(circle at 50% 10%, rgba(77, 182, 172, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
 }
 
-.trace-card {
-    margin-bottom: 22rpx;
+/* 根节点样式 */
+.root-node-section {
+  padding: 40rpx;
+  margin-bottom: 40rpx;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.05), rgba(255, 255, 255, 0.6));
 }
 
-.trace-root {
-    border: 2rpx solid var(--border-color);
-    border-left-width: 8rpx;
-    border-left-color: rgba(47, 79, 111, 0.35);
-    border-radius: 14rpx;
-    background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
-    padding: 18rpx 16rpx;
+.node-tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 18rpx;
+  padding: 6rpx 20rpx;
+  border-bottom-right-radius: 20rpx;
+  font-weight: 600;
 }
 
-.trace-root-title {
-    font-size: 30rpx;
-    font-weight: 700;
-    color: var(--primary-color);
-    line-height: 1.3;
+.root-info {
+  display: flex;
+  align-items: center;
+  gap: 30rpx;
+  margin-top: 20rpx;
 }
 
-.trace-root-batch {
-    margin-top: 8rpx;
-    font-size: 23rpx;
-    color: var(--text-sub);
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace;
+.root-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  background: var(--primary-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
-.trace-root-status {
-    margin-top: 10rpx;
-    display: inline-block;
-    padding: 6rpx 12rpx;
-    border-radius: 999rpx;
-    border: 2rpx solid rgba(47, 79, 111, 0.2);
-    background: rgba(47, 79, 111, 0.08);
-    color: var(--primary-color);
-    font-size: 20rpx;
+.avatar-text {
+  color: #fff;
+  font-size: 40rpx;
+  font-weight: 800;
 }
 
-.trace-timeline {
-    display: flex;
-    flex-direction: column;
-    gap: 12rpx;
+.pulse-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 4rpx solid var(--primary-color);
+  border-radius: 50%;
+  animation: pulseRoot 2s infinite;
 }
 
-.trace-item {
-    padding: 16rpx;
-    border-radius: 14rpx;
-    border: 2rpx solid var(--border-color);
-    border-left-width: 8rpx;
-    border-left-color: rgba(29, 78, 216, 0.38);
-    background: #fff;
-    box-shadow: 0 4rpx 12rpx rgba(15, 23, 42, 0.03);
+@keyframes pulseRoot {
+  0% { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(1.4); opacity: 0; }
 }
 
-.trace-item-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10rpx;
+.root-name {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 12rpx;
 }
 
-.process-tag {
-    max-width: 70%;
-    padding: 4rpx 12rpx;
-    border-radius: 999rpx;
-    border: 2rpx solid rgba(47, 79, 111, 0.2);
-    background: rgba(47, 79, 111, 0.07);
-    color: var(--primary-color);
-    font-size: 20rpx;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.root-batch-box {
+  background: rgba(0,0,0,0.03);
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
 }
 
-.detail-btn {
-    padding: 5rpx 12rpx;
-    border-radius: 10rpx;
-    border: 2rpx solid var(--border-color);
-    background: #f5f8fc;
-    color: var(--primary-color);
-    font-size: 20rpx;
+.root-batch-box .label {
+  color: var(--text-light);
 }
 
-.trace-item-title {
-    margin-top: 10rpx;
-    font-size: 28rpx;
-    font-weight: 600;
-    color: var(--primary-color);
+.root-batch-box .value {
+  color: var(--text-sub);
+  font-family: monospace;
 }
 
-.trace-item-batch {
-    margin-top: 8rpx;
-    font-size: 22rpx;
-    color: var(--text-sub);
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace;
+/* 链路展示 */
+.timeline-card {
+  padding: 40rpx 30rpx;
 }
 
-.icon-copy {
-    margin-left: 10rpx;
-    color: var(--text-light);
-    font-size: 20rpx;
+.node-count {
+  font-size: 20rpx;
+  color: var(--text-light);
+  background: var(--surface-muted);
+  padding: 4rpx 16rpx;
+  border-radius: 999rpx;
 }
 
-.trace-item-desc {
-    margin-top: 8rpx;
-    font-size: 22rpx;
-    line-height: 1.5;
-    color: var(--text-sub);
+.trace-tree {
+  margin-top: 40rpx;
+  padding-left: 20rpx;
 }
 
-.empty-tree {
-    text-align: center;
-    color: var(--text-sub);
-    font-size: 23rpx;
-    padding: 14rpx 0;
+.tree-node {
+  margin-bottom: 40rpx;
+  padding: 30rpx;
+  position: relative;
+  margin-left: 40rpx;
+}
+
+.node-connector {
+  position: absolute;
+  left: -40rpx;
+  top: 0;
+  height: 100%;
+  width: 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vertical-line {
+  width: 2rpx;
+  background: var(--border-color);
+  flex: 1;
+}
+
+.node-dot {
+  width: 16rpx;
+  height: 16rpx;
+  background: var(--border-strong);
+  border-radius: 50%;
+  margin-top: 40rpx;
+  z-index: 2;
+  border: 4rpx solid #fff;
+}
+
+.tree-node:last-child .vertical-line {
+  display: none;
+}
+
+.node-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.proc-type {
+  font-size: 22rpx;
+  color: var(--secondary-cyan);
+  background: rgba(77, 182, 172, 0.1);
+  padding: 4rpx 16rpx;
+  border-radius: 6rpx;
+  font-weight: 700;
+}
+
+.detail-link {
+  font-size: 20rpx;
+  color: var(--text-light);
+}
+
+.node-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 12rpx;
+}
+
+.node-batch-row {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  font-size: 22rpx;
+  margin-bottom: 12rpx;
+}
+
+.node-batch-row .label {
+  color: var(--text-light);
+}
+
+.node-batch-row .value {
+  color: var(--text-sub);
+  font-family: monospace;
+}
+
+.node-desc {
+  font-size: 22rpx;
+  color: var(--text-light);
+  line-height: 1.6;
+  background: rgba(0,0,0,0.02);
+  padding: 12rpx;
+  border-radius: 8rpx;
+}
+
+.trace-footer {
+  text-align: center;
+  font-size: 20rpx;
+  color: var(--text-light);
+  margin-top: 40rpx;
+  opacity: 0.6;
+}
+
+.empty-icon-box {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+  opacity: 0.2;
 }

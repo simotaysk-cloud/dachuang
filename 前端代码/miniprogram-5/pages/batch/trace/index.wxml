@@ -1,40 +1,70 @@
 <view class="page-container trace-page">
-    <view class="header trace-header">
-        <view class="title">批次溯源图谱</view>
-        <view class="desc">当前节点：{{currentBatchNo}}</view>
+    <view class="node-bg-trace"></view>
+    
+    <view class="header">
+        <view class="title">数字化溯源图谱</view>
+        <view class="desc">本草从田间到指尖的全生命周期链条</view>
     </view>
 
-    <view class="card trace-card">
-        <view class="section-title">当前批次</view>
-        <view class="trace-root">
-            <view class="trace-root-title">{{rootBatch.name || '未知名称'}}</view>
-            <view class="trace-root-batch" bindtap="copy" data-text="{{rootBatch.batchNo}}">
-                {{rootBatch.batchNo || '-'}}
+    <!-- 溯源根节点 -->
+    <view class="card glass-card root-node-section">
+        <view class="node-tag">溯源起点 (源头批次)</view>
+        <view class="root-info">
+            <view class="root-avatar">
+                <view class="pulse-ring"></view>
+                <text class="avatar-text">源</text>
             </view>
-
+            <view class="root-details">
+                <view class="root-name">{{rootBatch.name || '核心原材'}}</view>
+                <view class="root-batch-box" bindtap="copy" data-text="{{rootBatch.batchNo}}">
+                    <text class="label">存证编号：</text>
+                    <text class="value">{{rootBatch.batchNo || '-'}}</text>
+                </view>
+            </view>
         </view>
     </view>
 
-    <view class="card trace-card">
-        <view class="section-title">下游节点</view>
-        <view class="empty-tree" wx:if="{{!tree || tree.length === 0}}">暂无后续加工记录</view>
+    <!-- 溯源脉络 -->
+    <view class="card glass-card timeline-card">
+        <view class="section-divider">
+            <view class="section-title">后续流通与加工脉络</view>
+            <view class="node-count" wx:if="{{tree.length}}">链路深度: {{tree.length}}层</view>
+        </view>
 
-        <view class="trace-timeline" wx:if="{{tree && tree.length > 0}}">
-            <view class="trace-item" wx:for="{{tree}}" wx:key="childBatchNo" bindtap="traceChild" data-batch="{{item.childBatchNo}}">
-                <view class="trace-item-head">
-                    <view class="process-tag">{{item.processType || '加工'}}</view>
-                    <view class="detail-btn" catchtap="viewDetail" data-item="{{item}}">详情</view>
+        <view class="empty-state" wx:if="{{!tree || tree.length === 0}}">
+            <view class="empty-icon-box">🛡️</view>
+            <view>该批次为末端成品，暂无下游溯源数据</view>
+        </view>
+
+        <view class="trace-tree" wx:if="{{tree && tree.length > 0}}">
+            <view class="tree-node glass-card" wx:for="{{tree}}" wx:key="childBatchNo" bindtap="traceChild" data-batch="{{item.childBatchNo}}">
+                <view class="node-connector">
+                    <view class="vertical-line"></view>
+                    <view class="node-dot"></view>
                 </view>
+                
+                <view class="node-main">
+                    <view class="node-header">
+                        <text class="proc-type">{{item.processType || '精细加工'}}</text>
+                        <view class="detail-link" catchtap="viewDetail" data-item="{{item}}">
+                            详情识别码 >
+                        </view>
+                    </view>
 
-                <view class="trace-item-title">{{item.childName || '-'}}</view>
+                    <view class="node-title">{{item.childName || '-'}}</view>
 
-                <view class="trace-item-batch" catchtap="copy" data-text="{{item.childBatchNo}}">
-                    {{item.childBatchNo || '-'}}
-                    <text class="icon-copy">复制</text>
+                    <view class="node-batch-row" catchtap="copy" data-text="{{item.childBatchNo}}">
+                        <text class="label">衍生批次:</text>
+                        <text class="value">{{item.childBatchNo || '-'}}</text>
+                    </view>
+
+                    <view class="node-desc">{{item.details || '已录入数字化摘要'}}</view>
                 </view>
-
-                <view class="trace-item-desc">{{item.details || '无详情'}}</view>
             </view>
         </view>
+    </view>
+    
+    <view class="trace-footer">
+        数据已经腾讯云至信链存证安全加密 🛡️
     </view>
 </view>

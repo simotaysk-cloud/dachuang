@@ -1,0 +1,5 @@
+<view class="user-info-tag" wx:if="{{token}}">
+  <view class="user-avatar">{{username[0]}}</view>
+  <view class="user-info-name">{{username}}</view>
+  <view class="user-info-role">{{roleName}}</view>
+</view>

@@ -21,7 +21,8 @@
     "pages/line-work/index",
     "pages/logs/logs",
     "pages/user-mgmt/index",
-    "pages/web-dashboard/index"
+    "pages/web-dashboard/index",
+    "pages/mine/index"
   ],
   "subPackages": [],
   "window": {

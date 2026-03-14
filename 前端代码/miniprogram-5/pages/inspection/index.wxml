@@ -1,37 +1,74 @@
-<view class="page-container">
+<view class="page-container inspection-page">
+    <view class="ink-blob-top"></view>
+    
     <view class="header">
         <view class="title">质检中心</view>
-        <view class="desc">发布与管理药材的质量检测报告</view>
+        <view class="desc">中药材质量安全监测与数字化认证</view>
     </view>
-    <!-- 列表 -->
-    <view class="card">
-        <view class="section-title">质检记录</view>
-        <view class="search-bar search-bar-paired">
-            <input class="input-inline" placeholder="输入批次号查询" value="{{queryNo}}" bindinput="onQueryInput" />
-            <button class="btn-small" bindtap="query">查询</button>
+
+    <!-- 核心质检指令 -->
+    <view class="card glass-card qc-hero-section">
+        <view class="section-divider">
+            <view class="section-title">质检作业</view>
+            <view class="safe-badge"><icon type="success_no_circle" size="14" color="#2E7D32"></icon>合规认证中</view>
         </view>
-        <view class="proc-hero">
-            <button class="btn btn-primary btn-hero" bindtap="onScanStart">扫码质检</button>
-            <view class="proc-hint">扫码填入被检批次号，提交后将生成新批次并生成新二维码</view>
-        </view>
-        <view class="btn-group" style="margin-bottom: 20rpx;">
-            <button class="btn btn-outline" bindtap="startCreate">手工质检</button>
-            <button class="btn btn-outline" bindtap="refreshList">刷新列表</button>
-        </view>
-        <!-- 列表内容 -->
-        <view class="list" wx:if="{{records && records.length > 0}}">
-            <view class="list-item proc-list-item" wx:for="{{records}}" wx:key="id" bindtap="editFromList" data-item="{{item}}">
-                <view class="list-main">
-                    <view class="list-title proc-list-title">ID: #{{item.id}}</view>
-                    <view class="list-sub proc-list-sub">
-                        批次: {{item.batchNo || '-'}}
-                        <text wx:if="{{item.result}}"> 结果: {{item.result}}</text>
-                    </view>
-                    <view class="list-meta">质检员: {{item.inspector || '-'}}</view>
-                </view>
-                <view class="list-action">详情</view>
+        
+        <view class="qc-scan-box" bindtap="onScanStart">
+            <view class="scan-frame">
+                <view class="scan-bar"></view>
+                <view class="qr-placeholder"></view>
+            </view>
+            <view class="scan-info">
+                <view class="main-label">扫码执行质检</view>
+                <view class="sub-label">扫描药材批次 录入实验室检测结论</view>
             </view>
         </view>
-        <view class="empty" wx:if="{{(!records || records.length === 0) && !loading}}">暂无记录</view>
+        
+        <view class="action-row">
+            <button class="btn btn-outline" bindtap="startCreate">手工录入报告</button>
+            <button class="btn btn-outline" bindtap="refreshList">同步台账记录</button>
+        </view>
+    </view>
+
+    <!-- 记录台账 -->
+    <view class="card glass-card">
+        <view class="section-title">历次质检档案</view>
+        
+        <view class="search-section">
+            <view class="search-bar">
+                <input class="input-inline" placeholder="输入待查批次号" value="{{queryNo}}" bindinput="onQueryInput" />
+                <button class="btn-small search-btn" bindtap="query">检索</button>
+            </view>
+        </view>
+
+        <!-- 列表内容 -->
+        <view class="records-container" wx:if="{{records && records.length > 0}}">
+            <view class="record-card glass-card {{item.result === '合格' ? 'status-pass' : 'status-pending'}}" wx:for="{{records}}" wx:key="id" bindtap="editFromList" data-item="{{item}}">
+                <view class="record-body">
+                    <view class="record-header">
+                        <text class="record-id">报告编号 #{{item.id}}</text>
+                        <text class="record-result-tag">{{item.result || '审核中'}}</text>
+                    </view>
+                    <view class="record-content">
+                        <view class="content-item">
+                            <text class="c-label">受检批次：</text>
+                            <text class="c-value">{{item.batchNo || '数据缺失'}}</text>
+                        </view>
+                        <view class="content-item">
+                            <text class="c-label">质检负责人：</text>
+                            <text class="c-value">{{item.inspector || '待指派'}}</text>
+                        </view>
+                    </view>
+                </view>
+                <view class="record-footer">
+                    <view class="view-detail">查看电子证书 &gt;</view>
+                </view>
+            </view>
+        </view>
+        
+        <view class="empty-state" wx:if="{{(!records || records.length === 0) && !loading}}">
+            <view class="empty-cert">📜</view>
+            <view>暂未查询到相关的质检档案</view>
+        </view>
     </view>
 </view>

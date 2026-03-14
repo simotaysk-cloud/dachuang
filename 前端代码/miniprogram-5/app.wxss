@@ -1,27 +1,29 @@
 /** app.wxss */
 page {
-  --primary-color: #2f4f6f;
-  --primary-strong: #1f4a72;
-  --accent-color: #c74636;
-  --bg-color: #edf3f8;
-  --card-bg: #ffffff;
-  --surface-soft: #f8fafd;
-  --surface-muted: #f2f6fb;
-  --text-main: #233547;
-  --text-sub: #5f6f80;
-  --text-light: #8a99a9;
-  --border-color: #d9e4ee;
-  --border-strong: #cbd8e6;
-  --layout-gap: 16rpx;
-  --radius-sm: 10rpx;
-  --radius-md: 14rpx;
-  --radius-lg: 18rpx;
-  --card-shadow: 0 10rpx 26rpx rgba(15, 23, 42, 0.05);
+  /* 新中式科技感溯源系统色板 */
+  --primary-color: #2E7D32;    /* 翡翠绿 */
+  --primary-strong: #1B5E20;  /* 浓墨绿 */
+  --accent-color: #4DB6AC;    /* 草本青 */
+  --bg-color: #F4F7F4;        /* 清新骨白 */
+  --card-bg: rgba(255, 255, 255, 0.85); /* 磨砂底色 */
+  --surface-soft: #F9FBF9;
+  --surface-muted: #F1F4F1;
+  --text-main: #1A2E1A;       /* 深墨绿黑 */
+  --text-sub: #556B55;        /* 草本灰 */
+  --text-light: #8DA38D;      /* 浅草灰 */
+  --border-color: #E0E8E0;    /* 极淡绿边 */
+  --border-strong: #C8D6C8;   /* 中性绿边 */
+  --layout-gap: 20rpx;
+  --radius-sm: 12rpx;
+  --radius-md: 20rpx;
+  --radius-lg: 32rpx;
+  --card-shadow: 0 12rpx 40rpx rgba(46, 125, 50, 0.08);
+  --glass-blur: blur(15px);
 
   min-height: 100%;
   background-color: var(--bg-color);
   color: var(--text-main);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
 }
 
 .page-container {
@@ -55,24 +57,28 @@ page {
 .card {
   width: 100%;
   box-sizing: border-box;
-  margin-bottom: 20rpx;
-  padding: 24rpx;
+  margin-bottom: 30rpx;
+  padding: 32rpx;
   border-radius: var(--radius-lg);
-  border: 2rpx solid rgba(44, 62, 80, 0.08);
+  border: 1rpx solid rgba(255, 255, 255, 0.4);
   background: var(--card-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   box-shadow: var(--card-shadow);
   display: flex;
   flex-direction: column;
 }
 
 .section-title {
-  margin-bottom: 16rpx;
-  padding-left: 12rpx;
-  border-left: 6rpx solid var(--accent-color);
-  font-size: 30rpx;
+  margin-bottom: 24rpx;
+  padding-left: 20rpx;
+  border-left: 8rpx solid var(--primary-color);
+  font-size: 34rpx;
   font-weight: 700;
   line-height: 1.2;
-  color: var(--primary-color);
+  color: var(--primary-strong);
+  display: flex;
+  align-items: center;
 }
 
 .section-title+.section-title {
@@ -209,8 +215,10 @@ page {
 }
 
 .btn-primary {
-  background: var(--primary-color);
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
   color: #fff;
+  font-weight: 600;
+  box-shadow: 0 10rpx 20rpx rgba(46, 125, 50, 0.15);
 }
 
 .btn-warn {

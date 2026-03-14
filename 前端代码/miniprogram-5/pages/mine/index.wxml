@@ -1,0 +1,82 @@
+<view class="page-container mine-page">
+  <!-- Profile Card -->
+  <view class="profile-card tcm-card">
+    <view class="profile-info">
+      <view class="profile-avatar">{{username[0] || 'U'}}</view>
+      <view class="profile-details">
+        <view class="profile-name">{{username || '未登录'}}</view>
+        <view class="profile-role">{{roleName}}</view>
+      </view>
+      <view class="profile-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- Menu List -->
+  <view class="mine-menu">
+    <view class="menu-item tcm-card">
+      <view class="menu-icon">📜</view>
+      <view class="menu-text">
+        <view class="menu-title">我的收藏记录</view>
+        <view class="menu-subtitle">我的收藏记录、拍时记录</view>
+      </view>
+      <view class="menu-action">📋</view>
+    </view>
+
+    <view class="menu-item tcm-card">
+      <view class="menu-icon">👣</view>
+      <view class="menu-text">
+        <view class="menu-title">下道德的步珠</view>
+        <view class="menu-subtitle">何理经进拍时步珠</view>
+      </view>
+      <view class="menu-action">👣</view>
+    </view>
+
+    <view class="menu-item tcm-card">
+      <view class="menu-icon">📝</view>
+      <view class="menu-text">
+        <view class="menu-title">健康词厉</view>
+        <view class="menu-subtitle">健康的的待提示示標</view>
+      </view>
+      <view class="menu-action">📝</view>
+    </view>
+  </view>
+
+  <!-- Discovery Section -->
+  <view class="discovery-section">
+    <view class="section-header">
+      <view class="tcm-title" style="font-size: 32rpx;">探索</view>
+      <view class="section-desc">推荐在人既往文章，练刺疼和刺痛</view>
+    </view>
+
+    <view class="discovery-list">
+      <view class="discovery-card tcm-card">
+        <image class="discovery-thumb" src="/assets/tcm_herb.png" mode="aspectFill" />
+        <view class="discovery-info">
+          <view class="discovery-title">人参与能量</view>
+          <view class="discovery-excerpt">人生弟独独独的的良独姨康，泰派道，何统济贯和链序苏苏的明...</view>
+          <view class="discovery-meta">格苏表</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Custom Tabbar -->
+  <view class="tcm-tabbar">
+    <view class="tab-item" bindtap="navTo" data-url="/pages/index/index">
+      <view class="tab-icon">🏠</view>
+      <view class="tab-label">首页</view>
+    </view>
+    <view class="tab-item" bindtap="navTo" data-url="/pages/batch/index">
+      <view class="tab-icon">📦</view>
+      <view class="tab-label">生物</view>
+    </view>
+    <view class="tab-item" bindtap="navTo" data-url="/pages/web-dashboard/index">
+      <view class="tab-icon">📊</view>
+      <view class="tab-label">网络</view>
+    </view>
+    <view class="tab-item active">
+      <view class="tab-icon">👤</view>
+      <view class="tab-label">我的</view>
+    </view>
+  </view>
+</view>
