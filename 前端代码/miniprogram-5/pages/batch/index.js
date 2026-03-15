@@ -107,8 +107,12 @@ Page({
                 const tempFilePath = res.tempFiles[0].tempFilePath
                 wx.showLoading({ title: '上传中...' })
                 try {
-                    const uploadRes = await api.uploadFile(tempFilePath)
-                    that.setData({ 'form.imageUrl': uploadRes.data }) // Assuming backend returns { code: 200, data: "url" }
+                    const uploadRes = await api.uploadFile(tempFilePath, { quiet: true })
+                    const url = uploadRes?.data?.url || uploadRes?.data || ''
+                    if (url) {
+                        const fullUrl = url.startsWith('/') ? `${api.baseUrl}${url}` : url
+                        that.setData({ 'form.imageUrl': fullUrl })
+                    }
                     wx.hideLoading()
                 } catch (e) {
                     wx.hideLoading()
@@ -285,6 +289,10 @@ Page({
 
     hideQrModal() {
         this.setData({ showQrModal: false })
+    },
+
+    return() {
+        // Dummy handler for catchtap="return" in WXML to prevent event bubbling
     },
 
     viewTrace() {

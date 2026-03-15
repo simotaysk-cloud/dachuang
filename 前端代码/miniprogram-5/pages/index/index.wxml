@@ -9,6 +9,26 @@
     </view>
   </view>
 
+  <!-- 供应链全流程可视化 -->
+  <view class="flow-section" wx:if="{{token}}">
+    <view class="supply-chain-flow glass-card">
+      <view class="flow-nodes">
+        <block wx:for="{{flowNodes}}" wx:key="id">
+          <!-- 节点 -->
+          <view class="flow-node {{item.active ? 'active' : ''}}">
+            <view class="node-dot"></view>
+            <view class="node-name">{{item.name}}</view>
+          </view>
+          <!-- 连接线 (物流) - 最后一个节点后不需要 -->
+          <view class="flow-connector {{logisticsActive ? 'active' : ''}}" wx:if="{{index < 4}}">
+            <view class="connector-line"></view>
+            <view class="connector-arrow" wx:if="{{logisticsActive}}"></view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+
   <!-- 概览看板 -->
   <view class="card glass-card overview-card">
     <view class="section-title">实时概览</view>
@@ -23,7 +43,7 @@
       <view class="stat-cell">
         <view class="stat-icon login-dot {{token ? 'active' : ''}}"></view>
         <view class="stat-info">
-          <view class="stat-value" style="max-width: 180rpx; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{token ? username : '待登录'}}</view>
+          <view class="stat-value">{{token ? username : '待登录'}}</view>
           <view class="stat-label">{{token ? roleName : '身份认证'}}</view>
         </view>
       </view>

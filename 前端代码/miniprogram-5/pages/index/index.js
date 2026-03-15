@@ -7,9 +7,11 @@ Page({
     baseUrl: api.baseUrl,
     token: api.token,
     role: api.role,
-    username: api.username,
-    roleName: api.getRoleName(api.role),
-    menuAccess: getMenuAccess(api.role)
+    username: '用户名：' + (api.username || '待登录'),
+    roleName: '用户身份：' + api.getRoleName(api.role),
+    menuAccess: getMenuAccess(api.role),
+    flowNodes: [],
+    logisticsActive: false
   },
 
   onLoad() {
@@ -17,15 +19,29 @@ Page({
   },
 
   onShow() {
-    // 每次回来刷新 token 状态
+    const r = (api.role || '').toUpperCase()
     this.setData({
       baseUrl: api.baseUrl,
       token: api.token,
       role: api.role,
-      username: api.username,
-      roleName: api.getRoleName(api.role),
-      menuAccess: getMenuAccess(api.role)
+      username: '用户名：' + (api.username || '待登录'),
+      roleName: '用户身份：' + api.getRoleName(api.role),
+      menuAccess: getMenuAccess(api.role),
+      flowNodes: this.getFlowNodes(api.role),
+      logisticsActive: r === 'LOGISTICS' || r === 'ADMIN'
     })
+  },
+
+  getFlowNodes(role) {
+    const r = (role || '').toUpperCase()
+    const isAdmin = r === 'ADMIN' || r === 'REGULATOR'
+    return [
+      { id: 'origin', name: '资源产地', active: isAdmin || r === 'FARMER' },
+      { id: 'inspect1', name: '原料质检', active: isAdmin || r === 'FARMER' || r === 'QUALITY' },
+      { id: 'process', name: '深加工', active: isAdmin || r === 'MANUFACTURER' || r === 'FACTORY' },
+      { id: 'inspect2', name: '成品检验', active: isAdmin || r === 'QUALITY' || r === 'MANUFACTURER' },
+      { id: 'terminal', name: '终端溯源', active: isAdmin }
+    ]
   },
 
   onBaseUrlInput(e) {

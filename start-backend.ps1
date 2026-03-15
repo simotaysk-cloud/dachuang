@@ -24,7 +24,7 @@ if ($springbootDir) {
     echo "Starting Spring Boot on http://127.0.0.1:8091 (Using Local MySQL)"
     $mavenArgs = @(
         "spring-boot:run",
-        "-Dspring-boot.run.arguments=--server.port=8091 --spring.profiles.active=dev --app.mock-data.enabled=true --spring.datasource.url=jdbc:mysql://localhost:3306/dachuang?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true --spring.datasource.username=root --spring.datasource.password= --spring.flyway.enabled=true"
+        "-Dspring-boot.run.arguments=--server.port=8091 --spring.profiles.active=dev --app.mock-data.enabled=true --app.public-base-url=http://146.56.231.239 --spring.datasource.url=jdbc:mysql://localhost:3306/dachuang?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true --spring.datasource.username=root --spring.datasource.password= --spring.flyway.enabled=true"
     )
     mvn $mavenArgs
 }

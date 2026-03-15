@@ -21,8 +21,11 @@ public class AuthController {
 
     private final WxAuthService wxAuthService;
 
-    @PostMapping("/login")
-    public Result<AuthResponse> login(@Valid @RequestBody AuthRequest request) {
+    @RequestMapping(value = "/login", method = {org.springframework.web.bind.annotation.RequestMethod.POST, org.springframework.web.bind.annotation.RequestMethod.GET})
+    public Result<AuthResponse> login(@Valid @RequestBody(required = false) AuthRequest request, jakarta.servlet.http.HttpServletRequest httpServletRequest) {
+        if ("GET".equalsIgnoreCase(httpServletRequest.getMethod())) {
+            return Result.error(405, "Redirect detected (GET): Please check server SSL/Nginx configuration. Ensure you are using HTTP on Port 80 without redirects.");
+        }
         AuthResponse response = wxAuthService.login(request.getUsername(), request.getPassword());
         return Result.success(response);
     }
