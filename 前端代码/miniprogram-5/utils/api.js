@@ -1,4 +1,4 @@
-const DEFAULT_API_BASE_URL = 'http://146.56.231.239:8091'
+const DEFAULT_API_BASE_URL = 'https://146.56.231.239'
 const BASE_URL_STORAGE_KEY = 'baseUrl'
 const INVALID_BASE_URLS = new Set([
     'https://api.example.com',
@@ -188,12 +188,13 @@ const api = {
         return this.request('/api/v1/batches')
     },
 
-    uploadFile(filePath) {
+    uploadFile(filePath, options = {}) {
         return new Promise((resolve, reject) => {
             const header = {}
             if (this.token) {
                 header.Authorization = `Bearer ${this.token}`
             }
+            const quiet = options.quiet || false
             wx.uploadFile({
                 url: `${this.baseUrl}/api/v1/files/upload`,
                 filePath,
@@ -209,18 +210,18 @@ const api = {
                     const error = { statusCode: res.statusCode, data: payload }
                     if (res.statusCode >= 200 && res.statusCode < 300) {
                         if (payload && typeof payload === 'object' && 'code' in payload && payload.code !== 200) {
-                            wx.showToast({ title: payload?.message || '上传失败', icon: 'none' })
+                            if (!quiet) wx.showToast({ title: payload?.message || '上传失败', icon: 'none' })
                             reject(error)
                             return
                         }
                         resolve(payload)
                         return
                     }
-                    wx.showToast({ title: payload?.message || '上传失败', icon: 'none' })
+                    if (!quiet) wx.showToast({ title: payload?.message || '上传失败', icon: 'none' })
                     reject(error)
                 },
                 fail: (err) => {
-                    wx.showToast({ title: '上传失败', icon: 'none' })
+                    if (!quiet) wx.showToast({ title: '上传失败', icon: 'none' })
                     reject(err)
                 }
             })

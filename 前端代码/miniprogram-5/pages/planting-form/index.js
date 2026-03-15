@@ -370,17 +370,18 @@ Page({
         try {
             if (imageFilePath) {
                 const up = await api.uploadFile(imageFilePath)
-                const url = up?.data?.url ? String(up.data.url) : ''
+                const url = up?.data?.url || up?.data || ''
                 if (url) {
-                    // Store relative URL in DB; preview uses baseUrl at runtime.
-                    this.setData({ 'form.imageUrl': url, imageFilePath: '' })
+                    const fullUrl = url.startsWith('/') ? `${api.baseUrl}${url}` : url
+                    this.setData({ 'form.imageUrl': fullUrl, imageFilePath: '' })
                 }
             }
             if (audioFilePath) {
                 const up = await api.uploadFile(audioFilePath)
-                const url = up?.data?.url ? String(up.data.url) : ''
+                const url = up?.data?.url || up?.data || ''
                 if (url) {
-                    this.setData({ 'form.audioUrl': url, audioFilePath: '' })
+                    const fullUrl = url.startsWith('/') ? `${api.baseUrl}${url}` : url
+                    this.setData({ 'form.audioUrl': fullUrl, audioFilePath: '' })
                 }
             }
         } finally {

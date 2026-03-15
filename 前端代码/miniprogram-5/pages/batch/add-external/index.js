@@ -41,7 +41,11 @@ Page({
                 wx.showLoading({ title: '上传中...' })
                 try {
                     const uploadRes = await api.uploadFile(tempFilePath)
-                    that.setData({ 'form.imageUrl': uploadRes.data })
+                    const url = uploadRes?.data?.url || uploadRes?.data || ''
+                    if (url) {
+                        const fullUrl = url.startsWith('/') ? `${api.baseUrl}${url}` : url
+                        that.setData({ 'form.imageUrl': fullUrl })
+                    }
                     wx.hideLoading()
                 } catch (e) {
                     wx.hideLoading()
