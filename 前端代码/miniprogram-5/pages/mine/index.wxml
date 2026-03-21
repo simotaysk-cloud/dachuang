@@ -50,7 +50,7 @@
 
     <view class="discovery-list">
       <view class="discovery-card tcm-card">
-        <image class="discovery-thumb" src="/assets/tcm_herb.png" mode="aspectFill" />
+        <image class="discovery-thumb" src="https://cpuzhbc.cn/assets/tcm_herb.png" mode="aspectFill" />
         <view class="discovery-info">
           <view class="discovery-title">人参与能量</view>
           <view class="discovery-excerpt">人生弟独独独的的良独姨康，泰派道，何统济贯和链序苏苏的明...</view>

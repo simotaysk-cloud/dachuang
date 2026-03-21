@@ -28,3 +28,13 @@ env/
 
 # Logs
 **/*.log
+
+# Temporary deploy scripts and keys
+/*.py
+/*.ps1
+/*.bat
+/*.exe
+/*.sh
+/*.txt
+/certs/
+/qr.png

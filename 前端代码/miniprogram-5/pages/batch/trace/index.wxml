@@ -1,70 +1,341 @@
-<view class="page-container trace-page">
-    <view class="node-bg-trace"></view>
+<view class="page-container trace-page {{scanCompleted ? 'scanned' : ''}}">
+    <!-- 背景流光与数字网格 -->
+    <view class="aurora-bg-trace"></view>
     
-    <view class="header">
-        <view class="title">数字化溯源图谱</view>
-        <view class="desc">本草从田间到指尖的全生命周期链条</view>
+    <!-- 1. 产品主图与鉴伪首屏 (Hero Section) -->
+    <view class="hero-section">
+        <view class="product-showcase">
+            <view class="product-glow"></view>
+            <view class="product-img-box">
+                <view class="mock-product">
+                    <text class="herb-icon">🌿</text>
+                    <view class="herb-name">长白山野山参</view>
+                    <view class="herb-batch">No. {{batchNo}}</view>
+                </view>
+            </view>
+
+            <!-- 激光扫描鉴伪动画 -->
+            <view class="laser-scanner" wx:if="{{!scanCompleted}}">
+                <view class="laser-beam"></view>
+                <view class="scan-text">正在通过至信链获取源流数据...</view>
+            </view>
+            
+            <!-- 真品认证徽章 -->
+            <view class="auth-badge {{scanCompleted ? 'show' : ''}}">
+                <text class="icon">🛡️</text> 真品认证
+            </view>
+        </view>
+        
+        <!-- 核心信任指标 -->
+        <view class="trust-metrics {{scanCompleted ? 'fade-in-up' : 'hidden'}}">
+            <view class="metric-item glass-card style1">
+                <view class="value">99<text class="unit">分</text></view>
+                <view class="label">安全评分</view>
+            </view>
+            <view class="metric-item glass-card style2">
+                <view class="value">{{mockCert.txCount || 5}}<text class="unit">次</text></view>
+                <view class="label">链上确权</view>
+            </view>
+            <view class="metric-item glass-card style3">
+                <view class="value">365<text class="unit">天</text></view>
+                <view class="label">自然生长</view>
+            </view>
+        </view>
     </view>
 
-    <!-- 溯源根节点 -->
-    <view class="card glass-card root-node-section">
-        <view class="node-tag">溯源起点 (源头批次)</view>
-        <view class="root-info">
-            <view class="root-avatar">
-                <view class="pulse-ring"></view>
-                <text class="avatar-text">源</text>
+    <!-- 2. 本草典籍与生态环境 (TCM & Origin) -->
+    <view class="story-section {{scanCompleted ? 'fade-in-up delay-1' : 'hidden'}}">
+        <view class="section-title-box">
+            <view class="title-cn">数字本草 · 药性溯源</view>
+            <view class="title-en">Digital Herb & Origin Traceability</view>
+        </view>
+
+        <view class="tcm-cards">
+            <!-- 药性归经 -->
+            <view class="tcm-card glass-card row-card">
+                <view class="tcm-nature">
+                    <view class="big-char">温</view>
+                    <view class="tags">
+                        <text class="tag">性{{tcmProperties.nature}}</text>
+                        <text class="tag">味{{tcmProperties.taste}}</text>
+                    </view>
+                </view>
+                <view class="tcm-details">
+                    <view class="detail-row"><text class="label">核心归经</text><text class="value">{{tcmProperties.meridian}}</text></view>
+                    <view class="detail-row"><text class="label">有效成分</text><text class="value highlight">{{tcmProperties.ingredients[0].name}} {{tcmProperties.ingredients[0].value}}%</text></view>
+                </view>
             </view>
-            <view class="root-details">
-                <view class="root-name">{{rootBatch.name || '核心原材'}}</view>
-                <view class="root-batch-box" bindtap="copy" data-text="{{rootBatch.batchNo}}">
-                    <text class="label">存证编号：</text>
-                    <text class="value">{{rootBatch.batchNo || '-'}}</text>
+            
+            <!-- 双列信息区 -->
+            <view class="twin-cards">
+                <!-- 经典配伍 -->
+                <view class="tcm-card glass-card twin-card peiwu-card">
+                    <view class="card-subtitle">经典配伍</view>
+                    <view class="peiwu-list">
+                        <view class="peiwu-item" wx:for="{{tcmProperties.combinations}}" wx:key="index">
+                            <view class="dot"></view>{{item}}
+                        </view>
+                    </view>
+                </view>
+
+                <!-- 生态指标 -->
+                <view class="tcm-card glass-card twin-card env-card">
+                    <view class="card-subtitle">生态源产地</view>
+                    <view class="env-grid">
+                        <view class="env-item">
+                            <text class="val">{{envData.altitude}}m</text>
+                            <text class="lbl">海拔</text>
+                        </view>
+                        <view class="env-item">
+                            <text class="val">{{envData.daylight}}</text>
+                            <text class="lbl">日照</text>
+                        </view>
+                        <view class="env-item">
+                            <text class="val">pH {{envData.soilPH}}</text>
+                            <text class="lbl">土壤</text>
+                        </view>
+                        <view class="env-item">
+                            <text class="val">{{envData.rainfall}}</text>
+                            <text class="lbl">降水</text>
+                        </view>
+                    </view>
                 </view>
             </view>
         </view>
     </view>
 
-    <!-- 溯源脉络 -->
-    <view class="card glass-card timeline-card">
-        <view class="section-divider">
-            <view class="section-title">后续流通与加工脉络</view>
-            <view class="node-count" wx:if="{{tree.length}}">链路深度: {{tree.length}}层</view>
-        </view>
+    <!-- 3. 数据流水线 -->
+    <view class="section-title-box pipeline-title {{scanCompleted ? 'fade-in-up delay-2' : 'hidden'}}">
+        <view class="title-cn">数据宗谱流水线</view>
+        <view class="title-en">Blockchain Data Pedigree</view>
+    </view>
+    
+    <!-- 榫卯溯源链 (Interlocking Chain) -->
+    <!-- 数字化流水线 (Digital Artery Pipeline) -->
+    <scroll-view class="pipeline-container {{scanCompleted ? 'fade-in delay-3' : 'hidden'}}" scroll-x="true" scroll-with-animation="true">
+        <view class="pipeline-axis">
+            <!-- 动态流动的数据胶囊 (Data Capsules) -->
+            <view class="capsule-emitter">
+                <view class="data-capsule pulse-1"></view>
+                <view class="data-capsule pulse-2"></view>
+            </view>
 
-        <view class="empty-state" wx:if="{{!tree || tree.length === 0}}">
-            <view class="empty-icon-box">🛡️</view>
-            <view>该批次为末端成品，暂无下游溯源数据</view>
-        </view>
+            <!-- 环节工位 (Processing Stations) -->
+            <block wx:for="{{stations}}" wx:key="id">
+                <view class="station {{item.type}}">
+                    <!-- 顶部的工位指示器 -->
+                    <view class="station-indicator">
+                        <view class="dot {{item.active ? 'active' : ''}}"></view>
+                        <view class="line"></view>
+                    </view>
 
-        <view class="trace-tree" wx:if="{{tree && tree.length > 0}}">
-            <view class="tree-node glass-card" wx:for="{{tree}}" wx:key="childBatchNo" bindtap="traceChild" data-batch="{{item.childBatchNo}}">
-                <view class="node-connector">
-                    <view class="vertical-line"></view>
-                    <view class="node-dot"></view>
-                </view>
-                
-                <view class="node-main">
-                    <view class="node-header">
-                        <text class="proc-type">{{item.processType || '精细加工'}}</text>
-                        <view class="detail-link" catchtap="viewDetail" data-item="{{item}}">
-                            详情识别码 >
+                    <view class="station-card glass-card {{item.active ? 'highlight' : ''}}">
+                        <view class="station-header">
+                            <text class="station-icon" style="font-size: 36rpx; margin-right: 16rpx;">{{item.icon}}</text>
+                            <view class="station-info">
+                                <text class="title">{{item.title}}</text>
+                                <text class="time">{{item.time || '等待中'}}</text>
+                            </view>
+                        </view>
+
+                        <view class="station-body">
+                            <view class="record-list">
+                                <view class="record-item" wx:for="{{item.records}}" wx:for-item="rec" wx:key="index">
+                                    <text class="dot">•</text>
+                                    <text class="text">{{rec.content}}</text>
+                                </view>
+                            </view>
+
+                            <!-- 加工状态特有的进度展示 -->
+                            <view class="process-status" wx:if="{{item.type === 'processing' && item.progress}}">
+                                <view class="progress-bar">
+                                    <view class="fill" style="width: {{item.progress}}%"></view>
+                                </view>
+                                <text class="progress-txt">{{item.currentStep}} ({{item.progress}}%)</text>
+                            </view>
                         </view>
                     </view>
 
-                    <view class="node-title">{{item.childName || '-'}}</view>
-
-                    <view class="node-batch-row" catchtap="copy" data-text="{{item.childBatchNo}}">
-                        <text class="label">衍生批次:</text>
-                        <text class="value">{{item.childBatchNo || '-'}}</text>
+                    <!-- 节点间的逻辑核验锁 -->
+                    <view class="verification-joint" wx:if="{{index < stations.length - 1}}" bindtap="verifyLogic" data-index="{{index}}">
+                        <view class="joint-artery"></view>
+                        <view class="lock-unit">
+                            <view class="lock-glow"></view>
+                            <text class="qty-badge">{{item.outputQty}} {{item.unit}}</text>
+                        </view>
                     </view>
-
-                    <view class="node-desc">{{item.details || '已录入数字化摘要'}}</view>
                 </view>
+            </block>
+
+            <!-- 空态展示 -->
+            <view class="empty-pipeline" wx:if="{{!stations || stations.length === 0}}">
+                溯源数据正在链上同步...
+            </view>
+        </view>
+    </scroll-view>
+
+    <!-- 底部详情面板 -->
+    <view class="batch-detail-footer {{showDetail ? 'expanded' : ''}}">
+        <view class="panel-handle" bindtap="toggleDetail">
+            <view class="pill"></view>
+        </view>
+        <view class="footer-content">
+            <view class="main-info">
+                <view class="batch-tag">批次号: {{batchNo}}</view>
+                <view class="hash-tag" bindtap="showBlockCert">
+                    <text class="label">存证鉴权 (点击查看凭证):</text>
+                    <text class="value" style="text-decoration: underline; padding-top:4rpx;">一键核验链上确权证书</text>
+                </view>
+            </view>
+        </view>
+    </view>
+
+    <!-- 区块链存证凭证 Modal -->
+    <view class="modal-mask" wx:if="{{showCertModal}}" bindtap="closeBlockCert">
+        <view class="cert-modal" catchtap="stopProp">
+            <view class="cert-bg"></view>
+            <view class="cert-header">
+                <view class="cert-title">腾讯云至信链</view>
+                <view class="cert-subtitle">数据不可篡改存证凭证</view>
+            </view>
+            <view class="cert-body">
+                <view class="cert-row">
+                    <view class="label">存证主体：</view>
+                    <view class="value auth-text">大创数字本草实验室</view>
+                </view>
+                <view class="cert-row">
+                    <view class="label">溯源批次号：</view>
+                    <view class="value">{{batchNo}}</view>
+                </view>
+                <view class="cert-row">
+                    <view class="label">智能合约地址：</view>
+                    <view class="value hash-text">{{mockCert.contractAddr}}</view>
+                </view>
+                <view class="cert-row">
+                    <view class="label">本次存证区块高度：</view>
+                    <view class="value height-text">{{mockCert.blockHeight}}</view>
+                </view>
+                <view class="cert-row">
+                    <view class="label">确权时间戳：</view>
+                    <view class="value">{{mockCert.timestamp}}</view>
+                </view>
+                <view class="cert-row-col">
+                    <view class="label">SHA-256 数据哈希签章：</view>
+                    <view class="value hash-text hash-box">{{mockCert.txHash}}</view>
+                </view>
+            </view>
+            <view class="cert-footer">
+                <view class="auth-seal">
+                    <view class="seal-inner">链上确权</view>
+                </view>
+                <button class="cert-btn" bindtap="closeBlockCert">完成查验</button>
             </view>
         </view>
     </view>
     
     <view class="trace-footer">
         数据已经腾讯云至信链存证安全加密 🛡️
+    </view>
+
+    <!-- 悬浮区块链动作组 -->
+    <view class="floating-actions">
+        <view class="action-btn cert-btn-float" bindtap="showBlockCert">
+            <view class="badge-text">🛡️ 确权凭证</view>
+        </view>
+        <view class="action-btn viz-btn-float" bindtap="showLedgerViz">
+            <view class="badge-text">🌐 账本可视化</view>
+        </view>
+    </view>
+
+    <!-- 区块链底层账本拓扑可视化 -->
+    <view class="ledger-viz-modal" wx:if="{{showLedgerViz}}">
+        <view class="ledger-header">
+            <view class="title">至信链底层账本全景</view>
+            <view class="subtitle">TrustSQL Topology · Node Consensus</view>
+            <view class="close-btn" bindtap="closeLedgerViz">×</view>
+        </view>
+        
+        <!-- 网络节点层 -->
+        <view class="network-layer">
+            <view class="sec-title">共识节点网络 (Consensus Nodes)</view>
+            <view class="nodes-container">
+                <view class="node-item scanning">
+                    <view class="node-core">工厂</view>
+                    <view class="node-ring"></view>
+                </view>
+                <view class="node-link"></view>
+                <view class="node-item scanning">
+                    <view class="node-core" style="background:#4db6ac;box-shadow:0 0 20rpx #4db6ac;">主链</view>
+                    <view class="node-ring" style="border-color:#4db6ac"></view>
+                </view>
+                <view class="node-link"></view>
+                <view class="node-item scanning">
+                    <view class="node-core">监管</view>
+                    <view class="node-ring"></view>
+                </view>
+            </view>
+            <view class="consensus-status">3/3 Nodes Verified | PBFT Consensus Reached</view>
+        </view>
+
+        <!-- 账本物理结构层 -->
+        <view class="ledger-layer">
+            <view class="sec-title">核心区块结构 (Block Chain)</view>
+            <scroll-view class="blocks-scroll" scroll-x="true" scroll-left="100">
+                <view class="blocks-track">
+                    <!-- Pre-Block -->
+                    <view class="block-model">
+                        <view class="block-header">Block #{{mockCert.blockHeight - 1}}</view>
+                        <view class="block-body">
+                            <view class="hash-line">Prev: 0x8a2f...9c1b</view>
+                            <view class="hash-line">Hash: {{prevHashShort}}</view>
+                            <view class="tx-line">Tx: 142 Payload</view>
+                        </view>
+                    </view>
+
+                    <view class="chain-link">
+                        <view class="link-data"></view>
+                    </view>
+
+                    <!-- Current Block -->
+                    <view class="block-model active">
+                        <view class="block-header">Block #{{mockCert.blockHeight}}</view>
+                        <view class="block-body">
+                            <view class="hash-line">Prev: {{prevHashShort}}</view>
+                            <view class="hash-line highlight">Hash: {{currHashShort}}</view>
+                            <view class="tx-line">Tx: [{{batchNo}}]</view>
+                        </view>
+                        <view class="block-glow"></view>
+                    </view>
+
+                    <view class="chain-link pending">
+                        <view class="link-data"></view>
+                    </view>
+
+                    <!-- Next Block (Pending) -->
+                    <view class="block-model pending">
+                        <view class="block-header">Packing...</view>
+                        <view class="block-body">
+                            <view class="hash-line">Prev: {{currHashShort}}</view>
+                            <view class="loading-bar"></view>
+                        </view>
+                    </view>
+                </view>
+            </scroll-view>
+        </view>
+
+        <!-- 当前交易详情 -->
+        <view class="tx-detail-layer">
+            <view class="sec-title">当前事务报文 (Tx Payload Stream)</view>
+            <scroll-view scroll-y class="code-terminal">
+                <view class="code-line">> INIT TRUSTSQL_TRANSACTION</view>
+                <view class="code-line">> ACTION: "SMART_CONTRACT_INVOKE"</view>
+                <view class="code-line">> BATCH_NO: {{batchNo}}</view>
+                <view class="code-line">> CONTRACT: {{mockCert.contractAddr}}</view>
+                <view class="code-line">> TIMESTAMP: {{mockCert.timestamp}}</view>
+                <view class="code-line">> SHA256_HASH: </view>
+                <view class="code-line" style="color:#ce93d8">{{mockCert.txHash}}</view>
+                <view class="code-line success">> STATUS: [PACKED_IN_BLOCK] & [BROADCASTED_SUCCESSFULLY]</view>
+            </scroll-view>
+        </view>
     </view>
 </view>

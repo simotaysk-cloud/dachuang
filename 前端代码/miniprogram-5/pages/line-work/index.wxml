@@ -49,6 +49,7 @@
         <view class="modal-mask" wx:if="{{showAddModal}}">
             <view class="modal">
                 <view class="modal-title">添加工序</view>
+                <view class="meta" style="color:#27ae60; margin-bottom:16rpx; text-align:left;">💡 提示：此按钮仅用于不扣减库存地记录工步。如需输入物料消耗并分包出新批次，请在外部点击【完工结算】。</view>
                 <view class="field-label">工艺名称</view>
                 <input class="input" placeholder="如：清洗、烘干、取样" value="{{addForm.processType}}" data-form="add" data-field="processType" bindinput="onModalInput" />
                 <view class="field-label">说明（可选）</view>
@@ -66,7 +67,11 @@
         <!-- Settle Modal -->
         <view class="modal-mask" wx:if="{{showSettleModal}}">
             <view class="modal">
-                <view class="modal-title">完工结算</view>
+                <view class="modal-title">完工结算 (分包新码)</view>
+                <view class="field-label">消耗原批次数量 (可选)</view>
+                <input class="input" type="digit" placeholder="例如：投入的千克数" value="{{settleForm.extractedQuantity}}" data-form="settle" data-field="extractedQuantity" bindinput="onModalInput" />
+                <view class="field-label">产出新批次数量 (可选)</view>
+                <input class="input" type="digit" placeholder="例如：产出的千克数" value="{{settleForm.outputQuantity}}" data-form="settle" data-field="outputQuantity" bindinput="onModalInput" />
                 <view class="field-label">下游状态（可选，默认自动生成）</view>
                 <input class="input" placeholder="例如：研磨完成、切片完成、包装完成" value="{{settleForm.statusLabel}}" data-form="settle" data-field="statusLabel" bindinput="onModalInput" />
                 <view class="field-label">生产线名称</view>

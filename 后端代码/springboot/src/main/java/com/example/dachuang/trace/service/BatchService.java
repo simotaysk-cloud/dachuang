@@ -113,6 +113,11 @@ public class BatchService {
             batch.setGs1Code(gs1Service.generateGs1HRI(batch.getGs1LotNo(), batch.getQuantity(), batch.getUnit()));
         }
 
+        // 初始库存逻辑
+        if (batch.getRemainingQuantity() == null) {
+            batch.setRemainingQuantity(batch.getQuantity());
+        }
+
         Batch saved = batchRepository.save(batch);
 
         // Optional: auto-anchor to blockchain in background (disabled by default to
@@ -125,8 +130,32 @@ public class BatchService {
     }
 
     public Batch deriveBatch(String parentBatchNo, String childBatchNo, String stage, String processType,
-            String details, String lineName, String operator) {
+            String details, String lineName, String operator, java.math.BigDecimal extractedQuantity, java.math.BigDecimal outputQuantity) {
         Batch parent = getBatchByNo(parentBatchNo);
+
+        // --- 核心分包加工逻辑 (Mass Balance) ---
+        java.math.BigDecimal toExtract = extractedQuantity;
+        if (toExtract == null) {
+            // 如果前端没有传提取量，默认全额消耗父批次的剩余库存（兼容原有测试逻辑）
+            toExtract = parent.getRemainingQuantity();
+            if (toExtract == null) {
+                toExtract = parent.getQuantity(); // fallback
+            }
+        }
+        
+        java.math.BigDecimal currentRemaining = parent.getRemainingQuantity() != null ? parent.getRemainingQuantity() : parent.getQuantity();
+        if (currentRemaining == null) currentRemaining = java.math.BigDecimal.ZERO;
+
+        if (currentRemaining.compareTo(toExtract) < 0) {
+            throw new BusinessException(400, "分包加工失败：父批次剩余库存不足。当前剩余: " + currentRemaining + "，申请消耗: " + toExtract);
+        }
+
+        // 执行严格扣减
+        parent.setRemainingQuantity(currentRemaining.subtract(toExtract));
+        batchRepository.save(parent); // 保存扣减后的父批次（乐观锁防并发）
+
+        // 确定子批次的产出量
+        java.math.BigDecimal finalOutput = outputQuantity != null ? outputQuantity : toExtract;
 
         String outputNo = childBatchNo;
         if (outputNo == null || outputNo.isBlank()) {
@@ -143,7 +172,8 @@ public class BatchService {
                     .category(parent.getCategory())
                     .origin(parent.getOrigin())
                     .status(parent.getStatus())
-                    .quantity(parent.getQuantity())
+                    .quantity(finalOutput)
+                    .remainingQuantity(finalOutput)
                     .unit(parent.getUnit())
                     .description(parent.getDescription())
                     .imageUrl(parent.getImageUrl())

@@ -58,19 +58,26 @@ if [ ! -f /etc/nginx/ssl/server.crt ]; then
     openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
         -keyout /etc/nginx/ssl/server.key \
         -out /etc/nginx/ssl/server.crt \
-        -subj "/CN=146.56.231.239"
+        -subj "/CN=cpuzhbc.cn"
 fi
 
 echo "[4/5] Testing and restarting Nginx..."
 nginx -t && systemctl restart nginx
 
-echo "[5/5] Starting backend with corrected public URL (no port)..."
+echo "[5/5] Starting backend with explicit dev profile and domain..."
 nohup java -jar /root/app.jar \
-    --app.public-base-url=http://146.56.231.239 \
+    --spring.profiles.active=dev \
+    --app.public-base-url=https://cpuzhbc.cn \
     > /root/backend.log 2>&1 &
 
-echo "Waiting 8 seconds for Spring Boot to start..."
-sleep 8
+echo "Waiting 10 seconds for Spring Boot to start..."
+sleep 10
+
+echo "=== Startup Arguments Check ==="
+ps aux | grep java | grep -v grep
+
+echo "=== Config Check from Log ==="
+grep -i 'public-base-url' /root/backend.log | head -n 5 || echo "No public-base-url found in log"
 
 echo "=== Startup log ==="  
 grep -E 'Started|ERROR|WARN.*port' /root/backend.log | head -10

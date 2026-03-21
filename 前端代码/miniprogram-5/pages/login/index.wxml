@@ -3,13 +3,23 @@
     <view class="ink-blob"></view>
     
     <view class="header login-header">
-        <image class="logo-icon" src="/assets/tcm_herb.png" mode="aspectFit"></image>
+        <image class="logo-icon" src="https://cpuzhbc.cn/assets/tcm_herb.png" mode="aspectFit"></image>
         <view class="title">智汇本草</view>
         <view class="desc">中药材溯源管理平台</view>
     </view>
 
     <view class="card glass-card">
         <view class="section-title">身份验证</view>
+
+        <view class="input-group">
+            <view class="field-label">身份选择</view>
+            <picker bindchange="onRoleChange" value="{{roleIndex}}" range="{{roleOptions}}" range-key="label">
+                <view class="picker-inner">
+                    <text class="picker-value">{{roleOptions[roleIndex].label}}</text>
+                    <text class="picker-arrow">▾</text>
+                </view>
+            </picker>
+        </view>
         
         <view class="input-group">
             <view class="field-label">管理员账号</view>
@@ -35,7 +45,7 @@
         <view class="field-label">后端服务器地址</view>
         <input
             class="input"
-            placeholder="例如：http://146.56.231.239:8091"
+            placeholder="例如：https://cpuzhbc.cn"
             value="{{baseUrl}}"
             bindinput="onBaseUrlInput"
         />
