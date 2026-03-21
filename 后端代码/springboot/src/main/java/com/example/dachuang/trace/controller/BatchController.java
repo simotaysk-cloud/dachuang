@@ -75,7 +75,7 @@ public class BatchController {
             @RequestParam(required = false) String details) {
         return Result
                 .success(batchService.deriveBatch(parentBatchNo, childBatchNo, "PROCESSING", processType, details, null,
-                        null));
+                        null, null, null));
     }
 
     @PostMapping("/{batchNo}/lock-gs1")
@@ -86,6 +86,11 @@ public class BatchController {
     @GetMapping("/{parentBatchNo}/children")
     public Result<List<BatchLineage>> children(@PathVariable String parentBatchNo) {
         return Result.success(batchService.getChildren(parentBatchNo));
+    }
+
+    @GetMapping("/{childBatchNo}/parent")
+    public Result<BatchLineage> parent(@PathVariable String childBatchNo) {
+        return Result.success(batchService.getParentEdge(childBatchNo));
     }
 
     @GetMapping("/leaf-batches")

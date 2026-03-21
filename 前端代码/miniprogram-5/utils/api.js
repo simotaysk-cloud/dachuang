@@ -1,4 +1,4 @@
-const DEFAULT_API_BASE_URL = 'https://146.56.231.239'
+const DEFAULT_API_BASE_URL = 'https://cpuzhbc.cn'
 const BASE_URL_STORAGE_KEY = 'baseUrl'
 const INVALID_BASE_URLS = new Set([
     'https://api.example.com',

@@ -16,10 +16,12 @@ Page({
             factory: '',
             details: '',
             operator: '',
-            imageUrl: ''
+            imageUrl: '',
+            extractedQuantity: '',
+            outputQuantity: ''
         },
-        actionModes: ['追加工序 (同识别码)', '完工结算 (生成新码)'],
-        actionModeIndex: 0
+        actionModes: ['追加工序 (同码记录)', '分包加工 (产生新码)'],
+        actionModeIndex: 1
     },
 
     onActionModeChange(e) {
@@ -38,7 +40,14 @@ Page({
         this.setData({ loading: true })
         try {
             const res = await api.request(`/api/v1/processing/${encodeURIComponent(id)}`)
-            if (res?.data) this.setData({ form: { ...res.data } })
+            if (res?.data) {
+                this.setData({ form: { ...res.data } })
+                if (res.data.parentBatchNo && res.data.parentBatchNo !== res.data.batchNo) {
+                    this.setData({ actionModeIndex: 1 })
+                } else {
+                    this.setData({ actionModeIndex: 0 })
+                }
+            }
         } catch (err) {
             wx.showToast({ title: '加载失败', icon: 'none' })
         } finally {
@@ -61,7 +70,13 @@ Page({
             // For our UI, if it's "Settle Mode", we ensure batchNo is empty so backend generates a new one.
             if (this.data.actionModeIndex == 1) {
                 payload.batchNo = ''
+            } else {
+                delete payload.extractedQuantity
+                delete payload.outputQuantity
             }
+
+            if (payload.extractedQuantity === '') delete payload.extractedQuantity
+            if (payload.outputQuantity === '') delete payload.outputQuantity
 
             if (!payload.batchNo) delete payload.batchNo
 

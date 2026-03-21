@@ -33,6 +33,12 @@ public class ProcessingRecord extends BaseEntity {
         @Column(length = 64)
         private String operator;
 
+        @Column(precision = 19, scale = 6)
+        private java.math.BigDecimal extractedQuantity; // 消耗原批次数量
+        
+        @Column(precision = 19, scale = 6)
+        private java.math.BigDecimal outputQuantity; // 产出新批次数量
+
         @Column(length = 255)
         private String imageUrl; // 加工现场/成品照片
 }

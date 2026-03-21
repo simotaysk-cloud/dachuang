@@ -9,7 +9,16 @@ Page({
         username: '',
         password: '',
         rememberLogin: false,
-        baseUrl: ''
+        baseUrl: '',
+        roleOptions: [
+            { label: '种植户', key: 'FARMER' },
+            { label: '加工企业/厂家', key: 'MANUFACTURER' },
+            { label: '质检员', key: 'QUALITY' },
+            { label: '物流配送商', key: 'LOGISTICS' },
+            { label: '监管部门', key: 'REGULATOR' },
+            { label: '系统管理员', key: 'ADMIN' }
+        ],
+        roleIndex: 0
     },
 
     onLoad() {
@@ -24,6 +33,10 @@ Page({
         const { field } = e.currentTarget.dataset
         const value = (e.detail.value || '').trim()
         this.setData({ [field]: value })
+    },
+
+    onRoleChange(e) {
+        this.setData({ roleIndex: e.detail.value })
     },
 
     onRememberLoginChange(e) {
@@ -70,6 +83,19 @@ Page({
             wx.hideLoading()
 
             if (loginRes?.data?.token) {
+                const actualRole = (loginRes.data.role || '').toUpperCase()
+                const selectedRole = this.data.roleOptions[this.data.roleIndex].key
+                
+                // Identity Validation
+                if (actualRole !== selectedRole && actualRole !== 'ADMIN') {
+                    wx.hideLoading()
+                    wx.showToast({ title: '身份与账号不匹配', icon: 'none' })
+                    // Clear the session just in case
+                    api.setToken('')
+                    api.setRole('')
+                    return
+                }
+
                 if (this.data.rememberLogin) {
                     wx.setStorageSync(SAVED_USERNAME_KEY, username)
                     wx.setStorageSync(SAVED_PASSWORD_KEY, password)

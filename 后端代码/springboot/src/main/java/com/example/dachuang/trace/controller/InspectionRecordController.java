@@ -41,6 +41,8 @@ public class InspectionRecordController {
                 request.getResult(),
                 request.getDetails(),
                 null,
+                null,
+                null,
                 null);
 
         InspectionRecord record = InspectionRecord.builder()

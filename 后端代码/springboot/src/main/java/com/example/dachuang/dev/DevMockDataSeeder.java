@@ -187,15 +187,15 @@ public class DevMockDataSeeder implements CommandLineRunner {
 
                 // Create deterministic processing branches using deriveBatch (so lineage
                 batchService.deriveBatch(ROOT_BATCH_NO, PROC_A_BATCH_NO, "PROCESSING", "SLICE", "切片工艺分支", "切片一车间",
-                                "李四");
-                batchService.deriveBatch(ROOT_BATCH_NO, PROC_B_BATCH_NO, "PROCESSING", "DRY", "晒干工艺分支", "晒场二区", "王五");
+                                "李四", null, null);
+                batchService.deriveBatch(ROOT_BATCH_NO, PROC_B_BATCH_NO, "PROCESSING", "DRY", "晒干工艺分支", "晒场二区", "王五", null, null);
 
                 // Pre-create inspection branches (derive stage INSPECTION). Records added in
                 // seedInspectionBranching.
                 batchService.deriveBatch(PROC_A_BATCH_NO, INSP_A_GRADE_A_BATCH_NO, "INSPECTION", "GRADE_A", "分级为 A",
-                                "质检站1", "赵六");
+                                "质检站1", "赵六", null, null);
                 batchService.deriveBatch(PROC_B_BATCH_NO, INSP_B_REWORK_BATCH_NO, "INSPECTION", "REWORK", "返工处理",
-                                "返修车间", "钱七");
+                                "返修车间", "钱七", null, null);
 
                 // Sanity: make sure lineage rows exist (deriveBatch should create them; this is
                 // just a guard).

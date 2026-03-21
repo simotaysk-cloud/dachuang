@@ -49,6 +49,31 @@
   margin-bottom: 30rpx;
 }
 
+.picker-inner {
+  height: 90rpx;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-md);
+  border: 1rpx solid rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30rpx;
+  box-shadow: 0 10rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+
+.picker-value {
+  font-size: 28rpx;
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.picker-arrow {
+  font-size: 24rpx;
+  color: var(--primary-color);
+  opacity: 0.6;
+}
+
 .login-agreement {
   margin-top: 40rpx;
   text-align: center;

@@ -2,7 +2,7 @@
   <view class="ink-blob-bottom"></view>
   
   <view class="header home-header">
-    <image class="header-logo" src="/assets/tcm_herb.png" mode="aspectFit"></image>
+    <image class="header-logo" src="https://cpuzhbc.cn/assets/tcm_herb.png" mode="aspectFit"></image>
     <view class="header-content">
       <view class="title">智汇本草</view>
       <view class="desc">中药材全过程数字化溯源平台</view>

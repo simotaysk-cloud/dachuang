@@ -20,7 +20,13 @@
             <view class="input">当前模式：{{actionModes[actionModeIndex]}}</view>
         </picker>
         <view class="meta" wx:if="{{actionModeIndex == 1}}" style="color: #e67e22;">
-            提示：结算模式下，保存后将自动派生新批次号并扣减原库存
+            提示：分包模式下，系统将自动扣减原批次库存，并为您派生一张全新的追溯二维码
+        </view>
+        <view wx:if="{{actionModeIndex == 1}}">
+            <view class="field-label">消耗当前批次数量 (可选)</view>
+            <input class="input" type="digit" placeholder="例如：填入本次消耗的千克数" value="{{form.extractedQuantity}}" data-field="extractedQuantity" bindinput="onInput" />
+            <view class="field-label">产出新批次数量 (可选)</view>
+            <input class="input" type="digit" placeholder="新批次的初始数量" value="{{form.outputQuantity}}" data-field="outputQuantity" bindinput="onInput" />
         </view>
         <view class="field-label">详细说明</view>
         <textarea class="textarea" placeholder="备注信息..." value="{{form.details}}" data-field="details" bindinput="onInput" />

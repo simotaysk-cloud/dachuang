@@ -20,7 +20,9 @@ Page({
             statusLabel: '',
             lineName: '1号生产线',
             operator: '',
-            factory: '数字化工厂中心'
+            factory: '数字化工厂中心',
+            extractedQuantity: '',
+            outputQuantity: ''
         }
     },
 
@@ -152,7 +154,9 @@ Page({
                 lineName: this.data.settleForm.lineName,
                 operator: this.data.settleForm.operator,
                 factory: this.data.settleForm.factory,
-                details: steps ? `本次工序：${steps}` : '阶段性产线结算，进入下一工艺分库。'
+                details: steps ? `本次工序：${steps}` : '阶段性产线结算，进入下一工艺分库。',
+                extractedQuantity: this.data.settleForm.extractedQuantity || null,
+                outputQuantity: this.data.settleForm.outputQuantity || null
             }
 
             // 1. Prompt user about locking

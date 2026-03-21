@@ -50,8 +50,15 @@ public class Batch extends BaseEntity {
     private String commonPairings; // 常见配伍
 
     // Inventory & GS1
+    @jakarta.persistence.Version
+    private Integer version; // 乐观锁机制防并发幻读
+
     @Column(precision = 19, scale = 6)
-    private BigDecimal quantity; // 数量
+    private BigDecimal quantity; // 初始/入库数量
+    
+    @Column(name = "remaining_quantity", precision = 19, scale = 6)
+    private BigDecimal remainingQuantity; // 剩余可用数量
+
     @Column(length = 16)
     private String unit; // 单位 (kg, g, ton, etc.)
 

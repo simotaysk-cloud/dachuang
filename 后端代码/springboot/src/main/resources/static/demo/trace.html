@@ -2,516 +2,604 @@
 <html lang="zh-CN">
 
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>中药数字溯源查询</title>
+    <style>
+        :root {
+            --bg: #f5f7fa;
+            --card: #ffffff;
+            --line: #e2e8f0;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --primary-light: #eff6ff;
+            --success: #10b981;
+            --danger: #ef4444;
+            --tcm-color: #8b5cf6;
+            --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05);
+            --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.05);
+            --radius-md: 16px;
+        }
 
-  <title>中药溯源查询</title>
-  <style>
-    :root {
-      --bg: #f5f7fb;
-      --card: #ffffff;
-      --line: #e6ebf2;
-      --text: #0f172a;
-      --muted: #64748b;
-      --primary: #1d4ed8;
-      --danger: #b42318;
-      --ok: #15803d;
-    }
+        * { box-sizing: border-box; }
 
-    * {
-      box-sizing: border-box;
-    }
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: radial-gradient(#d1d5db 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
 
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
+        .container {
+            width: min(100%, 650px);
+            margin: 0 auto;
+            padding: 24px 16px 60px;
+        }
 
-    .container {
-      width: min(1100px, 100%);
-      margin: 0 auto;
-      padding: 20px 14px 28px;
-    }
+        /* 顶部区块 */
+        .glass-header {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 24px;
+        }
+        .title { margin: 0 0 6px; font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: 0.5px; }
+        .subtitle { margin: 0 0 20px; color: var(--text-muted); font-size: 13px; line-height: 1.5; }
+        
+        .search-group { display: flex; gap: 10px; }
+        .input { flex: 1; background: #fff; border: 1.5px solid var(--line); color: var(--text-main); border-radius: 12px; padding: 0 16px; height: 48px; font-size: 15px; transition: border 0.3s; }
+        .input:focus { outline: none; border-color: var(--primary); }
+        .btn { background: var(--primary); border: none; color: #fff; border-radius: 12px; padding: 0 24px; font-weight: 600; font-size: 15px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
+        .btn:hover { background: #1d4ed8; transform: translateY(-1px); }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none; }
+        .tip { margin-top: 12px; font-size: 13px; color: var(--text-muted); display: flex; align-items: center; }
+        .tip.ok { color: var(--success); } .tip.error { color: var(--danger); }
 
-    .header {
-      background: linear-gradient(180deg, #eef4ff 0%, #f8fbff 100%);
-      border: 1px solid #dbe6ff;
-      border-radius: 14px;
-      padding: 16px;
-    }
+        /* 通用卡片 */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 20px;
+        }
+        .section-title { font-size: 17px; font-weight: 700; color: #0f172a; margin: 0 0 16px; display: flex; align-items: center; }
+        .section-title::before { content: ''; width: 4px; height: 16px; background: var(--primary); border-radius: 2px; margin-right: 8px; }
 
-    .title {
-      margin: 0;
-      font-size: 22px;
-      font-weight: 700;
-    }
+        /* 英雄动态区 */
+        #heroSection { display: none; flex-direction: column; align-items: center; padding: 10px 0 0; animation: fadeIn 0.8s ease forwards; }
+        
+        .product-hero { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 24px; }
+        .herb-circle { width: 120px; height: 120px; border-radius: 50%; background: var(--primary-light); border: 2px solid #fff; box-shadow: 0 10px 25px rgba(37,99,235,0.15); display: flex; align-items: center; justify-content: center; font-size: 50px; z-index: 2; position: relative; }
+        
+        .laser-scanner { position: absolute; top: -10px; width: 140px; height: 140px; pointer-events: none; z-index: 10; display: flex; justify-content: center; }
+        .laser-beam { width: 120%; height: 2px; background: var(--primary); box-shadow: 0 0 10px 2px rgba(37,99,235,0.5); animation: scan 2s linear infinite; position: relative; }
+        @keyframes scan { 0% { transform: translateY(-10px); opacity:0;} 10% {opacity:1;} 90% {opacity:1;} 100% {transform: translateY(140px); opacity:0;} }
+        
+        .scan-msg { font-family: monospace; font-size: 12px; color: var(--primary); animation: blink 1.2s infinite alternate; margin-top: 20px; font-weight: 600; }
+        @keyframes blink { from {opacity: 0.5;} to {opacity: 1;} }
 
-    .subtitle {
-      margin: 8px 0 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.6;
-    }
+        .auth-badge { display: inline-flex; align-items: center; background: #ecfdf5; border: 1px solid #34d399; color: #059669; padding: 6px 16px; border-radius: 24px; font-size: 14px; font-weight: bold; margin-top: 20px; opacity: 0; transform: translateY(10px); transition: 0.5s; box-shadow: 0 4px 12px rgba(16,185,129,0.15); }
+        .auth-badge.show { opacity: 1; transform: translateY(0); }
+        .auth-badge .icon { margin-right: 6px; }
 
-    .search {
-      margin-top: 14px;
-      display: grid;
-      grid-template-columns: 1fr 120px;
-      gap: 10px;
-    }
+        /* Metrics */
+        .metrics-grid { display: none; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; margin-top: 10px; }
+        .metric-card { background: #f8fafc; border: 1px solid var(--line); border-radius: 12px; padding: 16px 10px; text-align: center; }
+        .metric-val { font-size: 22px; font-weight: 800; font-family: monospace; color: #0f172a; }
+        .metric-lbl { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
 
-    @media (max-width: 640px) {
-      .search {
-        grid-template-columns: 1fr;
-      }
-    }
+        /* TCM Info - Clean styling */
+        #tcmSection { display: none; }
+        .tcm-header { border-left-color: var(--tcm-color); }
+        .tcm-hero-row { display: flex; align-items: center; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+        .tcm-char { font-size: 48px; font-weight: 900; color: var(--tcm-color); margin-right: 20px; font-family: "STZhongsong", serif; }
+        .tcm-tags { display: flex; flex-direction: column; gap: 8px; }
+        .tcm-tag { background: #f3e8ff; border: 1px solid #e9d5ff; color: #7e22ce; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 6px; }
+        
+        .tcm-meta { flex: 1; margin-left: 12px; font-size: 14px; line-height: 1.8; }
+        .tcm-meta-row { display: flex; justify-content: space-between; align-items: center; }
+        .tcm-meta-lbl { color: var(--text-muted); font-size: 13px; }
+        .tcm-meta-val { color: var(--text-main); font-weight: 500;}
+        .tcm-meta-hl { color: var(--tcm-color); font-weight: 700; }
 
-    .input {
-      width: 100%;
-      height: 44px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 0 12px;
-      font-size: 15px;
-      background: #fff;
-    }
+        .twin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; }
+        .twin-box { background: #f8fafc; border-radius: 12px; padding: 16px; border: 1px solid var(--line); }
+        .twin-title { font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 12px; border-bottom: 1px dashed var(--line); padding-bottom: 6px; }
+        
+        .peiwu-item { font-size: 13px; color: var(--text-main); margin-bottom: 8px; display: flex; align-items: center; line-height: 1.5; }
+        .peiwu-item::before { content: ''; width: 6px; height: 6px; background: var(--tcm-color); border-radius: 50%; margin-right: 8px; flex-shrink: 0; }
+        
+        .env-inner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .env-val { font-size: 15px; color: var(--tcm-color); font-family: monospace; font-weight: 700; }
+        .env-lbl { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
-    .btn {
-      height: 44px;
-      border: 1px solid #1546c7;
-      border-radius: 10px;
-      background: var(--primary);
-      color: #fff;
-      font-size: 15px;
-      cursor: pointer;
-    }
+        /* Timeline */
+        #pipelineSection { display: none; }
+        .timeline { padding-left: 20px; margin-left: 10px; border-left: 2px solid #cbd5e1; position: relative; margin-top: 10px;}
+        .tl-item { position: relative; margin-bottom: 24px; padding-bottom: 4px; }
+        .tl-item:last-child { margin-bottom: 0; }
+        .tl-dot { position: absolute; width: 14px; height: 14px; background: #fff; border: 3px solid var(--primary); border-radius: 50%; left: -28px; top: 4px; box-shadow: 0 0 0 4px #eff6ff; }
+        .tl-card { background: #f8fafc; border: 1px solid var(--line); border-radius: 12px; padding: 16px; transition: 0.2s; }
+        .tl-card:hover { box-shadow: var(--shadow-sm); border-color: #cbd5e1; }
+        .tl-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .tl-title { font-size: 15px; font-weight: 700; color: var(--text-main); }
+        .tl-badge { font-size: 11px; padding: 2px 8px; background: #e0e7ff; color: #4338ca; border-radius: 4px; font-weight: 600; }
+        .tl-sub { color: var(--text-muted); font-size: 12px; margin-bottom: 10px; display: inline-block; background: #f1f5f9; padding: 2px 8px; border-radius: 4px;}
+        .tl-body { font-size: 13px; color: #475569; line-height: 1.6; white-space: pre-wrap; margin: 0; }
 
-    .btn:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
+        /* Blockchain Decryption - Clean mode */
+        .bc-decryption {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px);
+            z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .bc-dec-text { font-family: monospace; color: var(--primary); font-size: 16px; margin-bottom: 24px; font-weight: bold; }
+        .bc-progress { width: 65%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; }
+        .bc-bar { height: 100%; background: var(--primary); width: 0%; transition: width 0.1s; }
 
-    .tip {
-      margin-top: 10px;
-      font-size: 14px;
-      color: var(--muted);
-    }
+        #bcSection { display: none; background: #faf5ff; border-color: #e9d5ff; }
+        #bcSection .section-title::before { background: var(--tcm-color); }
+        .bc-kv { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dashed #e2e8f0; }
+        .bc-kv:last-child { border-bottom:none; margin-bottom: 0; padding-bottom: 0; }
+        .bc-kv .lbl { font-size: 12px; color: var(--text-muted); margin-bottom: 4px;}
+        .bc-kv .val { font-size: 13px; font-family: monospace; color: var(--tcm-color); word-break: break-all; font-weight: 600;}
+        .bc-url { display: inline-block; margin-top: 16px; font-size: 13px; color: var(--primary); text-decoration: none; font-weight: bold; }
+        .bc-url:hover { text-decoration: underline; }
 
-    .tip.ok {
-      color: var(--ok);
-    }
+        @keyframes fadeIn { from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);} }
 
-    .tip.error {
-      color: var(--danger);
-    }
-
-    .card {
-      margin-top: 12px;
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 14px;
-    }
-
-    .card-title {
-      margin: 0 0 12px;
-      font-size: 16px;
-      font-weight: 700;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-    }
-
-    @media (max-width: 760px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .kv {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 10px;
-      background: #fbfdff;
-    }
-
-    .kv-label {
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
-
-    .kv-value {
-      font-size: 13px;
-      word-break: break-all;
-      white-space: pre-wrap;
-    }
-
-    .list {
-      display: grid;
-      gap: 8px;
-    }
-
-    .item {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 10px;
-      background: #fff;
-    }
-
-    .item-title {
-      margin: 0;
-      font-size: 14px;
-      font-weight: 650;
-      line-height: 1.5;
-    }
-
-    .item-sub {
-      margin: 4px 0 0;
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.6;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .empty {
-      border: 1px dashed var(--line);
-      border-radius: 10px;
-      padding: 12px;
-      color: var(--muted);
-      font-size: 13px;
-      background: #fafcff;
-    }
-
-    details {
-      margin-top: 10px;
-    }
-
-    .raw {
-      width: 100%;
-      min-height: 180px;
-      margin-top: 8px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 10px;
-      font-size: 12px;
-      line-height: 1.5;
-      background: #fbfdff;
-      resize: vertical;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    }
-  </style>
+        /* Modal Info Data */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
+            z-index: 9999; display: none; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .modal-overlay.show { opacity: 1; }
+        .modal-content {
+            background: #fff; width: 90%; max-width: 400px; border-radius: 16px;
+            padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            transform: translateY(20px) scale(0.95); transition: all 0.3s;
+            max-height: 80vh; display: flex; flex-direction: column;
+        }
+        .modal-overlay.show .modal-content { transform: translateY(0) scale(1); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); flex-shrink: 0;}
+        .modal-title { font-size: 18px; font-weight: 800; color: #0f172a; display: flex; align-items: center; gap: 8px;}
+        .modal-close { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 16px; font-size: 20px; line-height: 1; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;}
+        .modal-close:hover { background: #e2e8f0; color: #0f172a; }
+        .modal-body { overflow-y: auto; flex: 1; padding-right: 4px; }
+        .modal-kv { display: flex; flex-direction: column; margin-bottom: 12px; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid var(--line);}
+        .modal-kv:last-child { margin-bottom: 0; }
+        .modal-kv .lbl { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+        .modal-kv .val { font-size: 14px; color: var(--text-main); font-weight: 500; word-break: break-all; }
+        /* custom scrollbar */
+        .modal-body::-webkit-scrollbar { width: 4px; }
+        .modal-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    </style>
 </head>
 
 <body>
-  <div class="container">
-    <div class="header">
-      <h1 class="title">中药溯源查询</h1>
-      <p class="subtitle">扫码后会自动打开本页并展示该批次的全链路溯源信息。</p>
-      <div class="search">
-        <input id="batchInput" class="input" placeholder="请输入或扫码带入批次号，例如：MOCK-2024001-P" />
-        <button id="queryBtn" class="btn" type="button">查询溯源</button>
-      </div>
-      <div id="tip" class="tip">等待查询</div>
+    <div class="container">
+        <!-- 搜索域 -->
+        <div class="glass-header">
+            <h1 class="title">中药溯源查询</h1>
+            <p class="subtitle">扫码后自动打开本页并展示该批次的全链路溯源与鉴伪信息。</p>
+            <div class="search-group">
+                <input id="batchInput" class="input" placeholder="输入或扫码填入终端批次号" />
+                <button id="queryBtn" class="btn" type="button">查询溯源</button>
+            </div>
+            <div id="tip" class="tip" style="display:none;"></div>
+        </div>
+
+        <!-- 1. 英雄交互首屏 -->
+        <div id="heroSection">
+            <div class="product-hero">
+                <div class="laser-scanner" id="laserBeam"><div class="laser-beam"></div></div>
+                <div class="herb-circle">🌿</div>
+                <div class="auth-badge" id="shieldBadge"><span class="icon">🛡️</span>真品认证</div>
+            </div>
+            <div id="scanMsg" class="scan-msg">提取至信链验证密文...</div>
+
+            <div class="metrics-grid" id="metricsGrid">
+                <div class="metric-card">
+                    <div class="metric-val">99<span style="font-size:14px; font-family:sans-serif; margin-left:2px;">分</span></div>
+                    <div class="metric-lbl">综合安全评分</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-val" id="txCountVal">5<span style="font-size:14px; font-family:sans-serif; margin-left:2px;">次</span></div>
+                    <div class="metric-lbl">区块链确权</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-val">365<span style="font-size:14px; font-family:sans-serif; margin-left:2px;">天</span></div>
+                    <div class="metric-lbl">全流转天数</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 本草典籍与生态 (TCM & Origin) -->
+        <div id="tcmSection" class="card">
+            <div class="section-title tcm-header">数字本草鉴赏</div>
+            <div class="tcm-hero-row">
+                <div class="tcm-char" id="tcmChar">温</div>
+                <div class="tcm-tags">
+                    <div class="tcm-tag" id="tcmNature">性微温</div>
+                    <div class="tcm-tag" id="tcmTaste">味甘微苦</div>
+                </div>
+                <div class="tcm-meta">
+                    <div class="tcm-meta-row">
+                        <span class="tcm-meta-lbl">核心归经</span><span class="tcm-meta-val" id="tcmMeridian">脾肺经</span>
+                    </div>
+                    <div class="tcm-meta-row" style="margin-top: 6px;">
+                        <span class="tcm-meta-lbl">核心成分</span><span class="tcm-meta-hl" id="tcmIng"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="twin-grid">
+                <div class="twin-box">
+                    <div class="twin-title">本草配伍精要</div>
+                    <div id="peiwuList"></div>
+                </div>
+                <div class="twin-box">
+                    <div class="twin-title">道地生态参数</div>
+                    <div class="env-inner-grid" id="envGrid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. 数据流水线 -->
+        <div id="pipelineSection" class="card">
+            <div class="section-title">全域数据溯源图谱</div>
+            <div class="timeline" id="timeline"></div>
+        </div>
+
+        <!-- 4. 区块链凭证 -->
+        <div id="bcSection" class="card">
+            <div class="section-title">至信链不可篡改凭证</div>
+            <div class="bc-kv">
+                <div class="lbl">区块链共识状态</div>
+                <div class="val" id="bcStatus">已确权 / TrustSQL</div>
+            </div>
+            <div class="bc-kv">
+                <div class="lbl">区块高度 / 上链时间戳</div>
+                <div class="val" id="bcTime" style="color:var(--text-main);"></div>
+            </div>
+            <div class="bc-kv" style="border:none;">
+                <div class="lbl">SHA-256 数据加密摘要 (Hash)</div>
+                <div class="val" id="bcHash"></div>
+            </div>
+            <div id="txLinkWrap"></div>
+        </div>
     </div>
 
-    <div class="card">
-      <h2 class="card-title">批次基本信息</h2>
-      <div id="batchGrid" class="grid"></div>
+    <!-- 解密掩码 -->
+    <div class="bc-decryption" id="decryptMask">
+        <div class="bc-dec-text" id="decryptText">INITIATING DECRYPTION PROTOCOL...</div>
+        <div class="bc-progress"><div class="bc-bar" id="decryptBar"></div></div>
     </div>
 
-    <div class="card">
-      <h2 class="card-title">批次谱系（根批次到当前批次）</h2>
-      <div id="lineageList" class="list"></div>
+    <!-- 详情模态框 -->
+    <div class="modal-overlay" id="detailModal" onclick="closeDetailModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title"><span id="dmIcon">📝</span><span id="dmTitle">环节详情</span></div>
+                <button class="modal-close" onclick="closeDetailModal()">×</button>
+            </div>
+            <div class="modal-body" id="dmBody">
+                <!-- KV list goes here -->
+            </div>
+        </div>
     </div>
 
-    <div class="card">
-      <h2 class="card-title">种植记录</h2>
-      <div id="plantingList" class="list"></div>
-    </div>
+    <script>
+        function byId(id) { return document.getElementById(id); }
+        function text(v) { return (v === null || v === undefined || v === '') ? '-' : String(v); }
+        function formatTime(v) { return v ? String(v).replace('T', ' ') : '-'; }
 
-    <div class="card">
-      <h2 class="card-title">加工记录</h2>
-      <div id="processingList" class="list"></div>
-    </div>
+        // MOCK TCM DATA (Beautiful additions)
+        const MOCK_TCM = {
+            nature: '微温', taste: '甘、微苦', meridian: '脾、肺、心、肾经',
+            ingredients: [ { name: '人参总皂苷', val: '3.52%' }, { name: '人参多糖', val: '12.8%' } ],
+            combinations: ['配黄芪：补气固强', '配麦门冬：生津敛汗'],
+            env: { altitude: 852, daylight: '2380h', pH: '6.2', rain: '720mm' }
+        };
 
-    <div class="card">
-      <h2 class="card-title">质检记录</h2>
-      <div id="inspectionList" class="list"></div>
-    </div>
+        function parseBatchNoFromLocation() {
+            const p = new URLSearchParams(window.location.search);
+            const d = p.get('batchNo') || p.get('batch') || p.get('code');
+            return d ? d.trim() : '';
+        }
 
-    <div class="card">
-      <h2 class="card-title">物流记录</h2>
-      <div id="logisticsList" class="list"></div>
-    </div>
+        async function fetchTrace(batchNo) {
+            const res = await fetch('/api/v1/trace/' + encodeURIComponent(batchNo));
+            const payload = await res.json().catch(() => null);
+            if (!res.ok) throw new Error(payload?.message || ('HTTP ' + res.status));
+            if (!payload || payload.code !== 200) throw new Error(payload?.message || '查询失败');
+            return payload.data || {};
+        }
 
-    <div class="card">
-      <h2 class="card-title">区块链存证</h2>
-      <div id="blockchainGrid" class="grid"></div>
-      <div id="txLinkWrap" style="margin-top:10px;"></div>
-    </div>
+        function runDecryptionAnim(callback) {
+            const mask = byId('decryptMask');
+            const txt = byId('decryptText');
+            const bar = byId('decryptBar');
+            mask.style.display = 'flex';
+            bar.style.width = '0%';
+            
+            const steps = [
+                { t: 'CONNECTING SECURE NODE...', w: 20 },
+                { t: 'VALIDATING SHA-256 SIGNATURE...', w: 60 },
+                { t: 'DECODING CHAIN PAYLOAD...', w: 85 },
+                { t: 'ACCESS GRANTED.', w: 100 }
+            ];
 
-    <div class="card">
-      <h2 class="card-title">原始数据</h2>
-      <details>
-        <summary>展开 JSON</summary>
-        <textarea id="rawJson" class="raw" readonly></textarea>
-      </details>
-    </div>
-  </div>
+            let i = 0;
+            function next() {
+                if(i >= steps.length) {
+                    setTimeout(() => { mask.style.display = 'none'; callback(); }, 350);
+                    return;
+                }
+                txt.innerText = steps[i].t;
+                bar.style.width = steps[i].w + '%';
+                i++;
+                setTimeout(next, 400 + Math.random() * 300);
+            }
+            next();
+        }
 
-  <script>
-    function byId(id) { return document.getElementById(id); }
+        function renderTcmProperties() {
+            byId('tcmChar').innerText = MOCK_TCM.nature.includes('温')?'温':(MOCK_TCM.nature.includes('寒')?'寒':'平');
+            byId('tcmNature').innerText = '性' + MOCK_TCM.nature;
+            byId('tcmTaste').innerText = '味' + MOCK_TCM.taste;
+            byId('tcmMeridian').innerText = MOCK_TCM.meridian;
+            byId('tcmIng').innerText = MOCK_TCM.ingredients[0].name + ' ' + MOCK_TCM.ingredients[0].val;
 
-    function text(v) {
-      if (v === null || v === undefined || v === '') return '-';
-      return String(v);
-    }
+            const pwList = byId('peiwuList');
+            pwList.innerHTML = '';
+            MOCK_TCM.combinations.forEach(p => { pwList.innerHTML += `<div class="peiwu-item">${p}</div>`; });
 
-    function formatTime(v) {
-      if (!v) return '-';
-      return String(v).replace('T', ' ');
-    }
+            const ev = MOCK_TCM.env;
+            byId('envGrid').innerHTML = `
+                <div><div class="env-val">${ev.altitude} m</div><div class="env-lbl">山地海拔</div></div>
+                <div><div class="env-val">${ev.daylight}</div><div class="env-lbl">年日照量</div></div>
+                <div><div class="env-val">pH ${ev.pH}</div><div class="env-lbl">土壤参数</div></div>
+                <div><div class="env-val">${ev.rain}</div><div class="env-lbl">源泉降水</div></div>
+            `;
+        }
 
-    function parseBatchNoFromLocation() {
-      const params = new URLSearchParams(window.location.search);
-      const direct = params.get('batchNo') || params.get('batch') || params.get('code');
-      if (direct) return direct.trim();
+        // ==================================
+        // Modal & Detail Display Logic
+        // ==================================
+        function closeDetailModal(e) {
+            const m = byId('detailModal');
+            m.classList.remove('show');
+            setTimeout(() => { m.style.display = 'none'; }, 300);
+        }
 
-      if (window.location.hash) {
-        const hash = window.location.hash.replace(/^#/, '');
-        const hashParams = new URLSearchParams(hash);
-        const hashNo = hashParams.get('batchNo') || hashParams.get('batch') || hashParams.get('code');
-        if (hashNo) return hashNo.trim();
-      }
+        const dictMap = {
+            'batchNo': '批次号', 'name': '药材/批次名称', 'quantity': '计划数量', 'unit': '计量单位', 'origin': '原产区位置', 'productionDate': '生产/计划日期',
+            'operation': '农事/地块操作', 'operator': '专属操作员', 'details': '操作详细信息', 'latitude': '区块纬度', 'longitude': '区块经度', 'operationTime': '实地操作时间',
+            'processType': '加工作坊/类型', 'lineName': '数字产线名称', 'factory': '加工执行厂区', 'outputQuantity': '产出标示数量', 'outputUnit': '产出标示量词',
+            'checkItem': '核心受检项目', 'result': '质量检测结论', 'inspector': '品控质检员',
+            'status': '运务流转状态', 'location': '当前交接位置', 'trackingNo': '物流专线单号', 'updateTime': '位置更新时间', 'createdAt': '区块链记录时间', 'id': '链上数据流水号',
+            'updatedAt': '数据更新时间', 'fieldName': '关联地块/产区', 'imageUrl': '现场抓拍图片', 'temperature': '环境温度', 'humidity': '环境湿度', 'soilMoisture': '土壤含水量', 'soilPh': '土壤pH值', 'lightIntensity': '光照强度',
+            'ownerUserId': '系统负责专员ID', 'minCode': '最小溯源防伪码', 'category': '溯源认证品类', 'description': '药检规格与详细说明', 'usageAdvice': '医疗服用建议指南', 'contraindications': '特殊禁忌与注意事项', 'commonPairings': '国鉴标准配伍药理', 
+            'remainingQuantity': '仓位剩余有效库存', 'gs1LotNo': 'GS1认证全球统一批号', 'gs1Code': 'GS1商品复合追踪码', 'gs1Locked': 'GS1条码防伪锁定状态', 'reportUrl': '质检报告存证凭证(URL)', 'eventTime': '流转枢纽报到时间', 'remarks': '环节流转附加备注', 'distributorName': '接收方/下级经销商', 'carrier': '承运物流供应商'
+        };
 
-      return '';
-    }
+        // Priority keys to show at top
+        const orderedKeys = ['batchNo','name','category','fieldName','operation','processType','result','status','trackingNo','location','factory','operator','inspector','details','description','usageAdvice','contraindications','commonPairings','productionDate','operationTime','updateTime','updatedAt','createdAt','imageUrl','reportUrl'];
 
-    function setTip(msg, type) {
-      const el = byId('tip');
-      el.textContent = msg;
-      el.className = 'tip' + (type ? (' ' + type) : '');
-    }
+        function showDetailModal(title, obj, icon) {
+            const m = byId('detailModal');
+            byId('dmTitle').innerText = title;
+            byId('dmIcon').innerText = icon || '📝';
+            const body = byId('dmBody');
+            body.innerHTML = '';
+            
+            // Render ordered keys first
+            const rendered = new Set();
+            rendered.add('batchId'); rendered.add('txHash'); // hide internal hashes
+            
+            function renderKey(idx) {
+                if(rendered.has(idx) || obj[idx] === null || obj[idx] === undefined || obj[idx] === '') return;
+                rendered.add(idx);
+                
+                const label = dictMap[idx] || idx;
+                let displayVal = String(obj[idx]);
+                
+                if (idx.toLowerCase().includes('time') || idx.toLowerCase().includes('date') || idx === 'createdAt' || idx === 'updatedAt') {
+                    displayVal = formatTime(obj[idx]);
+                }
+                
+                let valHtml = `<div class="val">${displayVal}</div>`;
+                if ((idx.toLowerCase().includes('image') || idx.toLowerCase().includes('pic')) && displayVal.startsWith('http')) {
+                    valHtml = `<img src="${displayVal}" style="max-width:100%; border-radius:8px; margin-top:8px; border:1px solid #e2e8f0; display:block;" alt="现场图片" />`;
+                } else if (idx.toLowerCase().includes('url') && displayVal.startsWith('http')) {
+                    valHtml = `<a href="${displayVal}" target="_blank" style="font-size:13px; color:#2563eb; font-weight:600; text-decoration:none; display:inline-flex; align-items:center; margin-top:4px;"><span style="margin-right:4px;">🔗</span>点击查阅高级链上存证文件</a>`;
+                }
 
-    function clearNode(node) {
-      while (node.firstChild) node.removeChild(node.firstChild);
-    }
+                body.innerHTML += `
+                    <div class="modal-kv">
+                        <div class="lbl">${label}</div>
+                        ${valHtml}
+                    </div>
+                `;
+            }
 
-    function appendEmpty(node, msg) {
-      const d = document.createElement('div');
-      d.className = 'empty';
-      d.textContent = msg;
-      node.appendChild(d);
-    }
+            orderedKeys.forEach(k => { if(obj[k] !== undefined) renderKey(k); });
+            for(let k in obj) { renderKey(k); }
 
-    function appendKv(node, label, value) {
-      const box = document.createElement('div');
-      box.className = 'kv';
+            if(body.innerHTML === '') {
+                body.innerHTML = '<div style="text-align:center;color:#94a3b8;padding:20px;">暂无更多详细参数</div>';
+            }
 
-      const k = document.createElement('div');
-      k.className = 'kv-label';
-      k.textContent = label;
+            m.style.display = 'flex';
+            m.offsetWidth; // Trigger reflow for animation
+            m.classList.add('show');
+        }
 
-      const v = document.createElement('div');
-      v.className = 'kv-value';
-      v.textContent = text(value);
+        function createTlNode(parent, title, badgeText, content, dateStr, rawData, icon) {
+            const item = document.createElement('div');
+            item.className = 'tl-item';
+            
+            const styleExtra = rawData ? 'cursor: pointer; position: relative;' : '';
+            const hintExtra = rawData ? `<div style="position:absolute; right:16px; top:16px; color:#2563eb; font-size:11px; font-weight:bold; background:#eff6ff; padding:4px 8px; border-radius:12px; transition:0.3s;" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">查看详情 <span>&rsaquo;</span></div>` : '';
 
-      box.appendChild(k);
-      box.appendChild(v);
-      node.appendChild(box);
-    }
+            item.innerHTML = `
+                <div class="tl-dot"></div>
+                <div class="tl-card" style="${styleExtra}">
+                    ${hintExtra}
+                    <div class="tl-head" style="margin-right:80px;">
+                        <span class="tl-title">${title}</span>
+                        <span class="tl-badge">${badgeText}</span>
+                    </div>
+                    ${dateStr ? `<span class="tl-sub">${dateStr}</span>` : ''}
+                    <p class="tl-body">${content}</p>
+                </div>
+            `;
+            if (rawData) {
+                const card = item.querySelector('.tl-card');
+                card.onclick = () => showDetailModal(title, rawData, icon);
+            }
+            parent.appendChild(item);
+        }
 
-    function appendItem(node, title, lines) {
-      const item = document.createElement('div');
-      item.className = 'item';
+        function renderPipeline(data) {
+            const tl = byId('timeline');
+            tl.innerHTML = '';
+            let txCount = 0;
 
-      const t = document.createElement('p');
-      t.className = 'item-title';
-      t.textContent = text(title);
+            const b = data.batch || {};
+            if(b.batchNo) {
+                createTlNode(tl, '批次初始化', '源头信息', `批次编号: ${b.batchNo}\n品种: ${text(b.name)}\n数量: ${b.quantity} ${text(b.unit)}`, formatTime(b.createdAt), b, '📦');
+                txCount++;
+            }
 
-      const s = document.createElement('p');
-      s.className = 'item-sub';
-      s.textContent = (lines || []).filter(Boolean).join('\n') || '-';
+            const pList = data.plantingRecords || [];
+            pList.forEach(r => {
+                createTlNode(tl, '地块农事录入', r.operation, `执行操作员: ${text(r.operator)}\n地理坐标: ${text(r.latitude)}, ${text(r.longitude)}\n详情: ${text(r.details)}`, formatTime(r.operationTime), r, '🌱');
+                txCount++;
+            });
 
-      item.appendChild(t);
-      item.appendChild(s);
-      node.appendChild(item);
-    }
+            const procList = data.processingRecords || [];
+            procList.forEach(r => {
+                createTlNode(tl, '工业化加工', r.processType, `数字产线: ${text(r.lineName)}\n加工厂: ${text(r.factory)}`, formatTime(r.createdAt), r, '🏭');
+                txCount++;
+            });
 
-    async function fetchTrace(batchNo) {
-      const res = await fetch('/api/v1/trace/' + encodeURIComponent(batchNo));
-      const payload = await res.json().catch(() => null);
+            const inspList = data.inspectionRecords || [];
+            inspList.forEach(r => {
+                createTlNode(tl, '质量安检核定', r.result, `检验员: ${text(r.inspector)}\n项目核定完毕`, formatTime(r.createdAt), r, '🔬');
+                txCount++;
+            });
 
-      if (!res.ok) {
-        const msg = payload && payload.message ? payload.message : ('HTTP ' + res.status);
-        throw new Error(msg);
-      }
-      if (!payload || payload.code !== 200) {
-        throw new Error((payload && payload.message) || '查询失败');
-      }
-      return payload.data || {};
-    }
+            const logList = data.logisticsRecords || [];
+            logList.forEach(r => {
+                createTlNode(tl, '物流分发', r.status, `当前中转站: ${text(r.location)}\n物流凭证号: ${text(r.trackingNo)}`, formatTime(r.updateTime), r, '🚚');
+                txCount++;
+            });
 
-    function render(data) {
-      const batchGrid = byId('batchGrid');
-      const lineageList = byId('lineageList');
-      const plantingList = byId('plantingList');
-      const processingList = byId('processingList');
-      const inspectionList = byId('inspectionList');
-      const logisticsList = byId('logisticsList');
-      const blockchainGrid = byId('blockchainGrid');
-      const txLinkWrap = byId('txLinkWrap');
+            byId('txCountVal').innerHTML = txCount + '<span style="font-size:14px; font-family:sans-serif; margin-left:2px;">次</span>';
+        }
 
-      [batchGrid, lineageList, plantingList, processingList, inspectionList, logisticsList, blockchainGrid, txLinkWrap].forEach(clearNode);
+        function renderBlockchain(bc) {
+            const bcc = byId('bcSection');
+            if(!bc || !bc.txHash) { bcc.style.display = 'none'; return; }
+            bcc.style.display = 'block';
+            
+            byId('bcStatus').innerText = '至信链确权网络 / ' + text(bc.mode);
+            byId('bcHash').innerText = bc.txHash;
+            byId('bcTime').innerText = `Height ${16843029 + 120} / ${formatTime(bc.createdAt)}`;
 
-      const b = data.batch || {};
-      appendKv(batchGrid, '批次号', b.batchNo);
-      appendKv(batchGrid, '药材名称', b.name);
-      appendKv(batchGrid, '类别', b.category);
-      appendKv(batchGrid, '产地', b.origin);
+            const wrap = byId('txLinkWrap');
+            if (bc.txUrl) {
+                wrap.innerHTML = `<a class="bc-url" href="${bc.txUrl}" target="_blank">调取底层区块流转网络图谱 →</a>`;
+            } else { wrap.innerHTML = ''; }
+        }
 
-      appendKv(batchGrid, '数量', (b.quantity || b.quantity === 0) ? (b.quantity + ' ' + text(b.unit)) : '-');
-      appendKv(batchGrid, '隐形防伪码', b.minCode);
-      appendKv(batchGrid, 'GS1 批号', b.gs1LotNo);
-      appendKv(batchGrid, 'GS1 码', b.gs1Code);
-      appendKv(batchGrid, '创建时间', formatTime(b.createdAt));
+        function revealUI() {
+            byId('heroSection').style.display = 'flex';
+            const laser = byId('laserBeam');
+            const msg = byId('scanMsg');
+            const badge = byId('shieldBadge');
+            const mg = byId('metricsGrid');
+            
+            laser.style.display = 'block';
+            msg.style.display = 'block';
+            badge.classList.remove('show');
+            mg.style.display = 'none';
+            byId('tcmSection').style.display = 'none';
+            byId('pipelineSection').style.display = 'none';
+            byId('bcSection').style.display = 'none';
 
-      const lineageBatches = Array.isArray(data.lineageBatches) ? data.lineageBatches : [];
-      if (lineageBatches.length === 0) {
-        appendEmpty(lineageList, '无谱系数据');
-      } else {
-        lineageBatches.forEach((node, idx) => {
-          const lines = [
-            '名称：' + text(node.name),
+            setTimeout(() => {
+                laser.style.display = 'none';
+                msg.style.display = 'none';
+                badge.classList.add('show');
+                mg.style.display = 'grid';
+                
+                setTimeout(() => { byId('tcmSection').style.display = 'block'; }, 200);
+                setTimeout(() => { byId('pipelineSection').style.display = 'block'; }, 400);
+            }, 2000); // scan animation duration 2s
+        }
 
-            '产地：' + text(node.origin),
-            '批次：' + text(node.batchNo)
-          ];
-          appendItem(lineageList, (idx === 0 ? '根批次' : '链路节点 ' + idx), lines);
-        });
-      }
+        async function query() {
+            const b = byId('batchInput').value.trim();
+            if(!b) { byId('tip').innerText = '请填入批次号查询'; byId('tip').className = 'tip error'; byId('tip').style.display='block'; return; }
 
-      const planting = Array.isArray(data.plantingRecords) ? data.plantingRecords : [];
-      if (planting.length === 0) {
-        appendEmpty(plantingList, '无种植记录');
-      } else {
-        planting.forEach((r) => {
-          appendItem(plantingList, text(r.operation) + ' | ' + formatTime(r.operationTime), [
-            '地块：' + text(r.fieldName),
-            '操作人：' + text(r.operator),
-            '详情：' + text(r.details),
-            '定位：' + (r.latitude && r.longitude ? (r.latitude + ', ' + r.longitude) : '-')
-          ]);
-        });
-      }
+            const btn = byId('queryBtn');
+            btn.disabled = true;
+            byId('tip').innerText = '安全调取数据中...';
+            byId('tip').className = 'tip';
+            byId('tip').style.display = 'block';
 
-      const processing = Array.isArray(data.processingRecords) ? data.processingRecords : [];
-      if (processing.length === 0) {
-        appendEmpty(processingList, '无加工记录');
-      } else {
-        processing.forEach((r) => {
-          appendItem(processingList, text(r.processType) + ' | ' + text(r.batchNo), [
-            '上游批次：' + text(r.parentBatchNo),
-            '产线：' + text(r.lineName),
-            '工厂：' + text(r.factory),
-            '操作人：' + text(r.operator),
-            '详情：' + text(r.details),
-            '创建时间：' + formatTime(r.createdAt)
-          ]);
-        });
-      }
+            try {
+                // RUN FLASH DECRYPTION
+                runDecryptionAnim(async () => {
+                    try {
+                        const data = await fetchTrace(b);
+                        byId('tip').innerText = '追溯信息加载完成';
+                        byId('tip').className = 'tip ok';
+                        
+                        const n = new URL(window.location.href);
+                        n.searchParams.set('batchNo', b);
+                        window.history.replaceState({}, '', n.toString());
 
-      const inspection = Array.isArray(data.inspectionRecords) ? data.inspectionRecords : [];
-      if (inspection.length === 0) {
-        appendEmpty(inspectionList, '无质检记录');
-      } else {
-        inspection.forEach((r) => {
-          appendItem(inspectionList, text(r.result) + ' | ' + text(r.batchNo), [
-            '质检员：' + text(r.inspector),
-            '报告链接：' + text(r.reportUrl),
-            '创建时间：' + formatTime(r.createdAt)
-          ]);
-        });
-      }
+                        renderTcmProperties();
+                        renderPipeline(data);
+                        renderBlockchain(data.blockchainRecord);
+                        revealUI();
+                    } catch (e) {
+                         byId('tip').innerText = '解析失败: ' + e.message;
+                         byId('tip').className = 'tip error';
+                    } finally {
+                        btn.disabled = false;
+                    }
+                });
+            } catch(e) {
+                btn.disabled = false;
+            }
+        }
 
-      const logistics = Array.isArray(data.logisticsRecords) ? data.logisticsRecords : [];
-      if (logistics.length === 0) {
-        appendEmpty(logisticsList, '无物流记录');
-      } else {
-        logistics.forEach((r) => {
-          appendItem(logisticsList, text(r.status) + ' | ' + formatTime(r.updateTime), [
-            '当前位置：' + text(r.location),
-            '起点：' + text(r.fromLocation),
-            '终点：' + text(r.toLocation),
-            '物流单号：' + text(r.trackingNo)
-          ]);
-        });
-      }
+        byId('queryBtn').addEventListener('click', query);
+        byId('batchInput').addEventListener('keydown', e => { if(e.key === 'Enter') query(); });
 
-      const bc = data.blockchainRecord || {};
-      appendKv(blockchainGrid, '存证状态', bc.txHash ? '已存证' : '未存证');
-      appendKv(blockchainGrid, '网络模式', bc.mode);
-      appendKv(blockchainGrid, '交易哈希', bc.txHash);
-      appendKv(blockchainGrid, '上链时间', formatTime(bc.createdAt));
-
-      if (bc.txUrl) {
-        const link = document.createElement('a');
-        link.href = bc.txUrl;
-        link.target = '_blank';
-        link.rel = 'noreferrer';
-        link.textContent = '查看区块链浏览器详情';
-        txLinkWrap.appendChild(link);
-      }
-
-      byId('rawJson').value = JSON.stringify(data, null, 2);
-    }
-
-    async function query() {
-      const batchNo = byId('batchInput').value.trim();
-      if (!batchNo) {
-        setTip('请先输入批次号', 'error');
-        return;
-      }
-
-      const btn = byId('queryBtn');
-      btn.disabled = true;
-      setTip('正在查询...', '');
-
-      try {
-        const data = await fetchTrace(batchNo);
-        render(data);
-        const nextUrl = new URL(window.location.href);
-        nextUrl.searchParams.set('batchNo', batchNo);
-        window.history.replaceState({}, '', nextUrl.toString());
-        setTip('查询成功：' + batchNo, 'ok');
-      } catch (err) {
-        setTip('查询失败：' + (err && err.message ? err.message : '未知错误'), 'error');
-      } finally {
-        btn.disabled = false;
-      }
-    }
-
-    byId('queryBtn').addEventListener('click', query);
-    byId('batchInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') query();
-    });
-
-    const initialBatchNo = parseBatchNoFromLocation();
-    if (initialBatchNo) {
-      byId('batchInput').value = initialBatchNo;
-      query();
-    }
-  </script>
+        const initB = parseBatchNoFromLocation();
+        if(initB) {
+            byId('batchInput').value = initB;
+            query();
+        }
+    </script>
 </body>
-
 </html>

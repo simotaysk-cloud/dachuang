@@ -60,7 +60,7 @@
   </view>
 
   <view class="modal-mask" wx:if="{{previewVisible}}" bindtap="closePreview">
-    <view class="modal batch-modal-center" catchtap="return">
+    <view class="modal batch-modal-center" catchtap="">
       <view class="modal-title">二维码预览</view>
       <view class="code-box">{{previewBatchNo}}</view>
       <image class="qr-preview" src="{{previewSrc}}" mode="aspectFit" />
