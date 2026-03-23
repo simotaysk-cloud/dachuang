@@ -68,6 +68,7 @@ echo "[5/5] Starting backend with explicit dev profile and domain..."
 nohup java -jar /root/app.jar \
     --spring.profiles.active=dev \
     --app.public-base-url=https://cpuzhbc.cn \
+    --spring.flyway.repair-on-migrate=true \
     > /root/backend.log 2>&1 &
 
 echo "Waiting 10 seconds for Spring Boot to start..."

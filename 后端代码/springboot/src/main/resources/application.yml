@@ -6,3 +6,9 @@ spring:
 
 server:
   port: 8091
+
+ai:
+  openai:
+    base-url: "https://api.hunyuan.cloud.tencent.com/v1"
+    api-key: ${AI_API_KEY:sk-placeholder}
+    model: "hunyuan-lite"

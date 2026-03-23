@@ -9,14 +9,18 @@
 后端代码/springboot/.env
 后端代码/springboot/.env.*
 !后端代码/springboot/.env.example
+**/*-dev.yml
+**/*-local.yml
 
 # Node / frontend
 node_modules/
 dist/
 .cache/
+project.private.config.json
 
 # WeChat DevTools
 miniprogram_npm/
+
 # Environmental tools
 tools/
 env/
@@ -28,6 +32,7 @@ env/
 
 # Logs
 **/*.log
+verification_backend.log
 
 # Temporary deploy scripts and keys
 /*.py
@@ -38,3 +43,4 @@ env/
 /*.txt
 /certs/
 /qr.png
+app.jar

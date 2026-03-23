@@ -1,0 +1,39 @@
+<view class="container">
+  <!-- Dynamic Background Ambient Effect -->
+  <view class="ambient-glow"></view>
+  
+  <view class="header">
+    <view class="welcome-text">
+      <text class="greeting">探索镇坪道地珍源</text>
+      <text class="brand">药途寻迹</text>
+    </view>
+  </view>
+
+  <!-- Big Hero Scan Action -->
+  <view class="hero-card" bindtap="openScanner">
+    <view class="hero-content">
+      <text class="hero-title">鉴定指尖本草</text>
+      <text class="hero-desc">无感溯源 · 见证从深山泥土到您手中的每一步确权数据</text>
+    </view>
+    <view class="scan-icon">
+      <view class="laser-line"></view>
+    </view>
+  </view>
+
+  <!-- Feed Section -->
+  <view class="section-header">
+    <text class="section-title">廿四节气 · 药膳志</text>
+    <text class="section-badge">AI 时令智算</text>
+  </view>
+
+  <scroll-view scroll-y class="feed-list">
+    <view class="feed-card" wx:for="{{newsFeed}}" wx:key="id">
+      <image class="feed-img" src="{{item.img}}" mode="aspectFill"></image>
+      <view class="feed-info">
+        <text class="feed-tag">{{item.tag}}</text>
+        <text class="feed-headline">{{item.title}}</text>
+        <text class="feed-excerpt">{{item.excerpt}}</text>
+      </view>
+    </view>
+  </scroll-view>
+</view>

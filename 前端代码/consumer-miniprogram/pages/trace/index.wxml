@@ -1,0 +1,117 @@
+<view class="container">
+  
+  <view class="bc-decryption" wx:if="{{isDecrypting}}">
+      <view class="bc-dec-text">{{decryptText}}</view>
+      <view class="bc-progress"><view class="bc-bar" style="width:{{decryptProgress}}%"></view></view>
+  </view>
+
+  <view class="error-state" wx:elif="{{errorMsg}}">
+    <view class="error-icon-wrapper"><text class="error-icon">⚠️</text></view>
+    <text class="error-title">鉴真失败</text>
+    <text class="error-text">{{errorMsg}}</text>
+    <button class="back-btn" bindtap="goBack">返回重新扫码</button>
+  </view>
+
+  <block wx:if="{{showUI}}">
+    <!-- Hero / Metrics -->
+    <view class="hero-section">
+      <view class="product-hero">
+          <view class="laser-scanner" wx:if="{{showUI}}"><view class="laser-beam"></view></view>
+          <view class="herb-circle">🌿</view>
+          <view class="auth-badge {{showUI ? 'show' : ''}}"><text class="icon">🛡️</text>真品认证</view>
+      </view>
+
+      <view class="metrics-grid">
+          <view class="metric-card">
+              <view class="metric-val">99<text style="font-size:24rpx; font-weight:normal; margin-left:4rpx;">分</text></view>
+              <view class="metric-lbl">综合安全评分</view>
+          </view>
+          <view class="metric-card">
+              <view class="metric-val">{{txCount}}<text style="font-size:24rpx; font-weight:normal; margin-left:4rpx;">次</text></view>
+              <view class="metric-lbl">区块链确权</view>
+          </view>
+          <view class="metric-card">
+              <view class="metric-val">365<text style="font-size:24rpx; font-weight:normal; margin-left:4rpx;">天</text></view>
+              <view class="metric-lbl">全流转天数</view>
+          </view>
+      </view>
+    </view>
+
+    <!-- TCM Info -->
+    <view class="card">
+        <view class="section-title tcm-header">数字本草鉴赏</view>
+        <view class="tcm-hero-row">
+            <view class="tcm-char">{{tcmData.nature === '微温' ? '温' : '平'}}</view>
+            <view class="tcm-tags">
+                <view class="tcm-tag">性{{tcmData.nature}}</view>
+                <view class="tcm-tag">味{{tcmData.taste}}</view>
+            </view>
+            <view class="tcm-meta">
+                <view class="tcm-meta-row">
+                    <text class="tcm-meta-lbl">核心归经</text><text class="tcm-meta-val">{{tcmData.meridian}}</text>
+                </view>
+                <view class="tcm-meta-row" style="margin-top: 12rpx;">
+                    <text class="tcm-meta-lbl">核心成分</text><text class="tcm-meta-hl">{{tcmData.ingredients[0].name}} {{tcmData.ingredients[0].val}}</text>
+                </view>
+            </view>
+        </view>
+        
+        <view class="twin-grid">
+            <view class="twin-box">
+                <view class="twin-title">本草配伍精要</view>
+                <view class="peiwu-list">
+                  <view class="peiwu-item" wx:for="{{tcmData.combinations}}" wx:key="*this">{{item}}</view>
+                </view>
+            </view>
+            <view class="twin-box">
+                <view class="twin-title">道地生态参数</view>
+                <view class="env-inner-grid">
+                    <view><view class="env-val">{{tcmData.env.altitude}} m</view><view class="env-lbl">山地海拔</view></view>
+                    <view><view class="env-val">{{tcmData.env.daylight}}</view><view class="env-lbl">年日照量</view></view>
+                    <view><view class="env-val">pH {{tcmData.env.pH}}</view><view class="env-lbl">土壤参数</view></view>
+                    <view><view class="env-val">{{tcmData.env.rain}}</view><view class="env-lbl">源泉降水</view></view>
+                </view>
+            </view>
+        </view>
+    </view>
+
+    <!-- Pipeline Timeline -->
+    <view class="card">
+        <view class="section-title">全域数据溯源图谱</view>
+        <view class="timeline">
+            <view class="tl-item" wx:for="{{timeline}}" wx:key="index">
+                <view class="tl-dot"></view>
+                <view class="tl-card" hover-class="tl-card-hover" bindtap="openDetailModal" data-index="{{index}}">
+                    <view class="tl-hint">查看详情 <text style="font-family: monospace;">›</text></view>
+                    <view class="tl-head">
+                        <text class="tl-title">{{item.title}}</text>
+                        <text class="tl-badge">{{item.badge}}</text>
+                    </view>
+                    <text class="tl-sub" wx:if="{{item.date}}">{{item.date}}</text>
+                    <text class="tl-body">{{item.body}}</text>
+                </view>
+            </view>
+        </view>
+    </view>
+  </block>
+
+</view>
+
+<!-- Interactive Modal -->
+<view class="modal-overlay {{showModal ? 'show' : ''}}" bindtap="closeModal">
+    <view class="modal-content" catchtap="return">
+        <view class="modal-header">
+            <view class="modal-title"><text class="modal-icon">{{modalIcon}}</text><text>{{modalTitle}} 详情</text></view>
+            <view class="modal-close" bindtap="closeModal">×</view>
+        </view>
+        <scroll-view scroll-y class="modal-body">
+            <view class="modal-kv" wx:for="{{modalKVs}}" wx:key="label">
+                <view class="modal-lbl">{{item.label}}</view>
+                <image wx:if="{{item.type === 'img'}}" src="{{item.val}}" mode="widthFix" class="modal-img"></image>
+                <text wx:if="{{item.type === 'text'}}" selectable class="modal-val">{{item.val}}</text>
+                <text wx:if="{{item.type === 'link'}}" selectable class="modal-link">{{item.val}}</text>
+            </view>
+            <view class="modal-empty" wx:if="{{modalKVs.length === 0}}">暂无更多详细参数</view>
+        </scroll-view>
+    </view>
+</view>

@@ -21,6 +21,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/api/v1/public/**", "/api/v1/blockchain/**", "/api/v1/dev/**",
                         "/api/v1/dashboard/**",
                         "/api/v1/public/logistics/**",
+                        "/api/v1/ai/**",
                         "/swagger-ui/**", "/v3/api-docs/**");
     }
 

@@ -1,0 +1,41 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/trace/index",
+    "pages/market/index",
+    "pages/ai-consult/index",
+    "pages/user/index"
+  ],
+  "window": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "药途寻迹 - 智汇本草",
+    "navigationBarBackgroundColor": "#0f172a"
+  },
+  "tabBar": {
+    "color": "#94a3b8",
+    "selectedColor": "#34d399",
+    "backgroundColor": "#1e293b",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "本草"
+      },
+      {
+        "pagePath": "pages/market/index",
+        "text": "云市集"
+      },
+      {
+        "pagePath": "pages/ai-consult/index",
+        "text": "智问"
+      },
+      {
+        "pagePath": "pages/user/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

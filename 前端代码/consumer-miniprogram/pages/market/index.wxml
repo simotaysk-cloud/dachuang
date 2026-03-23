@@ -1,0 +1,46 @@
+<view class="container">
+  
+  <view class="header-banner">
+    <view class="banner-title">云上市集 · 科技助农</view>
+    <view class="banner-sub">区块链直溯源头，让深山好药直达千家万户</view>
+    <view class="banner-glow"></view>
+  </view>
+
+  <view class="custom-tabs">
+    <view class="tab-item {{currentTab === 0 ? 'active' : ''}}" bindtap="switchTab" data-index="{{0}}">极地直供饮片<view class="tab-line" wx:if="{{currentTab===0}}"></view></view>
+    <view class="tab-item {{currentTab === 1 ? 'active' : ''}}" bindtap="switchTab" data-index="{{1}}">数字高山云认养<view class="tab-line" wx:if="{{currentTab===1}}"></view></view>
+  </view>
+
+  <!-- Products Tab -->
+  <view class="list-container" wx:if="{{currentTab === 0}}">
+    <view class="product-card" wx:for="{{products}}" wx:key="id">
+      <image class="product-img" src="{{item.img}}" mode="aspectFill"></image>
+      <view class="product-info">
+        <text class="p-name">{{item.name}}</text>
+        <view class="p-tags"><text class="p-tag">{{item.tag}}</text></view>
+        <view class="p-meta">已售出 {{item.sales}} 份 | 至信链防伪</view>
+        <view class="p-bottom">
+          <text class="p-price">¥{{item.price}}<text class="p-unit"> / {{item.unit}}</text></text>
+          <button class="buy-btn" bindtap="handlePurchase">助农采买</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Adoption Tab -->
+  <view class="list-container" wx:if="{{currentTab === 1}}">
+    <view class="adopt-card" wx:for="{{adoptions}}" wx:key="id">
+      <view class="adopt-status">{{item.status}}</view>
+      <image class="adopt-img" src="{{item.img}}" mode="aspectFill"></image>
+      <view class="adopt-info">
+        <text class="a-name">{{item.name}}</text>
+        <text class="a-desc">认养面积: {{item.area}} | 预估产出: {{item.yield}}</text>
+        <view class="a-bottom">
+          <text class="a-price">认养金 ¥{{item.price}}</text>
+          <button class="adopt-btn" bindtap="handleAdopt">签署数字地契</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+</view>
