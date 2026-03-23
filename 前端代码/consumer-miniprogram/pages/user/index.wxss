@@ -1,0 +1,188 @@
+page {
+  background-color: #0f172a;
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+.container { padding-bottom: 60rpx; }
+
+/* Header */
+.user-header {
+  padding: 60rpx 40rpx;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 1) 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.user-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40rpx;
+}
+.avatar {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 50%;
+  border: 4rpx solid #34d399;
+  margin-right: 32rpx;
+  box-shadow: 0 0 20rpx rgba(52, 211, 153, 0.3);
+}
+.info-text { display: flex; flex-direction: column; }
+.nickname {
+  font-size: 40rpx;
+  font-weight: 800;
+  color: #f1f5f9;
+  margin-bottom: 12rpx;
+}
+.level-tag {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  padding: 6rpx 20rpx;
+  border-radius: 40rpx;
+  font-size: 22rpx;
+  color: #34d399;
+  font-weight: bold;
+}
+.level-icon { margin-right: 8rpx; }
+
+.user-stats {
+  display: flex;
+  justify-content: space-around;
+  background: rgba(255,255,255,0.03);
+  padding: 24rpx 0;
+  border-radius: 20rpx;
+}
+.stat-item { text-align: center; }
+.stat-num { font-size: 36rpx; font-weight: 800; color: #f1f5f9; font-family: monospace; }
+.stat-lbl { font-size: 24rpx; color: #64748b; margin-top: 8rpx; }
+
+/* Assets Section */
+.asset-section {
+  padding: 40rpx 0 40rpx 40rpx;
+}
+.section-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 32rpx;
+  display: flex;
+  align-items: center;
+}
+.section-title::before {
+  content: ''; width: 8rpx; height: 32rpx; background: #3b82f6; border-radius: 4rpx; margin-right: 16rpx;
+}
+.cert-scroll {
+  white-space: nowrap;
+}
+.cert-card {
+  display: inline-block;
+  width: 580rpx;
+  height: 320rpx;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 24rpx;
+  margin-right: 32rpx;
+  padding: 32rpx;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10rpx 30rpx rgba(0,0,0,0.2);
+}
+.cert-glow {
+  position: absolute;
+  top: -50rpx;
+  right: -50rpx;
+  width: 200rpx;
+  height: 200rpx;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(15, 23, 42, 0) 70%);
+  border-radius: 50%;
+  filter: blur(20px);
+}
+.cert-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.cert-title {
+  font-size: 32rpx;
+  font-weight: 800;
+  color: #f8fafc;
+  margin-bottom: auto;
+  white-space: pre-wrap;
+}
+.cert-hash {
+  font-size: 20rpx;
+  color: #64748b;
+  font-family: monospace;
+  margin-bottom: 8rpx;
+}
+.cert-date {
+  font-size: 22rpx;
+  color: #94a3b8;
+}
+.cert-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  color: #60a5fa;
+  font-size: 20rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 30rpx;
+  font-weight: bold;
+}
+
+.cert-empty {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 600rpx;
+  height: 320rpx;
+  background: rgba(30, 41, 59, 0.4);
+  border: 1px dashed rgba(255,255,255,0.1);
+  border-radius: 24rpx;
+  margin-right: 40rpx;
+}
+.empty-icon { font-size: 60rpx; margin-bottom: 16rpx; }
+.empty-text { font-size: 24rpx; color: #64748b; margin-bottom: 24rpx; }
+.login-btn {
+  margin: 0 !important;
+  background: #3b82f6;
+  color: #fff;
+  font-size: 24rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  border-radius: 100rpx;
+  padding: 0 40rpx;
+}
+
+/* Menu List */
+.menu-list {
+  padding: 0 40rpx;
+}
+.menu-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(30, 41, 59, 0.5);
+  padding: 36rpx 32rpx;
+  border-radius: 20rpx;
+  margin-bottom: 20rpx;
+  border: 1px solid rgba(255,255,255,0.02);
+}
+.m-left {
+  display: flex;
+  align-items: center;
+  font-size: 30rpx;
+  color: #f1f5f9;
+}
+.m-icon {
+  margin-right: 20rpx;
+  font-size: 36rpx;
+}
+.m-right {
+  font-size: 26rpx;
+  color: #64748b;
+}
