@@ -78,7 +78,7 @@ Page({
   showAbout() {
     wx.showModal({
       title: '关于 药途寻迹',
-      content: '「药途寻迹 - 智汇本草」\n基于腾讯至信链与百度大语言模型的镇坪中药材D2C助农平台。\nV2.0.0 (双创大赛参评版)',
+      content: '「药途寻迹」\n基于腾讯至信链与百度大语言模型的镇坪中药材D2C助农平台。\nV2.0.0 (双创大赛参评版)',
       showCancel: false,
       confirmText: '我知道了'
     });

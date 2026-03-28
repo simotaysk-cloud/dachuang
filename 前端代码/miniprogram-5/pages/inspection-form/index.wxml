@@ -1,11 +1,18 @@
 <view class="page-container">
     <view class="header">
-        <view class="title">{{id ? '质检记录详情' : '质检录入'}}</view>
-        <view class="desc">{{id ? '查看或修正质检信息' : '提交后将生成新批次并生成新二维码'}}</view>
+        <view class="title">{{id ? '质检记录详情' : (type === 'RAW' ? '原料质检录入' : '成品检验录入')}}</view>
+        <view class="desc">{{id ? '查看或修正质检信息' : '记录实验室质检结果'}}</view>
     </view>
 
         <view class="card" wx:if="{{!id}}">
             <view class="section-title">质检信息</view>
+
+            <view class="field-label">检验环节</view>
+            <view class="type-selector">
+                <view class="type-item {{type === 'RAW' ? 'active' : ''}}" data-type="RAW" bindtap="changeType">原料质检</view>
+                <view class="type-item {{type === 'FINISHED' ? 'active' : ''}}" data-type="FINISHED" bindtap="changeType">成品检验</view>
+            </view>
+
             <view class="field-label">被检批次号</view>
         <input class="input {{parentLocked ? 'input-locked' : ''}}" placeholder="扫码或手工输入上游批次号" value="{{createForm.parentBatchNo}}" data-field="parentBatchNo" bindinput="onCreateInput" disabled="{{parentLocked}}" />
 
@@ -29,6 +36,13 @@
 
     <view class="card" wx:if="{{id}}">
         <view class="section-title">记录信息</view>
+        
+        <view class="field-label" style="margin-top: 20rpx;">检验环节</view>
+        <view class="type-selector">
+            <view class="type-item {{type === 'RAW' ? 'active' : ''}}" data-type="RAW" bindtap="changeType">原料质检</view>
+            <view class="type-item {{type === 'FINISHED' ? 'active' : ''}}" data-type="FINISHED" bindtap="changeType">成品检验</view>
+        </view>
+
         <view class="readonly-row">
             <view class="readonly-label">记录ID</view>
             <view class="readonly-value">#{{record.id}}</view>
@@ -39,7 +53,7 @@
         </view>
 
         <view class="field-label">检测结果</view>
-        <input class="input" placeholder="例如：合格 / 优级 / 不合格" value="{{record.result}}" data-field="result" bindinput="onRecordInput" />
+        <textarea class="textarea" placeholder="例如：合格 / 优级 / 不合格" value="{{record.result}}" data-field="result" bindinput="onRecordInput" />
 
         <view class="field-label">报告链接（可选）</view>
         <input class="input" placeholder="PDF/图片 URL" value="{{record.reportUrl}}" data-field="reportUrl" bindinput="onRecordInput" />

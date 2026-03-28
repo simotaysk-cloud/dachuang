@@ -1,4 +1,5 @@
 <view class="page-container">
+  <supply-chain-steps active="4" />
   <view class="header">
     <view class="title">末端二维码</view>
     <view class="desc">支持全部末端批次批量生成溯源二维码，并可按原始批次筛选导出</view>

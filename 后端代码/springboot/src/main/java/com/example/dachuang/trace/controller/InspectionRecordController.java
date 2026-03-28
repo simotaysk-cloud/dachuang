@@ -23,8 +23,9 @@ public class InspectionRecordController {
     private final BatchService batchService;
 
     @GetMapping
-    public Result<List<InspectionRecord>> list(@RequestParam(required = false) String batchNo) {
-        return Result.success(inspectionRecordService.list(batchNo));
+    public Result<List<InspectionRecord>> list(@RequestParam(required = false) String batchNo,
+                                               @RequestParam(required = false) String type) {
+        return Result.success(inspectionRecordService.list(batchNo, type));
     }
 
     @GetMapping("/{id}")
@@ -47,6 +48,7 @@ public class InspectionRecordController {
 
         InspectionRecord record = InspectionRecord.builder()
                 .batchNo(derived.getBatchNo())
+                .inspectionType(request.getInspectionType())
                 .result(request.getResult())
                 .reportUrl(request.getReportUrl())
                 .inspector(request.getInspector())

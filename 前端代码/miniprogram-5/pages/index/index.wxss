@@ -104,22 +104,24 @@
 }
 
 .supply-chain-flow {
-  height: 160rpx;
-  display: flex;
+  display: flex !important;
+  flex-direction: row !important;
   align-items: center;
-  padding: 0 20rpx;
+  justify-content: center;
+  padding: 40rpx 20rpx !important;
+  min-height: 180rpx;
 }
 
 .flow-nodes {
   width: 100%;
-  display: flex;
-  align-items: center;
+  display: flex !important;
+  align-items: flex-start !important;
   justify-content: space-between;
 }
 
 .flow-node {
-  display: flex;
-  flex-direction: column;
+  display: flex !important;
+  flex-direction: column !important;
   align-items: center;
   width: 110rpx;
   flex-shrink: 0;
@@ -128,7 +130,7 @@
 .node-dot {
   width: 18rpx;
   height: 18rpx;
-  background: #E0E0E0;
+  background: #E8E8E8;
   border-radius: 50%;
   border: 4rpx solid #fff;
   transition: all 0.3s ease;
@@ -155,15 +157,14 @@
   font-weight: 800;
 }
 
-/* 连接线/物流线 */
 .flow-connector {
   flex: 1;
-  height: 20rpx;
+  height: 18rpx;
   position: relative;
   display: flex;
   align-items: center;
   margin: 0 -10rpx;
-  margin-top: -34rpx; /* 对齐圆点中心 */
+  margin-top: 4rpx; /* 准确对齐 18rpx 圆点的中心 */
 }
 
 .connector-line {
@@ -236,12 +237,22 @@
 
 .menu-grid.density-3 {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 218rpx);
   gap: 24rpx;
+  justify-content: center;
+  width: 100%;
 }
 
 .menu-item {
-  padding: 30rpx 0;
+  width: 100%;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30rpx 10rpx !important;
+  margin-bottom: 0 !important; /* Override .glass-card default margin */
+  text-align: center;
+  box-sizing: border-box;
 }
 
 .menu-icon-bg {

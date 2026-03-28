@@ -17,6 +17,11 @@ echo ========================================================
 
 echo Starting Backend with Portable JDK and Maven...
 echo Mock Data Enabled (Data Persisted)...
-.\apache-maven-3.9.6\bin\mvn clean -DskipTests spring-boot:run "-Dspring-boot.run.arguments=--spring.datasource.username=root --spring.datasource.password= --app.mock-data.enabled=true --app.mock-data.force=false"
+
+set DB_HOST=cpuzhbc.cn
+set DB_USER=dachuang
+set DB_PASSWORD=Dachuang123!
+
+.\apache-maven-3.9.6\bin\mvn clean -DskipTests spring-boot:run "-Dspring-boot.run.arguments=--app.mock-data.enabled=true --app.mock-data.force=true"
 
 endlocal

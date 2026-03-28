@@ -1,4 +1,6 @@
 {
     "navigationBarTitleText": "加工处理",
-    "usingComponents": {}
+    "usingComponents": {
+    "supply-chain-steps": "../../components/supply-chain-steps/index"
+  }
 }

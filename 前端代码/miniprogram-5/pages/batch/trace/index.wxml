@@ -43,6 +43,11 @@
         </view>
     </view>
 
+    <!-- 宏观阶段指示器 (Macro Progress) -->
+    <view class="macro-progress-section fade-in">
+        <supply-chain-steps mode="process" active="{{processStepIdx}}" bind:stepClick="onStepClick" />
+    </view>
+
     <!-- 2. 本草典籍与生态环境 (TCM & Origin) -->
     <view class="story-section {{scanCompleted ? 'fade-in-up delay-1' : 'hidden'}}">
         <view class="section-title-box">
@@ -112,9 +117,12 @@
     
     <!-- 榫卯溯源链 (Interlocking Chain) -->
     <!-- 数字化流水线 (Digital Artery Pipeline) -->
-    <scroll-view class="pipeline-container {{scanCompleted ? 'fade-in delay-3' : 'hidden'}}" scroll-x="true" scroll-with-animation="true">
+    <scroll-view class="pipeline-container {{scanCompleted ? 'fade-in delay-3' : 'hidden'}}" scroll-x="true" scroll-with-animation="true" scroll-into-view="{{scrollToId}}">
         <view class="pipeline-axis">
-            <!-- 动态流动的数据胶囊 (Data Capsules) -->
+            <!-- 贯穿始末的发光主线 (Circuit Board Track) -->
+            <view class="main-track-line"></view>
+
+            <!-- 动态流动的数据脉冲 (Data Pulses) -->
             <view class="capsule-emitter">
                 <view class="data-capsule pulse-1"></view>
                 <view class="data-capsule pulse-2"></view>
@@ -122,19 +130,24 @@
 
             <!-- 环节工位 (Processing Stations) -->
             <block wx:for="{{stations}}" wx:key="id">
-                <view class="station {{item.type}}">
-                    <!-- 顶部的工位指示器 -->
-                    <view class="station-indicator">
-                        <view class="dot {{item.active ? 'active' : ''}}"></view>
-                        <view class="line"></view>
+                <view class="station {{item.active ? 'is-active' : ''}}" id="{{item.id}}">
+                    <!-- 主线上的实体节点 (Node on Track) -->
+                    <view class="station-node">
+                        <view class="core-dot {{item.active ? 'glow' : ''}}"></view>
+                        <view class="ping-ring" wx:if="{{item.active}}"></view>
+                        <text class="node-badge" wx:if="{{item.active}}">{{item.outputQty}}{{item.unit !== '单位' && item.unit !== '检验' && item.unit !== '100%' && item.unit !== '闭环' ? item.unit : ''}}</text>
                     </view>
 
+                    <!-- 向下延伸的连接柱 (Stem) -->
+                    <view class="stem-line {{item.active ? 'stem-glow' : ''}}"></view>
+
+                    <!-- 下方悬挂的数据卡片 (Hanging Card) -->
                     <view class="station-card glass-card {{item.active ? 'highlight' : ''}}">
                         <view class="station-header">
                             <text class="station-icon" style="font-size: 36rpx; margin-right: 16rpx;">{{item.icon}}</text>
                             <view class="station-info">
                                 <text class="title">{{item.title}}</text>
-                                <text class="time">{{item.time || '等待中'}}</text>
+                                <text class="time">{{item.time || '等待同步中'}}</text>
                             </view>
                         </view>
 
@@ -154,14 +167,10 @@
                                 <text class="progress-txt">{{item.currentStep}} ({{item.progress}}%)</text>
                             </view>
                         </view>
-                    </view>
-
-                    <!-- 节点间的逻辑核验锁 -->
-                    <view class="verification-joint" wx:if="{{index < stations.length - 1}}" bindtap="verifyLogic" data-index="{{index}}">
-                        <view class="joint-artery"></view>
-                        <view class="lock-unit">
-                            <view class="lock-glow"></view>
-                            <text class="qty-badge">{{item.outputQty}} {{item.unit}}</text>
+                        
+                        <!-- 节点核验交互区嵌入卡片内部 -->
+                        <view class="verification-btn" wx:if="{{item.active && index < stations.length - 1}}" bindtap="verifyLogic" data-index="{{index}}">
+                            <text class="v-icon">🔗</text> 链上溯源核验
                         </view>
                     </view>
                 </view>

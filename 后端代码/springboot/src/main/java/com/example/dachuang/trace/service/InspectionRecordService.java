@@ -15,11 +15,17 @@ public class InspectionRecordService {
     private final InspectionRecordRepository inspectionRecordRepository;
     private final BatchService batchService;
 
-    public List<InspectionRecord> list(String batchNo) {
+    public List<InspectionRecord> list(String batchNo, String type) {
+        List<InspectionRecord> res;
         if (batchNo == null || batchNo.isBlank()) {
-            return inspectionRecordRepository.findAll();
+            res = inspectionRecordRepository.findAll();
+        } else {
+            res = inspectionRecordRepository.findAllByBatchNo(batchNo);
         }
-        return inspectionRecordRepository.findAllByBatchNo(batchNo);
+        if (type != null && !type.isBlank()) {
+            return res.stream().filter(r -> type.equals(r.getInspectionType())).toList();
+        }
+        return res;
     }
 
     public InspectionRecord getById(Long id) {
@@ -37,6 +43,7 @@ public class InspectionRecordService {
                 .orElseThrow(() -> new BusinessException(404, "Inspection record not found"));
         batchService.getBatchByNo(record.getBatchNo());
         existing.setBatchNo(record.getBatchNo());
+        existing.setInspectionType(record.getInspectionType());
         existing.setResult(record.getResult());
         existing.setReportUrl(record.getReportUrl());
         existing.setInspector(record.getInspector());

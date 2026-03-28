@@ -218,17 +218,29 @@
 .pipeline-container {
   flex: 1;
   width: 100%;
-  padding: 80rpx 0;
+  padding: 80rpx 0 120rpx 0;
   white-space: nowrap;
 }
 
 .pipeline-axis {
   display: inline-flex;
-  padding: 0 60rpx;
+  padding: 0 80rpx;
   min-width: 100%;
   position: relative;
-  height: 700rpx;
-  align-items: center;
+  height: 600rpx;
+  align-items: flex-start; /* 卡片统一挂在上方主轴线 */
+}
+
+/* 这就是贯穿所有节点的高亮电路主线 (Circuit Board Track) */
+.main-track-line {
+  position: absolute;
+  top: 30rpx; /* 中心水平线 */
+  left: 80rpx;
+  right: 80rpx;
+  height: 6rpx;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4rpx;
+  z-index: 1;
 }
 
 /* 环节工位 (Station) */
@@ -236,46 +248,88 @@
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  margin-right: -40rpx; /* 紧凑衔接 */
   position: relative;
+  width: 480rpx; /* 每个工位占据固定等宽的凹槽，节节相扣 */
+  z-index: 10;
 }
 
-/* 工位指示器 */
-.station-indicator {
-  margin-bottom: 40rpx;
+/* 主线上的实体节点 (Node on Track) */
+.station-node {
+  height: 60rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  z-index: 10;
 }
 
-.station-indicator .dot {
-  width: 12rpx;
-  height: 12rpx;
-  background: rgba(255, 255, 255, 0.2);
+.core-dot {
+  width: 24rpx;
+  height: 24rpx;
+  background: #2a3b4c;
+  border: 4rpx solid rgba(255,255,255,0.3);
   border-radius: 50%;
-  box-shadow: 0 0 10rpx rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 12;
+  transition: all 0.4s;
+  margin-top: 18rpx; /* 精准骑在一半在主线上 (30rpx) */
 }
 
-.station-indicator .dot.active {
+.core-dot.glow {
   background: #4db6ac;
-  box-shadow: 0 0 20rpx #4db6ac;
+  border-color: #fff;
+  box-shadow: 0 0 20rpx #4db6ac, 0 0 40rpx #80cbc4;
 }
 
-/* 工位卡片 */
-.station-card {
-  width: 440rpx;
-  padding: 30rpx;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(30rpx);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+.node-badge {
+  position: absolute;
+  top: -46rpx;
+  font-size: 20rpx;
+  color: #4db6ac;
+  background: rgba(77, 182, 172, 0.15);
+  padding: 6rpx 16rpx;
   border-radius: 20rpx;
-  white-space: normal;
+  border: 1px solid rgba(77, 182, 172, 0.4);
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+.ping-ring {
+  position: absolute;
+  top: 18rpx; 
+  width: 24rpx;
+  height: 24rpx;
+  border: 2rpx solid #4db6ac;
+  border-radius: 50%;
+  animation: ping 2s infinite;
+}
+
+/* 向下延伸的连接柱 (Stem) */
+.stem-line {
+  width: 2rpx;
+  height: 60rpx;
+  background: rgba(255, 255, 255, 0.1);
+  margin-bottom: 20rpx;
+  transition: all 0.4s;
+}
+
+.stem-glow {
+  background: linear-gradient(to bottom, #4db6ac, rgba(77, 182, 172, 0.2));
+  box-shadow: 0 0 10rpx rgba(77, 182, 172, 0.5);
+}
+
+/* 下方悬挂的数据卡片 (Hanging Card) */
+.station-card {
+  width: 420rpx;
+  padding: 30rpx;
+  white-space: normal; /* 解决文本溢出换行 */
+  position: relative;
   transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .station-card.highlight {
   border-color: rgba(77, 182, 172, 0.4);
-  background: rgba(77, 182, 172, 0.06);
+  background: rgba(77, 182, 172, 0.08); /* 稍微提亮一点背景 */
   box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.4);
 }
 
@@ -286,10 +340,7 @@
 }
 
 .station-icon {
-  width: 48rpx;
-  height: 48rpx;
-  margin-right: 16rpx;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 .station-info {
@@ -305,8 +356,8 @@
 
 .station-info .time {
   font-size: 18rpx;
-  color: rgba(255, 255, 255, 0.3);
-  margin-top: 2rpx;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 4rpx;
 }
 
 .station-body {
@@ -317,7 +368,8 @@
   display: flex;
   align-items: flex-start;
   margin-bottom: 12rpx;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
 }
 
 .record-item .dot {
@@ -327,9 +379,7 @@
 
 /* 进度展示 (正在处理) */
 .process-status {
-  margin-top: 20rpx;
-  padding-top: 20rpx;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 10rpx;
 }
 
 .progress-bar {
@@ -358,40 +408,24 @@
   color: #4db6ac;
 }
 
-/* 节点衔接处 (Joints) */
-.verification-joint {
-  width: 200rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+/* 节点内嵌的核验交互区 */
+.verification-btn {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  text-align: center;
+  font-size: 22rpx;
+  color: #ce93d8;
+  border-radius: 8rpx;
+  transition: all 0.2s;
+  cursor: pointer;
 }
-
-.joint-artery {
-  width: 100%;
-  height: 4rpx;
-  background: linear-gradient(90deg, rgba(77, 182, 172, 0.3), rgba(77, 182, 172, 0.1));
+.verification-btn:active {
+  background: rgba(206, 147, 216, 0.2);
 }
-
-.lock-unit {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.qty-badge {
-  font-size: 18rpx;
-  color: #4db6ac;
-  background: rgba(77, 182, 172, 0.1);
-  padding: 4rpx 12rpx;
-  border-radius: 20rpx;
-  border: 1px solid rgba(77, 182, 172, 0.2);
-  white-space: nowrap;
+.v-icon {
+  font-size: 24rpx;
+  margin-right: 6rpx;
 }
 
 /* 数据胶囊动画 (Data Capsules) */

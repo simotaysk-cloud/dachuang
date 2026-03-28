@@ -1,4 +1,6 @@
 {
     "navigationBarTitleText": "批次溯源",
-    "usingComponents": {}
-}
+    "usingComponents": {
+        "supply-chain-steps": "../../../components/supply-chain-steps/index"
+    }
+}

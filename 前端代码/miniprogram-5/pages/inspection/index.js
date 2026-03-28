@@ -8,10 +8,14 @@ Page({
     data: {
         records: [],
         queryNo: '',
-        loading: false
+        loading: false,
+        activeStep: 1 // Default to 1 (Raw Material Inspection)
     },
 
-    onLoad() {
+    onLoad(options) {
+        if (options && options.active) {
+            this.setData({ activeStep: parseInt(options.active) })
+        }
         if (!guardFeatureAccess(api.role, 'INSPECTION')) return
 
         this.listAll()
@@ -30,18 +34,20 @@ Page({
         this.setData({ queryNo: e.detail.value })
     },
 
+    getInspectionType() {
+        return this.data.activeStep == 1 ? 'RAW' : 'FINISHED'
+    },
+
     startCreate() {
-        // Manual entry fallback: generate new batch and QR based on parent batch.
-        wx.navigateTo({ url: '/pages/inspection-form/index' })
+        // Manual entry fallback
+        wx.navigateTo({ url: `/pages/inspection-form/index?type=${this.getInspectionType()}` })
     },
 
     parseBatchNoFromScanResult(raw) {
         const s = String(raw || '').trim()
         if (!s) return ''
-        // Prefer query param: ...?batchNo=XXX
         const m1 = s.match(/[?&]batchNo=([^&]+)/i)
         if (m1 && m1[1]) return decodeURIComponent(m1[1])
-        // If it's a URL-like path, take last segment.
         if (s.startsWith('http://') || s.startsWith('https://') || s.includes('/')) {
             const noHash = s.split('#')[0]
             const noQuery = noHash.split('?')[0]
@@ -67,7 +73,7 @@ Page({
                 return
             }
             wx.navigateTo({
-                url: `/pages/inspection-form/index?parentBatchNo=${encodeURIComponent(batchNo)}&lockedParent=1`
+                url: `/pages/inspection-form/index?parentBatchNo=${encodeURIComponent(batchNo)}&lockedParent=1&type=${this.getInspectionType()}`
             })
         } catch (err) {
             // user canceled or failed
@@ -77,15 +83,24 @@ Page({
     editFromList(e) {
         const item = e.currentTarget.dataset.item
         if (!item || item.id == null) return
-        wx.navigateTo({ url: `/pages/inspection-form/index?id=${encodeURIComponent(String(item.id))}` })
+        wx.navigateTo({ url: `/pages/inspection-form/index?id=${encodeURIComponent(String(item.id))}&type=${this.getInspectionType()}` })
     },
 
     async listAll() {
         this.setData({ loading: true })
         try {
-            const res = await api.request('/api/v1/inspection')
-            this.setData({ records: res.data || [] })
-            if (!res.data || res.data.length === 0) {
+            const res = await api.request(`/api/v1/inspection?type=${this.getInspectionType()}`)
+            const rawRecords = res.data || []
+            const processed = rawRecords.map(item => {
+                const resStr = item.result || ''
+                return {
+                    ...item,
+                    isPass: resStr.includes('合格') && !resStr.includes('不合格'),
+                    shortSummary: resStr.length > 40 ? resStr.substring(0, 40) + '...' : resStr
+                }
+            })
+            this.setData({ records: processed })
+            if (processed.length === 0) {
                 wx.showToast({ title: '暂无记录', icon: 'none' })
             }
         } catch (err) {
@@ -107,7 +122,7 @@ Page({
 
         this.setData({ loading: true })
         try {
-            const res = await api.request(`/api/v1/inspection?batchNo=${this.data.queryNo}`)
+            const res = await api.request(`/api/v1/inspection?batchNo=${this.data.queryNo}&type=${this.getInspectionType()}`)
             this.setData({ records: res.data || [] })
             wx.setStorageSync(LAST_QUERY_KEY, this.data.queryNo)
             if (!res.data || res.data.length === 0) {

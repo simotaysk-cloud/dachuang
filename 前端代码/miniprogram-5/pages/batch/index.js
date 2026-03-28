@@ -27,8 +27,19 @@ Page({
 
     onLoad() {
         if (!guardFeatureAccess(api.role, 'BATCH')) return
-        this.setData({ role: api.role })
+        this.setData({ 
+            role: api.role,
+            currentStepIdx: this.getCurrentStepIdx(api.role)
+        })
         this.listAll()
+    },
+
+    getCurrentStepIdx(role) {
+        const r = (role || '').toUpperCase()
+        if (r === 'FARMER') return 0
+        if (r === 'QUALITY') return [1, 3]
+        if (r === 'FACTORY' || r === 'MANUFACTURER') return 2
+        return -1
     },
 
     async listAll() {
@@ -74,6 +85,11 @@ Page({
     },
 
     startCreate() {
+        if (this.data.role !== 'ADMIN') {
+            wx.showToast({ title: '仅管理员可新建批次', icon: 'none' })
+            return
+        }
+        
         this.setData({
             showForm: true,
             form: {
@@ -91,10 +107,6 @@ Page({
                 gs1Locked: false
             }
         })
-    },
-
-    startExternalRegistration() {
-        wx.navigateTo({ url: '/pages/batch/add-external/index' })
     },
 
     async chooseImage() {
@@ -122,12 +134,42 @@ Page({
         })
     },
 
-    editFromList(e) {
+    async editFromList(e) {
         const item = e.currentTarget.dataset.item
         this.setData({
             showForm: true,
-            form: { ...item } // clone
+            form: { ...item }, // clone
+            formProcessStepIdx: 0,
+            formLoadingTrace: true
         })
+
+        if (!item.batchNo) {
+            this.setData({ formLoadingTrace: false })
+            return
+        }
+
+        try {
+            const res = await api.request(`/api/v1/trace/${item.batchNo}?t=${Date.now()}`)
+            const data = res.data || {}
+            let processStepIdx = 0; // 默认：资源产地
+            if (data.processingRecords && data.processingRecords.length > 0) {
+                processStepIdx = 2; // 加工阶段
+            } else if (data.inspectionRecords && data.inspectionRecords.length > 0) {
+                processStepIdx = 1; // 原料质检
+            }
+            if (data.logisticsRecords && data.logisticsRecords.length > 0) {
+                processStepIdx = 4; // 物流阶段/终端溯源
+            } else if (data.inspectionRecords && data.inspectionRecords.length > 1) {
+                processStepIdx = 3; // 成品检验
+            }
+            this.setData({
+                formProcessStepIdx: processStepIdx,
+                formLoadingTrace: false
+            })
+        } catch (err) {
+            console.error('获取溯源进度失败:', err)
+            this.setData({ formLoadingTrace: false })
+        }
     },
 
     cancelEdit() {
@@ -210,6 +252,10 @@ Page({
     },
 
     async lockGs1() {
+        if (this.data.role !== 'ADMIN') {
+            wx.showToast({ title: '仅管理员可锁定信息', icon: 'none' })
+            return
+        }
         const batchNo = this.data.form.batchNo
         if (!batchNo) return
 
@@ -238,6 +284,11 @@ Page({
         const item = e.currentTarget.dataset.item
         const batchNo = item.batchNo
         const isLocked = item.gs1Locked
+
+        if (!isLocked && this.data.role !== 'ADMIN') {
+            wx.showToast({ title: '仅管理员可执行初始化锁定', icon: 'none' })
+            return
+        }
 
         if (!isLocked) {
             const confirm = await new Promise((resolve) => {

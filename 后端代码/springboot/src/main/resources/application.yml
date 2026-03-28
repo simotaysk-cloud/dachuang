@@ -3,6 +3,8 @@ spring:
     active: dev
   application:
     name: dachuang
+  main:
+    web-application-type: servlet
 
 server:
   port: 8091

@@ -6,11 +6,13 @@ import com.example.dachuang.auth.entity.User;
 import com.example.dachuang.auth.repository.UserRepository;
 import com.example.dachuang.common.exception.BusinessException;
 import com.example.dachuang.common.util.PhoneMaskUtil;
+import com.example.dachuang.config.WxProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -20,12 +22,18 @@ public class WxAuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
+    private final WxProperties wxProperties;
 
-    @Value("${wx.appid:mock-appid}")
-    private String appid;
-
-    @Value("${wx.secret:mock-secret}")
-    private String secret;
+    public String getSecretByAppid(String appid) {
+        if (appid == null || wxProperties.getConfigs() == null) {
+            return null;
+        }
+        return wxProperties.getConfigs().values().stream()
+                .filter(c -> appid.equals(c.getAppid()))
+                .map(WxProperties.Config::getSecret)
+                .findFirst()
+                .orElse(null);
+    }
 
     public AuthResponse login(String username, String password) {
         log.info("Login attempt - username: [{}], password length: {}", username,

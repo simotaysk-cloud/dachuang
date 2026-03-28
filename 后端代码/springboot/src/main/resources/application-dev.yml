@@ -27,8 +27,13 @@ jwt:
   expiration: 86400000
 
 wx:
-  appid: mock-appid
-  secret: mock-secret
+  configs:
+    miniprogram5:
+      appid: wxb6004f50990df687
+      secret: ae194da531b1c46d85469255c9ce673c
+    consumer:
+      appid: wxaff7283d63d54a14
+      secret: ${WX_CONSUMER_SECRET:mock-secret}
 
 # Blockchain (demo)
 # - mode=MOCK: generate fake txHash/dataHash

@@ -8,6 +8,7 @@ Page({
     data: {
         // When id is present, we are viewing/updating an existing record.
         id: '',
+        type: 'RAW', // Default to RAW
         loading: false,
         parentLocked: false,
 
@@ -26,7 +27,8 @@ Page({
             batchNo: '',
             result: '',
             reportUrl: '',
-            inspector: ''
+            inspector: '',
+            inspectionType: ''
         }
     },
 
@@ -35,7 +37,8 @@ Page({
 
         const opts = options || {}
         const id = opts.id ? String(opts.id) : ''
-        this.setData({ id })
+        const type = opts.type ? String(opts.type) : 'RAW'
+        this.setData({ id, type })
 
         if (id) {
             this.loadRecord(id)
@@ -64,7 +67,8 @@ Page({
                     batchNo: r.batchNo || '',
                     result: r.result || '',
                     reportUrl: r.reportUrl || '',
-                    inspector: r.inspector || ''
+                    inspector: r.inspector || '',
+                    inspectionType: r.inspectionType || this.data.type
                 }
             })
         } catch (err) {
@@ -81,13 +85,18 @@ Page({
         this.setData({ [`createForm.${field}`]: e.detail.value })
     },
 
+    changeType(e) {
+        const t = e.currentTarget.dataset.type
+        this.setData({ type: t })
+    },
+
     onRecordInput(e) {
         const { field } = e.currentTarget.dataset
         this.setData({ [`record.${field}`]: e.detail.value })
     },
 
     async submitAndGenQr() {
-        const payload = { ...this.data.createForm }
+        const payload = { ...this.data.createForm, inspectionType: this.data.type }
         if (!payload.parentBatchNo) return wx.showToast({ title: '请先填写被检批次号', icon: 'none' })
         if (!payload.result) return wx.showToast({ title: '请先填写检测结果', icon: 'none' })
         if (!payload.inspector) return wx.showToast({ title: '请先填写质检员', icon: 'none' })
@@ -131,6 +140,7 @@ Page({
             wx.showLoading({ title: '正在保存' })
             await api.request(`/api/v1/inspection/${encodeURIComponent(String(r.id))}`, 'PUT', {
                 batchNo: r.batchNo,
+                inspectionType: r.inspectionType || this.data.type,
                 result: r.result,
                 reportUrl: r.reportUrl,
                 inspector: r.inspector

@@ -1,4 +1,5 @@
 <view class="page-container processing-page">
+    <supply-chain-steps active="2" />
     <view class="ink-blob-bottom"></view>
     
     <view class="header">

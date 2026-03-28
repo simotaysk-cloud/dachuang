@@ -1,0 +1,125 @@
+/* components/supply-chain-steps/index.wxss */
+.stepper-wrapper {
+    width: 100%;
+    padding: 20rpx 0;
+    margin-bottom: 10rpx;
+}
+
+.stepper-inner {
+    background: #FFFFFF;
+    border-radius: 40rpx;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 60rpx 30rpx;
+    box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.03); /* Softer shadow */
+    box-sizing: border-box;
+}
+
+.step-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 120rpx;
+    flex: none;
+    position: relative;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.circle {
+    width: 48rpx;
+    height: 48rpx;
+    border-radius: 50%;
+    background: #F0F0F0;
+    margin-bottom: 24rpx;
+    position: relative;
+    transition: all 0.4s ease;
+}
+
+.label {
+    font-size: 24rpx;
+    color: #A0A0A0;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+/* Arrow styling - much more refined */
+.arrow {
+    flex: 1;
+    height: 48rpx; /* Match circle height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin: 0 -5rpx;
+}
+
+.arrow::before {
+    content: '';
+    width: 100%;
+    height: 2rpx;
+    background: #EAEAEA;
+    transform: scaleX(0.7); /* Shorter line */
+}
+
+.arrow::after {
+    content: '';
+    position: absolute;
+    right: 25%;
+    width: 10rpx;
+    height: 10rpx;
+    border-top: 3rpx solid #EAEAEA;
+    border-right: 3rpx solid #EAEAEA;
+    transform: rotate(45deg);
+    margin-top: -1rpx;
+}
+
+/* ACTIVE State - Sophisticated Green */
+.step-item.active .circle {
+    background: linear-gradient(135deg, #388E3C, #2E7D32);
+}
+
+.step-item.active .label {
+    color: #2E7D32;
+}
+
+.arrow.active::before {
+    background: #2E7D32;
+}
+.arrow.active::after {
+    border-color: #2E7D32;
+}
+
+/* CURRENT State - Premium Highlight */
+.step-item.current {
+    transform: translateY(-4rpx);
+}
+
+.step-item.current .circle {
+    box-shadow: 0 8rpx 24rpx rgba(46, 125, 50, 0.35), 
+                0 0 40rpx rgba(46, 125, 50, 0.15); /* Multi-layer glow */
+    transform: scale(1.1);
+}
+
+.step-item.current .label {
+    font-weight: 600;
+    color: #1B5E20;
+    position: relative;
+}
+
+/* Custom underline - doesn't stick to text */
+.step-item.current .label::after {
+    content: '';
+    position: absolute;
+    bottom: -8rpx;
+    left: 20%;
+    right: 20%;
+    height: 4rpx;
+    background: #2E7D32;
+    border-radius: 4rpx;
+}
+
+.step-item:active {
+    opacity: 0.8;
+}
