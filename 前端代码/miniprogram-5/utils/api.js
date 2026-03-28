@@ -57,10 +57,13 @@ function normalizeBaseUrl(url) {
 }
 
 const api = {
-    baseUrl: normalizeBaseUrl(getStoredBaseUrl() || getDefaultBaseUrl() || DEFAULT_API_BASE_URL),
+    baseUrl: (config.debug) 
+        ? normalizeBaseUrl(getStoredBaseUrl() || getDefaultBaseUrl() || DEFAULT_API_BASE_URL)
+        : normalizeBaseUrl(getDefaultBaseUrl() || DEFAULT_API_BASE_URL),
     token: wx.getStorageSync('token') || '',
     role: normalizeRole(wx.getStorageSync('role') || ''),
     username: wx.getStorageSync('username') || '',
+    debug: config.debug,
 
     init() {
         console.log('Current API Base URL:', this.baseUrl)

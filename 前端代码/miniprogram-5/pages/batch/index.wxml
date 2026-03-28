@@ -1,4 +1,5 @@
 <view class="page-container batch-page">
+    <supply-chain-steps active="{{currentStepIdx}}" />
     <view class="header">
         <view class="title">批次管理</view>
         <view class="desc">中药材溯源身份与全生命周期档案</view>
@@ -16,11 +17,8 @@
         </view>
 
         <view class="action-grid">
-            <button class="btn btn-primary" bindtap="startCreate" wx:if="{{role !== 'MANUFACTURER'}}">
+            <button class="btn btn-primary" bindtap="startCreate" wx:if="{{role === 'ADMIN'}}">
                 + 新建生产批次
-            </button>
-            <button class="btn btn-primary" bindtap="startExternalRegistration" wx:if="{{role === 'MANUFACTURER'}}" style="background: linear-gradient(135deg, #FF9800, #F57C00);">
-                登记外源原料
             </button>
             <button class="btn btn-outline" bindtap="listAll">同步数据</button>
         </view>
@@ -83,6 +81,16 @@
         <view class="modal glass-card modal-scroll" catchtap="return">
             <view class="modal-title">{{form.id ? '药材批次档案' : '录入新批次'}}</view>
             
+            <!-- 批次流转进度指示器 -->
+            <view wx:if="{{form.id}}" class="macro-progress-section" style="padding: 10rpx 0 30rpx 0;">
+                <view wx:if="{{formLoadingTrace}}" style="text-align: center; font-size: 24rpx; color: #999; padding: 20rpx;">
+                    正在同步后端链上数据...
+                </view>
+                <view wx:else style="margin: 0 -20rpx; transform: scale(0.9); transform-origin: top center;">
+                    <supply-chain-steps mode="process" active="{{formProcessStepIdx}}" bind:stepClick="viewTrace" />
+                </view>
+            </view>
+            
             <view class="form-section">
                 <view class="readonly-row" wx:if="{{form.id}}">
                     <view class="readonly-label">系统内部识别码</view>
@@ -140,7 +148,7 @@
                     </block>
                 </view>
 
-                <view wx:if="{{form.id && !form.gs1Locked}}" class="lock-section">
+                <view wx:if="{{form.id && !form.gs1Locked && role === 'ADMIN'}}" class="lock-section">
                     <button class="btn btn-warn" bindtap="lockGs1">锁定批次信息</button>
                     <view class="lock-hint">锁定后将正式生成防伪条码，数量信息将不可变更</view>
                 </view>

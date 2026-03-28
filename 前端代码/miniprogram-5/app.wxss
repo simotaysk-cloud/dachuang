@@ -54,7 +54,8 @@ page {
   color: var(--text-sub);
 }
 
-.card {
+.card,
+.glass-card {
   width: 100%;
   box-sizing: border-box;
   margin-bottom: 30rpx;

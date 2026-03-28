@@ -1,4 +1,5 @@
 <view class="page-container">
+    <supply-chain-steps active="0" />
     <view class="header">
         <view class="title">种植录入</view>
         <view class="desc">录入药材在田间的日常操作与生长情况</view>

@@ -28,8 +28,22 @@ Page({
       roleName: '用户身份：' + api.getRoleName(api.role),
       menuAccess: getMenuAccess(api.role),
       flowNodes: this.getFlowNodes(api.role),
-      logisticsActive: r === 'LOGISTICS' || r === 'ADMIN'
+      logisticsActive: r === 'LOGISTICS' || r === 'ADMIN',
+      currentStepIdx: this.getCurrentStepIdx(api.role)
     })
+  },
+
+  getCurrentStepIdx(role) {
+    const r = (role || '').toUpperCase()
+    if (r === 'FARMER') return 0
+    if (r === 'QUALITY') return [1, 3] // Highlights both Raw Material and Finished Product Inspections
+    if (r === 'FACTORY' || r === 'MANUFACTURER') return 2
+
+    // Admin/Regulator defaults to terminal (4) or overview (-1).
+    // In 'role' mode, giving them 4 will just highlight terminal.
+    // If they want to see all stages, they can switch roles via the login screen.
+    if (r === 'ADMIN' || r === 'REGULATOR') return -1 
+    return -1
   },
 
   getFlowNodes(role) {

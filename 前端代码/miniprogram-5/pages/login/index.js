@@ -18,7 +18,8 @@ Page({
             { label: '监管部门', key: 'REGULATOR' },
             { label: '系统管理员', key: 'ADMIN' }
         ],
-        roleIndex: 0
+        roleIndex: 0,
+        debugMode: false
     },
 
     onLoad() {
@@ -26,7 +27,13 @@ Page({
         const rememberLogin = !!wx.getStorageSync(REMEMBER_LOGIN_KEY)
         const username = rememberLogin ? (wx.getStorageSync(SAVED_USERNAME_KEY) || '') : ''
         const password = rememberLogin ? (wx.getStorageSync(SAVED_PASSWORD_KEY) || '') : ''
-        this.setData({ rememberLogin, username, password, baseUrl: api.baseUrl })
+        this.setData({ 
+            rememberLogin, 
+            username, 
+            password, 
+            baseUrl: api.baseUrl,
+            debugMode: api.debug
+        })
     },
 
     onInput(e) {
@@ -96,6 +103,10 @@ Page({
                     return
                 }
 
+                // Use the SELECTED role as the effective role for this session.
+                // This allows Admin to impersonate any role, and for others it ensures consistency with selected persona.
+                api.setRole(selectedRole)
+
                 if (this.data.rememberLogin) {
                     wx.setStorageSync(SAVED_USERNAME_KEY, username)
                     wx.setStorageSync(SAVED_PASSWORD_KEY, password)
@@ -103,7 +114,7 @@ Page({
                     wx.removeStorageSync(SAVED_USERNAME_KEY)
                     wx.removeStorageSync(SAVED_PASSWORD_KEY)
                 }
-                this.redirectByRole(loginRes.data.role)
+                this.redirectByRole(selectedRole)
             }
         } catch (err) {
             wx.hideLoading()

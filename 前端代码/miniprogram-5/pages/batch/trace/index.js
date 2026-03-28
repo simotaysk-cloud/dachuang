@@ -33,29 +33,66 @@ Page({
         }
     },
 
+    onStepClick(e) {
+        const stepIdx = e.detail.step;
+        
+        // Map 5 stepper index to 5 pipeline station IDs
+        let targetId = 'p1';
+        switch (stepIdx) {
+            case 0: targetId = 'p1'; break; // 资源产地 -> p1
+            case 1: targetId = 'p2'; break; // 原料质检 -> p2
+            case 2: targetId = 'p3'; break; // 深加工 -> p3
+            case 3: targetId = 'p4'; break; // 成品检验 -> p4
+            case 4: targetId = 'p5'; break; // 终端溯源 -> p5
+        }
+        
+        wx.pageScrollTo({
+            selector: '.pipeline-container',
+            duration: 300,
+            success: () => {
+                setTimeout(() => {
+                    this.setData({ scrollToId: targetId });
+                }, 300);
+            }
+        });
+    },
+
     onLoad(options) {
         if (!guardFeatureAccess(api.role, 'BATCH')) return
         if (options.batchNo) {
             this.loadData(options.batchNo)
+        } else {
+            wx.showToast({ title: '批次号无效', icon: 'error' })
         }
     },
 
     async loadData(batchNo) {
         this.setData({ loading: true, currentBatchNo: batchNo, scanCompleted: false })
         try {
-            const res = await api.request(`/api/v1/trace/${batchNo}`)
+            const res = await api.request(`/api/v1/trace/${batchNo}?t=${Date.now()}`)
             const data = res.data || {}
             
-            // 数据解析：将扁平记录转换为“流水线工位”
             const stations = this.parseStations(data)
+
+            let processStepIdx = 0; 
+            if (data.processingRecords && data.processingRecords.length > 0) {
+                processStepIdx = 2; // 加工阶段
+            } else if (data.inspectionRecords && data.inspectionRecords.some(r => r.inspectionType === 'RAW' || !r.inspectionType)) {
+                processStepIdx = 1; // 原料质检
+            }
+            if (data.logisticsRecords && data.logisticsRecords.length > 0) {
+                processStepIdx = 4; // 物流阶段/终端溯源
+            } else if (data.inspectionRecords && data.inspectionRecords.some(r => r.inspectionType === 'FINISHED' || (!r.inspectionType && data.inspectionRecords.length > 1))) {
+                processStepIdx = 3; // 成品检验 
+            }
 
             this.setData({
                 batchData: data.batch || {},
                 stations: stations,
-                batchNo: batchNo
+                batchNo: batchNo,
+                processStepIdx: processStepIdx
             })
 
-            // 模拟高科技激光扫描鉴伪动画
             setTimeout(() => {
                 this.setData({ scanCompleted: true })
             }, 2500)
@@ -72,74 +109,117 @@ Page({
         const { batch, processingRecords, logisticsRecords, inspectionRecords } = traceData
         const stations = []
 
-        // 1. 种植/源头工位
+        // 1. 资源产地 (p1)
         stations.push({
             id: 'p1',
             type: 'planting',
-            title: '地头溯源 (种植)',
+            title: '资源产地',
             active: true,
             icon: '🌱',
-            time: this.formatTime(batch.productionDate),
+            time: this.formatTime(batch?.createdAt),
             records: [
-                { content: `基地位置：${batch.origin || '自有GAP基地'}` },
-                { content: `品种批次已在至信链存证` }
+                { content: `产地归属：${batch?.origin || '标准GAP种植基地'}` },
+                { content: `品种记录已完成链上登记` }
             ],
-            outputQty: batch.quantity,
-            unit: batch.unit
+            outputQty: batch?.quantity || 0,
+            unit: batch?.unit || '单位'
         })
 
-        // 2. 加工工位 (如果有记录)
-        if (processingRecords && processingRecords.length > 0) {
-            const lastProc = processingRecords[processingRecords.length - 1]
-            stations.push({
-                id: 'p2',
-                type: 'processing',
-                title: '工业化加工',
-                active: true,
-                icon: '🏭',
-                time: this.formatTime(lastProc.createdAt),
-                records: processingRecords.map(r => ({ content: `${r.processType}: ${r.lineName}` })),
-                progress: 100,
-                currentStep: '加工已完成',
-                outputQty: lastProc.outputQuantity || batch.quantity,
-                unit: lastProc.outputUnit || batch.unit
-            })
+        // 2. 原料质检 (p2)
+        const rawInspection = inspectionRecords && (
+            inspectionRecords.find(r => r.inspectionType === 'RAW') || 
+            (inspectionRecords.length > 0 && !inspectionRecords[0].inspectionType ? inspectionRecords[0] : null)
+        );
+        let p2Records = [];
+        if (rawInspection) {
+            const resStr = rawInspection.result || '合格';
+            if (resStr.includes('；')) {
+                const parts = resStr.split('；').filter(Boolean);
+                p2Records = parts.map(p => ({ content: p.trim() }));
+            } else {
+                p2Records = [{ content: `质检结果：${resStr}` }];
+            }
+            p2Records.push({ content: `操作人：${rawInspection.inspector || '质检员'}` });
         } else {
-            // Mock 一个正在处理的状态，如果是在比赛演示中可能有用
-            stations.push({
-                id: 'p2',
-                type: 'processing',
-                title: '数字化车间',
-                active: true,
-                icon: '🏭',
-                records: [{ content: '正在读取车间传感器数据...' }],
-                progress: 65,
-                currentStep: '烘干处理中'
-            })
+            p2Records = [{ content: '暂无收样质检数据' }];
         }
 
-        // 3. 质检工位
-        const hasInspection = inspectionRecords && inspectionRecords.length > 0
+        stations.push({
+            id: 'p2',
+            type: 'inspection-raw',
+            title: '原料质检',
+            active: !!rawInspection,
+            icon: '🔬',
+            time: rawInspection ? this.formatTime(rawInspection.createdAt) : '',
+            records: p2Records,
+            outputQty: '通过',
+            unit: '检验'
+        })
+
+        // 3. 深加工 (p3)
+        // ... (keep p3 as is)
+        const hasProcessing = processingRecords && processingRecords.length > 0;
+        let p3Records = [];
+        if (hasProcessing) {
+            p3Records = processingRecords.map(r => {
+                const stepName = r.processType || '加工工序';
+                const detailName = r.lineName || r.details || r.factory || '按规范处理';
+                return { content: `${stepName}: ${detailName}` };
+            });
+        } else {
+            p3Records = [{ content: '尚未进入深加工阶段' }];
+        }
+        
         stations.push({
             id: 'p3',
-            type: 'inspection',
-            title: '质量检测',
-            active: hasInspection,
-            icon: '🔬',
-            time: hasInspection ? this.formatTime(inspectionRecords[0].createdAt) : '',
-            records: hasInspection 
-                ? inspectionRecords.map(r => ({ content: `${r.checkItem}: ${r.result}` }))
-                : [{ content: '等待批次质检报告发布' }],
+            type: 'processing',
+            title: '工业深加工',
+            active: hasProcessing,
+            icon: '🏭',
+            time: hasProcessing ? this.formatTime(processingRecords[processingRecords.length - 1].createdAt) : '',
+            records: p3Records,
+            progress: hasProcessing ? 100 : '',
+            currentStep: hasProcessing ? '加工已完成' : '',
+            outputQty: hasProcessing ? (processingRecords[processingRecords.length - 1].outputQuantity || batch?.quantity || 0) : '未出库',
+            unit: hasProcessing ? (processingRecords[processingRecords.length - 1].outputUnit || batch?.unit || '单位') : ''
+        })
+
+        // 4. 成品检验 (p4)
+        const finishInspection = inspectionRecords && (
+            inspectionRecords.find(r => r.inspectionType === 'FINISHED') || 
+            (inspectionRecords.length > 1 && !inspectionRecords[inspectionRecords.length - 1].inspectionType ? inspectionRecords[inspectionRecords.length - 1] : null)
+        );
+        let p4Records = [];
+        if (finishInspection) {
+            const resStr = finishInspection.result || '合格';
+            if (resStr.includes('；')) {
+                const parts = resStr.split('；').filter(Boolean);
+                p4Records = parts.map(p => ({ content: p.trim() }));
+            } else {
+                p4Records = [{ content: `放行核准：${resStr}` }];
+            }
+        } else {
+            p4Records = [{ content: '等待产线提交质检报告' }];
+        }
+
+        stations.push({
+            id: 'p4',
+            type: 'inspection-end',
+            title: '成品检验',
+            active: !!finishInspection,
+            icon: '✅',
+            time: finishInspection ? this.formatTime(finishInspection.createdAt) : '',
+            records: p4Records,
             outputQty: '合格率',
             unit: '100%'
         })
 
-        // 4. 物流/分发
-        const lastLog = (logisticsRecords && logisticsRecords.length > 0) ? logisticsRecords[logisticsRecords.length-1] : null
+        // 5. 终端溯源 / 物流 (p5)
+        const lastLog = logisticsRecords && logisticsRecords.length > 0 ? logisticsRecords[logisticsRecords.length-1] : null;
         stations.push({
-            id: 'p4',
+            id: 'p5',
             type: 'logistics',
-            title: '数字仓储物流',
+            title: '终端溯源',
             active: !!lastLog,
             icon: '🚚',
             time: lastLog ? this.formatTime(lastLog.createdAt) : '',

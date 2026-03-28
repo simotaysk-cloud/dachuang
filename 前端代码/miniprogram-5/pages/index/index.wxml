@@ -4,29 +4,14 @@
   <view class="header home-header">
     <image class="header-logo" src="https://cpuzhbc.cn/assets/tcm_herb.png" mode="aspectFit"></image>
     <view class="header-content">
-      <view class="title">智汇本草</view>
+      <view class="title">药途寻迹</view>
       <view class="desc">中药材全过程数字化溯源平台</view>
     </view>
   </view>
 
   <!-- 供应链全流程可视化 -->
   <view class="flow-section" wx:if="{{token}}">
-    <view class="supply-chain-flow glass-card">
-      <view class="flow-nodes">
-        <block wx:for="{{flowNodes}}" wx:key="id">
-          <!-- 节点 -->
-          <view class="flow-node {{item.active ? 'active' : ''}}">
-            <view class="node-dot"></view>
-            <view class="node-name">{{item.name}}</view>
-          </view>
-          <!-- 连接线 (物流) - 最后一个节点后不需要 -->
-          <view class="flow-connector {{logisticsActive ? 'active' : ''}}" wx:if="{{index < 4}}">
-            <view class="connector-line"></view>
-            <view class="connector-arrow" wx:if="{{logisticsActive}}"></view>
-          </view>
-        </block>
-      </view>
-    </view>
+    <supply-chain-steps active="{{currentStepIdx}}" />
   </view>
 
   <!-- 概览看板 -->
@@ -131,5 +116,5 @@
     </view>
   </view>
 
-  <view class="footer">© 2026 智汇本草 · 数字化中药材溯源系统支持</view>
+  <view class="footer">© 2026 药途寻迹 · 数字化中药材溯源系统支持</view>
 </view>

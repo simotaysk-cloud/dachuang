@@ -1,8 +1,9 @@
 <view class="page-container inspection-page">
+    <supply-chain-steps active="{{activeStep}}" />
     <view class="ink-blob-top"></view>
     
     <view class="header">
-        <view class="title">质检中心</view>
+        <view class="title">{{activeStep == 1 ? '原料质检室' : '成品检验中心'}}</view>
         <view class="desc">中药材质量安全监测与数字化认证</view>
     </view>
 
@@ -43,16 +44,20 @@
 
         <!-- 列表内容 -->
         <view class="records-container" wx:if="{{records && records.length > 0}}">
-            <view class="record-card glass-card {{item.result === '合格' ? 'status-pass' : 'status-pending'}}" wx:for="{{records}}" wx:key="id" bindtap="editFromList" data-item="{{item}}">
+            <view class="record-card glass-card {{item.isPass ? 'status-pass' : 'status-pending'}}" wx:for="{{records}}" wx:key="id" bindtap="editFromList" data-item="{{item}}">
                 <view class="record-body">
                     <view class="record-header">
                         <text class="record-id">报告编号 #{{item.id}}</text>
-                        <text class="record-result-tag">{{item.result || '审核中'}}</text>
+                        <text class="record-result-tag">{{item.isPass ? '检验合格' : '不合格/待定'}}</text>
                     </view>
                     <view class="record-content">
                         <view class="content-item">
                             <text class="c-label">受检批次：</text>
                             <text class="c-value">{{item.batchNo || '数据缺失'}}</text>
+                        </view>
+                        <view class="content-item">
+                            <text class="c-label">质检概要：</text>
+                            <text class="c-value summary-text">{{item.shortSummary}}</text>
                         </view>
                         <view class="content-item">
                             <text class="c-label">质检负责人：</text>

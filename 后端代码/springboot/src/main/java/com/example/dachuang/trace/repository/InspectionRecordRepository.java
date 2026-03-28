@@ -14,17 +14,6 @@ public interface InspectionRecordRepository extends JpaRepository<InspectionReco
     @Query("SELECT COUNT(DISTINCT i.batchNo) FROM InspectionRecord i")
     long countDistinctBatchNo();
 
-    @Query("""
-            SELECT COUNT(DISTINCT i.batchNo)
-            FROM InspectionRecord i
-            WHERE i.batchNo IN (
-                SELECT b.batchNo
-                FROM Batch b
-                WHERE b.batchNo NOT IN (
-                    SELECT bl.parentBatchNo
-                    FROM BatchLineage bl
-                )
-            )
-            """)
+    @Query("SELECT COUNT(DISTINCT i.batchNo) FROM InspectionRecord i WHERE i.batchNo IN (SELECT b.batchNo FROM Batch b WHERE b.batchNo NOT IN (SELECT bl.parentBatchNo FROM BatchLineage bl))")
     long countDistinctLeafBatchNo();
 }

@@ -33,6 +33,11 @@ public class BatchService {
     private final Gs1Service gs1Service;
     private final UserRepository userRepository;
     private final com.example.dachuang.blockchain.BlockchainService blockchainService;
+    private final com.example.dachuang.trace.repository.InspectionRecordRepository inspectionRecordRepository;
+    private final com.example.dachuang.trace.repository.PlantingRecordRepository plantingRecordRepository;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private org.springframework.core.env.Environment env;
 
     public com.example.dachuang.blockchain.BlockchainService getBlockchainService() {
         return blockchainService;

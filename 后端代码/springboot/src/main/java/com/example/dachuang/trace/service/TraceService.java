@@ -48,11 +48,33 @@ public class TraceService {
         Collections.reverse(lineageBatches);
         Collections.reverse(lineageEdges);
 
-        Batch batch = lineageBatches.get(lineageBatches.size() - 1);
+        // Keep a reference to the queried batch
+        Batch queriedBatch = lineageBatches.stream()
+                .filter(b -> b.getBatchNo().equals(batchNo))
+                .findFirst()
+                .orElse(lineageBatches.get(lineageBatches.size() - 1));
+
+        // Forward tracing to get all descendants (children)
+        cursor = batchNo;
+        while (true) {
+            List<BatchLineage> childrenEdges = batchService.getChildren(cursor);
+            if (childrenEdges == null || childrenEdges.isEmpty()) {
+                break;
+            }
+            // Take the first branch for main traceability lineage
+            BatchLineage firstChildEdge = childrenEdges.get(0);
+            lineageEdges.add(firstChildEdge);
+            cursor = firstChildEdge.getChildBatchNo();
+            Batch childBatch = batchService.getBatchByNo(cursor);
+            lineageBatches.add(childBatch);
+        }
+
         String rootBatchNo = lineageBatches.get(0).getBatchNo();
+        String leafBatchNo = lineageBatches.get(lineageBatches.size() - 1).getBatchNo();
         List<String> batchNosInChain = lineageBatches.stream().map(Batch::getBatchNo).toList();
 
-        List<ShipmentWithEvents> shipmentsWithEvents = shipmentRepository.findAllByBatchNo(batch.getBatchNo()).stream()
+        // Shipments are assigned to the final product (leaf), not necessarily the queried batch
+        List<ShipmentWithEvents> shipmentsWithEvents = shipmentRepository.findAllByBatchNo(leafBatchNo).stream()
                 .map(shipment -> ShipmentWithEvents.builder()
                         .shipment(shipment)
                         .events(shipmentEventRepository
@@ -60,10 +82,10 @@ public class TraceService {
                         .build())
                 .toList();
 
-        List<LogisticsRecord> logisticsRecords = buildLogisticsFromShipments(batch.getBatchNo(), shipmentsWithEvents);
+        List<LogisticsRecord> logisticsRecords = buildLogisticsFromShipments(leafBatchNo, shipmentsWithEvents);
 
         return TraceResponse.builder()
-                .batch(batch)
+                .batch(queriedBatch)
                 .lineageBatches(lineageBatches)
                 .lineageEdges(lineageEdges)
                 .plantingRecords(plantingRecordRepository.findAllByBatchNo(rootBatchNo))
