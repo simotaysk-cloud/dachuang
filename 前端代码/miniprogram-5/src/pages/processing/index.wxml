@@ -1,0 +1,114 @@
+<view class="page-container  processing-page">
+    <view class="page-aura aura-left"></view>
+    <view class="page-aura aura-right"></view>
+
+    <view class="topbar">
+        <view class="nav-ghost" bindtap="onBack">
+            <text class="nav-ghost-arrow">‹</text>
+        </view>
+        <text class="brand-title">加工生产</text>
+        <view class="profile-chip">
+            <text class="profile-name">{{usernameRaw}}</text>
+            <text class="profile-role">{{roleLabel}}</text>
+        </view>
+    </view>
+
+    <view class="header">
+                <text class="desc">衔接扫码开工、加工录入与源头批次的追溯流转。</text>
+    </view>
+
+    <view class="ops-hero">
+        <view class="hero-pattern"></view>
+        <view class="ops-hero-head">
+            <view class="ops-hero-copy">
+                <text class="ops-hero-eyebrow">作业指令</text>
+                <text class="ops-hero-number">扫码开工</text>
+                <text class="ops-hero-desc">扫描药材批次码后进入数字化产线，继续记录切制、烘干、包装等加工动作。</text>
+            </view>
+            <view class="ops-hero-badge">待处理 {{batches.length || 0}}</view>
+        </view>
+        <view class="ops-hero-grid">
+            <view class="ops-hero-stat">
+                <text class="ops-hero-label">当前身份</text>
+                <text class="ops-hero-value">{{roleLabel}}</text>
+            </view>
+            <view class="ops-hero-stat">
+                <text class="ops-hero-label">入口方式</text>
+                <text class="ops-hero-value">扫码 / 手工录入</text>
+            </view>
+            <view class="ops-hero-stat ops-hero-stat-wide processing-scan-card" bindtap="onScanStart">
+                <text class="ops-hero-label">快捷操作</text>
+                <text class="ops-hero-value">点击进入扫码开工</text>
+            </view>
+        </view>
+    </view>
+
+    <view class="ops-section-head">
+        <text class="section-title">操作区</text>
+    </view>
+
+    <view class="card">
+        <view class="ops-search-row">
+            <input class="ops-search-input" placeholder="输入批次号或药材名" value="{{queryNo}}" bindinput="onQueryInput" />
+            <view class="ops-action-search-btn" bindtap="query">检索</view>
+        </view>
+        <view class="ops-action-grid">
+            <view class="ops-action-tile ops-action-primary ops-action-wide" bindtap="onScanStart">
+                <text class="ops-action-title">扫码开工</text>
+            </view>
+            <view class="ops-action-tile ops-action-primary" bindtap="startCreate">
+                <text class="ops-action-title">手工录入</text>
+            </view>
+            <view class="ops-action-tile ops-action-secondary" bindtap="refreshList">
+                <text class="ops-action-title">刷新列表</text>
+            </view>
+        </view>
+    </view>
+
+    <view class="ops-section-head">
+        <text class="section-title">待处理批次</text>
+        <text class="meta" wx:if="{{batches.length}}">共 {{batches.length}} 项</text>
+    </view>
+
+    <view class="card">
+        <view class="empty-state" wx:if="{{(!batches || batches.length === 0) && !loading}}">
+            <text class="empty-title">暂无待处理批次</text>
+            <text class="empty-desc">可以先刷新列表，或通过扫码直接进入加工录入。</text>
+        </view>
+
+        <view class="list" wx:if="{{batches && batches.length > 0}}">
+            <block wx:for="{{batches}}" wx:key="id">
+            <view class="list-item" wx:if="{{canViewBatchArchive}}" bindtap="viewTrace" data-batch="{{item.batchNo}}">
+                <view class="list-index">
+                    <text class="list-index-text">{{index + 1}}</text>
+                </view>
+                <view class="list-main">
+                    <view class="list-head">
+                        <text class="list-title">{{item.name || '未命名药材'}}</text>
+                        <view class="list-side">
+                            <text class="list-pill">{{item.category || '原材'}}</text>
+                        </view>
+                    </view>
+                    <text class="list-line list-line-strong">批次：{{item.batchNo || '-'}}</text>
+                    <text class="list-line">来源：{{item.origin || '未填写'}}　数量：{{item.quantity || 0}} {{item.unit || ''}}</text>
+                </view>
+            </view>
+            <view class="list-item" wx:else>
+                <view class="list-index">
+                    <text class="list-index-text">{{index + 1}}</text>
+                </view>
+                <view class="list-main">
+                    <view class="list-head">
+                        <text class="list-title">{{item.name || '未命名药材'}}</text>
+                        <view class="list-side">
+                            <text class="list-pill">{{item.category || '原材'}}</text>
+                        </view>
+                    </view>
+                    <text class="list-line list-line-strong">批次：{{item.batchNo || '-'}}</text>
+                    <text class="list-line">来源：{{item.origin || '未填写'}}　数量：{{item.quantity || 0}} {{item.unit || ''}}</text>
+                </view>
+            </view>
+            </block>
+        </view>
+    </view>
+</view>

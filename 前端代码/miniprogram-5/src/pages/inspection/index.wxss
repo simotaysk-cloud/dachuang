@@ -1,0 +1,7 @@
+.inspection-index {
+  background: linear-gradient(180deg, #f0f4e8 0%, #e1e8d7 100%);
+}
+
+.inspection-scan-card {
+  border: 1rpx solid rgba(255, 255, 255, 0.14);
+}

@@ -1,0 +1,82 @@
+<view class="page-container  mine-page">
+  <view class="page-aura aura-left"></view>
+  <view class="page-aura aura-right"></view>
+
+  <view class="topbar">
+    <view class="nav-ghost" bindtap="navBack">
+      <text class="nav-ghost-arrow">‹</text>
+    </view>
+    <text class="brand-title">我的账号</text>
+    <view class="profile-chip">
+      <text class="profile-name">{{username}}</text>
+      <text class="profile-role">{{roleName}}</text>
+    </view>
+  </view>
+
+  <view class="header mine-header">
+        <text class="desc">查看当前登录身份，并进入常用管理入口。</text>
+  </view>
+
+  <view class="ops-hero mine-hero">
+    <view class="hero-pattern"></view>
+    <view class="ops-hero-head">
+      <view class="mine-profile">
+        <view class="mine-avatar">{{username[0] || 'U'}}</view>
+        <view class="mine-profile-copy">
+          <text class="ops-hero-number mine-name">{{username || '未登录'}}</text>
+          <text class="ops-hero-desc">{{roleName}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="ops-section-head">
+    <text class="section-title">常用入口</text>
+  </view>
+
+  <view class="card">
+    <view class="ops-action-grid">
+      <view class="ops-action-tile ops-action-primary" bindtap="navTo" data-url="/pages/index/index">
+        <text class="ops-action-kicker">HOME</text>
+        <text class="ops-action-title">返回首页</text>
+        <text class="ops-action-desc">回到当前角色的工作台</text>
+      </view>
+      <view class="ops-action-tile ops-action-secondary" bindtap="navTo" data-url="/pages/web-dashboard/index">
+        <text class="ops-action-kicker">DATA</text>
+        <text class="ops-action-title">数据看板</text>
+        <text class="ops-action-desc">查看链路指标与汇总统计</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="ops-section-head">
+    <text class="section-title">账号操作</text>
+  </view>
+
+  <view class="card">
+    <view class="list">
+      <view class="list-item" bindtap="navTo" data-url="/pages/login/index">
+        <view class="list-index">
+          <text class="list-index-text">1</text>
+        </view>
+        <view class="list-main">
+          <view class="list-head">
+            <text class="list-title">切换登录</text>
+          </view>
+          <text class="list-line">重新输入账号密码并切换当前身份。</text>
+        </view>
+      </view>
+      <view class="list-item" bindtap="logout">
+        <view class="list-index mine-logout-index">
+          <text class="list-index-text">2</text>
+        </view>
+        <view class="list-main">
+          <view class="list-head">
+            <text class="list-title">退出登录</text>
+          </view>
+          <text class="list-line">清理当前会话并返回登录页。</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

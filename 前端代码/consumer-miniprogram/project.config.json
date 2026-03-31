@@ -1,5 +1,6 @@
 {
   "description": "消费者端项目配置",
+  "miniprogramRoot": "dist/",
   "setting": {
     "urlCheck": false,
     "es6": true,

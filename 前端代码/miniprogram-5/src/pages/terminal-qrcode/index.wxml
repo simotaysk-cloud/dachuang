@@ -1,0 +1,103 @@
+<view class="page-container  terminal-qrcode-page">
+  <view class="page-aura aura-left"></view>
+  <view class="page-aura aura-right"></view>
+
+  <view class="topbar">
+    <view class="nav-ghost" bindtap="onBack">
+      <text class="nav-ghost-arrow">‹</text>
+    </view>
+    <text class="brand-title">终端溯源</text>
+    <view class="profile-chip">
+      <text class="profile-name">{{usernameRaw}}</text>
+      <text class="profile-role">{{roleLabel}}</text>
+    </view>
+  </view>
+
+  <view class="header">
+        <text class="desc">按原始批次筛选末端批次，批量生成二维码并导出 CSV。</text>
+  </view>
+
+  <view class="">
+    <view class="hero-panel hero-panel-warning">
+      <view class="hero-pattern"></view>
+      <text class="hero-title">{{rootBatchNo || '所有批次'}}</text>
+      <text class="hero-subtitle">末端二维码是溯源链路的最终呈现，扫码可查看完整的本草数据宗谱。</text>
+    </view>
+    <view class="card">
+      <view class="section-title">筛选条件</view>
+      <input class="input" placeholder="可选：输入或扫码原始批次号" value="{{rootBatchNo}}" bindinput="onRootInput" />
+      <view class="action-row">
+        <button class="btn btn-outline" bindtap="scanRootBatch">扫码填入</button>
+        <button class="btn btn-primary" bindtap="loadLeafBatches">加载末端批次</button>
+      </view>
+      <picker mode="selector" range="{{roots}}" range-key="batchNo" bindchange="onRootPick" wx:if="{{roots.length > 0}}">
+        <view class="picker-row terminal-picker">
+          <view class="picker-label">快速选择</view>
+          <view class="picker-value">从原始批次列表选择（留空则查询全部）</view>
+        </view>
+      </picker>
+    </view>
+
+    <view class="card">
+      <view class="section-title">末端批次列表</view>
+      <text class="meta" wx:if="{{loading}}">加载中</text>
+      <view class="empty-state" wx:if="{{!loading && leafRows.length === 0}}">
+        <text class="empty-title">暂无末端批次</text>
+        <text class="empty-desc">可以先切换原始批次条件，或直接查询全部。</text>
+      </view>
+      <view class="list" wx:if="{{leafRows.length > 0}}">
+        <view class="list-item" wx:for="{{leafRows}}" wx:key="batchNo">
+          <view class="list-index">
+            <text class="list-index-text">{{index + 1}}</text>
+          </view>
+          <view class="list-main">
+            <view class="list-head">
+              <text class="list-title">{{item.batchNo}}</text>
+            </view>
+            <text class="list-line list-line-strong">{{item.name || '-'}}</text>
+            <text class="list-line">工序：{{item.processType || '-'}}　产线：{{item.lineName || '-'}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="section-title">批量生成与导出</view>
+      <view class="action-row">
+        <button class="btn btn-primary" bindtap="generateAllQrcodes" loading="{{generating}}">批量生成二维码</button>
+        <button class="btn btn-outline" bindtap="exportBatchCsv" loading="{{exporting}}">导出 CSV</button>
+      </view>
+      <text class="meta">导出文件包含末端批次、追溯链接与二维码数据地址。</text>
+    </view>
+
+    <view class="card" wx:if="{{qrRows.length > 0}}">
+      <view class="section-title">已生成二维码</view>
+      <view class="list">
+        <view class="list-item" wx:for="{{qrRows}}" wx:key="batchNo">
+          <view class="list-index">
+            <text class="list-index-text">{{index + 1}}</text>
+          </view>
+          <view class="list-main">
+            <view class="list-head">
+              <text class="list-title">{{item.batchNo}}</text>
+              <view class="list-side">
+                <text class="list-pill" bindtap="previewQr" data-item="{{item}}">预览</text>
+              </view>
+            </view>
+            <text class="list-line list-line-strong">{{item.name || '-'}}</text>
+            <text class="list-line">工序：{{item.processType || '-'}}　产线：{{item.lineName || '-'}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="modal-mask" wx:if="{{previewVisible}}" bindtap="closePreview">
+      <view class="modal terminal-preview-modal" catchtap="noop">
+        <view class="modal-title">二维码预览</view>
+        <view class="batch-no-display">{{previewBatchNo}}</view>
+        <image class="qr-preview" src="{{previewSrc}}" mode="aspectFit" />
+        <button class="btn btn-outline single-action" bindtap="closePreview">关闭</button>
+      </view>
+    </view>
+  </view>
+</view>

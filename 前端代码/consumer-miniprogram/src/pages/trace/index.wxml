@@ -1,0 +1,164 @@
+<view class="page">
+  <view wx:if="{{isDecrypting}}" class="loading-mask">
+    <view class="loading-card">
+      <text class="loading-label">可信校验中</text>
+      <text class="loading-title">{{decryptText}}</text>
+      <view class="loading-track">
+        <view class="loading-bar" style="width: {{decryptProgress}}%;"></view>
+      </view>
+      <text class="loading-note">正在连接链上节点与批次档案</text>
+    </view>
+  </view>
+
+  <block wx:if="{{!isDecrypting}}">
+    <view wx:if="{{errorMsg}}" class="error-card">
+      <text class="error-title">未能读取当前批次档案</text>
+      <text class="error-desc">{{errorMsg}}</text>
+      <button size="mini" class="error-action" bindtap="goBack">返回首页</button>
+    </view>
+
+    <block wx:else>
+      <view class="hero-card">
+        <view class="hero-head">
+          <view class="hero-badge-wrap">
+            <view class="hero-badge-icon">
+              <view class="ui-icon w-8 h-8 text-[#d8b774]">
+                <view class="ui-shield__shell"></view>
+                <view class="ui-check__short"></view>
+                <view class="ui-check__long"></view>
+              </view>
+            </view>
+            <view class="hero-badge-copy">
+              <text class="hero-badge-label">链上验真</text>
+              <text class="hero-badge-note">当前批次已完成可信核验</text>
+            </view>
+          </view>
+          <view class="hero-status">正品</view>
+        </view>
+
+        <text class="hero-title">{{baseBatch.name || '本草批次记录'}}</text>
+        <text class="hero-batch">{{batchNo}}</text>
+
+        <view class="hero-grid">
+          <view class="hero-metric" wx:for="{{heroMetrics}}" wx:key="label">
+            <text class="hero-metric-label">{{item.label}}</text>
+            <text class="hero-metric-value">{{item.value}}</text>
+            <text class="hero-metric-note">{{item.note}}</text>
+          </view>
+        </view>
+
+        <view class="hero-cta" bindtap="goConsult">
+          <view>
+            <text class="hero-cta-title">带着这味药去智问</text>
+            <text class="hero-cta-desc">让 AI 基于当前批次给出配伍与食养建议</text>
+          </view>
+          <text class="hero-cta-link">去问问</text>
+        </view>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head section-head-inline">
+          <view>
+            <text class="section-title">溯源时间线</text>
+            <text class="section-desc">点击节点可查看该环节的详细记录</text>
+          </view>
+          <text class="section-tip">{{txCount}} 条链上记录</text>
+        </view>
+
+        <view class="timeline">
+          <view class="timeline-line"></view>
+          <view class="timeline-item" wx:for="{{timeline}}" wx:key="index" data-index="{{index}}" bindtap="openDetailModal">
+            <view class="timeline-dot">{{index + 1}}</view>
+            <view class="timeline-card">
+              <view class="timeline-head">
+                <text class="timeline-title">{{item.title}}</text>
+                <text class="timeline-date">{{item.date}}</text>
+              </view>
+              <view class="timeline-meta">
+                <text class="timeline-badge">{{item.badge || '已记录'}}</text>
+                <text class="timeline-link">查看详情</text>
+              </view>
+              <text class="timeline-body">{{item.body}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head section-head-inline">
+          <view>
+            <text class="section-title">批次档案</text>
+            <text class="section-desc">核心批次字段与基础规格</text>
+          </view>
+          <text class="section-tip">基础信息</text>
+        </view>
+        <view class="fact-grid">
+          <view class="fact-item" wx:for="{{batchFacts}}" wx:key="label">
+            <text class="fact-label">{{item.label}}</text>
+            <text class="fact-value">{{item.value}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="section-card">
+        <view class="section-head section-head-inline">
+          <view>
+            <text class="section-title">本草参考</text>
+            <text class="section-desc">药性与环境信息，仅作辅助理解</text>
+          </view>
+          <text class="section-tip">模拟辅助</text>
+        </view>
+
+        <view class="info-card">
+          <text class="info-title">药性概览</text>
+          <text class="info-body">性味：{{tcmData.nature}}，{{tcmData.taste}}</text>
+          <text class="info-body">归经：{{tcmData.meridian}}</text>
+        </view>
+
+        <view class="ingredient-card">
+          <view class="ingredient-head">
+            <text class="ingredient-title">主要成分</text>
+            <text class="ingredient-note">示意数据</text>
+          </view>
+          <view class="ingredient-list">
+            <view class="ingredient-item" wx:for="{{tcmData.ingredients}}" wx:key="name">
+              <text class="ingredient-name">{{item.name}}</text>
+              <text class="ingredient-value">{{item.val}}</text>
+            </view>
+          </view>
+          <view class="pairing-list">
+            <text class="pairing-chip" wx:for="{{tcmData.combinations}}" wx:key="*this">{{item}}</text>
+          </view>
+        </view>
+
+        <view class="metric-grid">
+          <view class="metric-card" wx:for="{{ecoMetrics}}" wx:key="label">
+            <text class="metric-label">{{item.label}}</text>
+            <text class="metric-value">{{item.value}}</text>
+          </view>
+        </view>
+      </view>
+    </block>
+  </block>
+
+  <view wx:if="{{showModal}}" class="modal-mask" bindtap="closeModal">
+    <view class="modal-card" catchtap="noop">
+      <view class="modal-head">
+        <view>
+          <text class="modal-label">节点详情</text>
+          <text class="modal-title">{{modalTitle}}</text>
+        </view>
+        <view class="modal-close" bindtap="closeModal">×</view>
+      </view>
+
+      <scroll-view scroll-y class="modal-body">
+        <view class="kv-item" wx:for="{{modalKVs}}" wx:key="index">
+          <text class="kv-label">{{item.label}}</text>
+          <image wx:if="{{item.type === 'img'}}" class="kv-image" src="{{item.val}}" mode="aspectFill" bindtap="previewImage" data-url="{{item.val}}"></image>
+          <text wx:elif="{{item.type === 'link'}}" class="kv-link" bindtap="copyValue" data-value="{{item.val}}">{{item.val}}</text>
+          <text wx:else class="kv-value" selectable>{{item.val}}</text>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</view>

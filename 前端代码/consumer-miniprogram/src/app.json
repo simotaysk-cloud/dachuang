@@ -1,0 +1,43 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/trace/index",
+    "pages/market/index",
+    "pages/ai-consult/index",
+    "pages/user/index"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "药途寻迹",
+    "navigationBarBackgroundColor": "#f5f2ea",
+    "backgroundColor": "#f5f2ea"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#7f8a82",
+    "selectedColor": "#264230",
+    "backgroundColor": "#f5f2ea",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/market/index",
+        "text": "云市集"
+      },
+      {
+        "pagePath": "pages/ai-consult/index",
+        "text": "智问"
+      },
+      {
+        "pagePath": "pages/user/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

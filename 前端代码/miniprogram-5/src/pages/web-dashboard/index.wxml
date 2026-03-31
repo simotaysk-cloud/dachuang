@@ -1,0 +1,107 @@
+<view class="page-container planting-dashboard-page">
+  <view class="page-aura aura-left"></view>
+  <view class="page-aura aura-right"></view>
+
+  <view class="topbar">
+    <view class="nav-ghost" bindtap="onBack">
+      <text class="nav-ghost-arrow">‹</text>
+    </view>
+    <text class="brand-title">数据看板</text>
+    <view class="profile-chip">
+      <text class="profile-name">{{usernameRaw}}</text>
+      <text class="profile-role">{{roleLabel}}</text>
+    </view>
+  </view>
+
+  <view class="header">
+        <text class="desc">{{dashboardDesc}}</text>
+  </view>
+
+  <view class="section-head">
+    <text class="section-title">概览</text>
+    <view class="section-action" bindtap="loadStats">
+      <text>{{loading ? '同步中' : '刷新数据'}}</text>
+    </view>
+  </view>
+
+  <view class="summary-grid">
+    <block wx:for="{{summaryCards}}" wx:key="key">
+      <view class="summary-card">
+        <text class="summary-value">{{item.value}}</text>
+        <text class="summary-label">{{item.label}}</text>
+        <text class="summary-note">{{item.note}}</text>
+      </view>
+    </block>
+  </view>
+
+  <view class="chart-card" wx:if="{{insightCards.length}}">
+    <view class="chart-head">
+      <text class="chart-title">{{insightTitle}}</text>
+      <text class="chart-caption">{{insightCaption}}</text>
+    </view>
+    <view class="summary-grid summary-grid-secondary">
+      <block wx:for="{{insightCards}}" wx:key="key">
+        <view class="summary-card summary-card-secondary">
+          <text class="summary-value summary-value-secondary">{{item.value}}</text>
+          <text class="summary-label">{{item.label}}</text>
+          <text class="summary-note">{{item.note}}</text>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <block wx:for="{{distSections}}" wx:for-item="section" wx:key="title">
+    <view class="chart-card">
+      <view class="chart-head">
+        <text class="chart-title">{{section.title}}</text>
+        <text class="chart-caption">{{section.caption}}</text>
+      </view>
+      <view class="bar-list" wx:if="{{section.items.length}}">
+        <block wx:for="{{section.items}}" wx:for-item="bar" wx:key="name">
+          <view class="bar-row">
+            <text class="bar-name">{{bar.name}}</text>
+            <view class="bar-track {{section.tone === 'warm' ? 'bar-track-gold' : ''}}">
+              <view class="bar-fill {{section.tone === 'warm' ? 'bar-fill-gold' : ''}}" style="width: {{bar.percent}}%;"></view>
+            </view>
+            <text class="bar-value">{{bar.value}}</text>
+          </view>
+        </block>
+      </view>
+      <view class="empty-state" wx:else>{{section.emptyText}}</view>
+    </view>
+  </block>
+
+  <view class="chart-card" wx:if="{{tagItems.length}}">
+    <view class="chart-head">
+      <text class="chart-title">{{tagSectionTitle}}</text>
+      <text class="chart-caption">{{tagSectionCaption}}</text>
+    </view>
+    <view class="tag-list">
+      <block wx:for="{{tagItems}}" wx:key="name">
+        <view class="tag-item">
+          <text class="tag-name">{{item.name}}</text>
+          <text class="tag-value">{{item.value}}</text>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="chart-card">
+    <view class="chart-head">
+      <text class="chart-title">{{chainSectionTitle}}</text>
+      <text class="chart-caption">{{chainSectionCaption}}</text>
+    </view>
+    <view class="record-list" wx:if="{{chainRecords.length}}">
+      <block wx:for="{{chainRecords}}" wx:key="txHash">
+        <view class="record-row">
+          <view class="record-main">
+            <text class="record-title">{{item.title}}</text>
+            <text class="record-note">{{item.note}}</text>
+          </view>
+          <text class="record-side">{{item.side}}</text>
+        </view>
+      </block>
+    </view>
+    <view class="empty-state" wx:else>{{chainEmptyText}}</view>
+  </view>
+</view>

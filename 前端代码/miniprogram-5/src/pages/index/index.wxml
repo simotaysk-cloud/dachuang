@@ -1,0 +1,92 @@
+<view class="page-container home-page">
+  <view class="page-aura aura-left"></view>
+  <view class="page-aura aura-right"></view>
+
+  <view class="topbar">
+    <view class="brand-block {{isFarmerWorkbench ? 'brand-block-farmer' : ''}}">
+      <image class="brand-mark" src="../../assets/project-mark.png" mode="aspectFit"></image>
+      <text class="brand-title">药途寻迹</text>
+    </view>
+    <view class="profile-chip">
+      <text class="profile-name">{{usernameRaw}}</text>
+      <text class="profile-role">{{roleLabel}}</text>
+    </view>
+  </view>
+
+  <view class="hero-panel hero-panel-{{heroPanelTone}}" bindtap="navTo" data-url="{{consoleAction.url}}">
+    <view class="hero-pattern"></view>
+    <view class="hero-copy">
+      <view class="hero-head">
+        <text class="hero-title">批次追溯工作台</text>
+      </view>
+      <text class="hero-subtitle">{{heroSubtitle}}</text>
+
+      <view class="hero-dashboard {{isFarmerWorkbench ? 'hero-dashboard-farmer' : 'hero-dashboard-admin'}}">
+        <block wx:for="{{heroHighlights}}" wx:key="key">
+          <view class="hero-highlight-card">
+            <text class="hero-highlight-value">{{item.value}}</text>
+            <text class="hero-highlight-label">{{item.label}}</text>
+            <text class="hero-highlight-note">{{item.note}}</text>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+
+  <view class="section-head">
+    <view>
+      <text class="section-title">环节进度</text>
+    </view>
+  </view>
+
+  <view class="trace-card">
+    <view class="trace-grid">
+      <block wx:for="{{flowNodes}}" wx:key="id">
+        <view class="trace-item">
+          <view class="trace-marker-column">
+            <view class="trace-marker {{item.active ? 'trace-marker-active' : ''}}"></view>
+            <view class="trace-line" wx:if="{{!item.isLast}}"></view>
+          </view>
+          <view class="trace-copy">
+            <view class="trace-row">
+              <text class="trace-name">{{item.name}}</text>
+              <text class="trace-status trace-status-{{item.statusTone}}">{{item.statusText}}</text>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="section-head modules-head">
+    <view>
+      <text class="section-title">业务入口</text>
+    </view>
+  </view>
+
+  <view class="module-grid">
+    <block wx:for="{{featuredModules}}" wx:key="key">
+      <view class="module-card module-card-{{item.tone}}" bindtap="navTo" data-url="{{item.url}}">
+        <view class="module-symbol module-symbol-{{item.key}}">
+          <view class="module-symbol-base module-symbol-base-{{item.key}}"></view>
+          <view class="module-symbol-accent module-symbol-accent-{{item.key}}"></view>
+          <view class="module-symbol-detail module-symbol-detail-{{item.key}}"></view>
+        </view>
+        <text class="module-name">{{item.label}}</text>
+      </view>
+    </block>
+  </view>
+
+  <view class="more-modules" wx:if="{{moreModules.length}}">
+    <block wx:for="{{moreModules}}" wx:key="key">
+      <view class="module-card module-card-{{item.tone}} module-card-compact" bindtap="navTo" data-url="{{item.url}}">
+        <view class="module-symbol module-symbol-{{item.key}}">
+          <view class="module-symbol-base module-symbol-base-{{item.key}}"></view>
+          <view class="module-symbol-accent module-symbol-accent-{{item.key}}"></view>
+          <view class="module-symbol-detail module-symbol-detail-{{item.key}}"></view>
+        </view>
+        <text class="module-name">{{item.label}}</text>
+      </view>
+    </block>
+  </view>
+</view>

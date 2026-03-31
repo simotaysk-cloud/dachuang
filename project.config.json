@@ -1,0 +1,29 @@
+{
+    "description": "仓库根目录快捷导入配置，默认指向管理端小程序",
+    "miniprogramRoot": "前端代码/miniprogram-5/dist/",
+    "setting": {
+        "es6": true,
+        "postcss": true,
+        "minified": true,
+        "uglifyFileName": false,
+        "enhance": true,
+        "packNpmManually": false,
+        "packNpmRelationList": [],
+        "babelSetting": {
+            "ignore": [],
+            "disablePlugins": [],
+            "outputPath": ""
+        },
+        "useCompilerPlugins": false,
+        "minifyWXML": true
+    },
+    "compileType": "miniprogram",
+    "srcMiniprogramRoot": "前端代码/miniprogram-5/src/",
+    "simulatorPluginLibVersion": {},
+    "packOptions": {
+        "ignore": [],
+        "include": []
+    },
+    "appid": "wxb6004f50990df687",
+    "editorSetting": {}
+}

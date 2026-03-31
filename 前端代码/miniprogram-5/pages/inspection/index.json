@@ -1,6 +1,0 @@
-{
-    "navigationBarTitleText": "质检中心",
-    "usingComponents": {
-    "supply-chain-steps": "../../components/supply-chain-steps/index"
-  }
-}

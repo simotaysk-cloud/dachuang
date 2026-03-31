@@ -1,6 +1,21 @@
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
 
+$envFile = Join-Path $PSScriptRoot ".env"
+if (Test-Path $envFile) {
+    Get-Content $envFile | ForEach-Object {
+        if ($_ -match '^\s*#' -or $_ -match '^\s*$') { return }
+        $parts = $_ -split '=', 2
+        if ($parts.Count -eq 2) {
+            [System.Environment]::SetEnvironmentVariable($parts[0], $parts[1])
+        }
+    }
+}
+
+if (-not $env:AI_API_KEY) {
+    throw "AI_API_KEY not found in .env"
+}
+
 Write-Host ""
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host "       [System] Auto Remote Deployment Wizard       " -ForegroundColor Yellow
@@ -24,7 +39,7 @@ try {
 
     Write-Host ""
     Write-Host "[2/2] Upload SUCCESS! Now restarting cloud services..." -ForegroundColor Magenta
-    ssh root@cpuzhbc.cn "fuser -k 8091/tcp 2>/dev/null; sleep 2; nohup java -jar /root/dachuang-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev --app.mock-data.enabled=true --app.mock-data.force=true > /root/backend.log 2>&1 &"
+    ssh root@cpuzhbc.cn "fuser -k 8091/tcp 2>/dev/null; sleep 2; nohup env AI_API_KEY='$($env:AI_API_KEY)' java -jar /root/dachuang-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev --app.mock-data.enabled=true --app.mock-data.force=true > /root/backend.log 2>&1 &"
     
     Write-Host ""
     Write-Host "==========================================================" -ForegroundColor Cyan

@@ -1,0 +1,40 @@
+.mine-header {
+  margin-top: 24rpx;
+}
+
+.mine-hero {
+  margin-bottom: 22rpx;
+}
+
+.mine-profile {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+}
+
+.mine-avatar {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 999rpx;
+  background: var(--primary-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38rpx;
+  font-weight: 700;
+  color: var(--page-bg);
+}
+
+.mine-profile-copy {
+  min-width: 0;
+}
+
+.mine-name {
+  font-size: 38rpx;
+  color: var(--page-ink);
+}
+
+.mine-logout-index {
+  background: linear-gradient(180deg, var(--gold-soft) 0%, var(--gold) 100%);
+  color: var(--primary-deep);
+}

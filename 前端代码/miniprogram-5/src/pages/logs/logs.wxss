@@ -1,0 +1,41 @@
+.logs-stats-grid {
+  margin-top: 14rpx;
+}
+
+.logs-search-input {
+  margin-top: 16rpx;
+}
+
+.logs-item.mod-batch .list-index {
+  background: linear-gradient(180deg, #e8efe4 0%, #d7e2d0 100%);
+}
+
+.logs-item.mod-planting .list-index {
+  background: linear-gradient(180deg, #edf4e5 0%, #dde6d2 100%);
+}
+
+.logs-item.mod-processing .list-index {
+  background: linear-gradient(180deg, #eee8dc 0%, #ddd4c2 100%);
+}
+
+.logs-item.mod-inspection .list-index {
+  background: linear-gradient(180deg, #e8ede5 0%, #d8dfd3 100%);
+}
+
+.logs-item.mod-logistics .list-index {
+  background: linear-gradient(180deg, #ede9df 0%, #ddd8cc 100%);
+}
+
+.logs-modal {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.97) 0%, rgba(245, 244, 232, 0.96) 100%);
+  border: 1rpx solid rgba(128, 141, 121, 0.12);
+  border-radius: 30rpx;
+  box-shadow: 0 24rpx 52rpx rgba(54, 66, 47, 0.18);
+}
+
+.logs-detail-text {
+  font-size: 22rpx;
+  line-height: 1.65;
+  color: #5f665a;
+  white-space: pre-wrap;
+}

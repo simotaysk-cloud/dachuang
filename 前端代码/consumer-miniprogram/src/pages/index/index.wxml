@@ -1,0 +1,82 @@
+<view class="bg-background text-on-background min-h-screen pb-32 overflow-x-hidden">
+  <view class="px-5 space-y-8 mt-4">
+    <!-- Hero Banner: Scan to Trace -->
+    <view class="relative h-[420px] rounded-lg overflow-hidden group">
+      <view class="absolute inset-0 bg-gradient-to-br from-primary/60 via-primary/20 to-transparent z-10"></view>
+      <image class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5gIJ0brNQLaKCyrxuAlq-Im9nbld3saHIlNGbKVKI8iKESx-o9wLlK8QPoOQYGAZh7LeOp2ejjvMljp8tI-ZjryGFoDbee7BNrBAXbvRxngYzGC3beVCxFt9v6YYcgOl47wZtJopFmabH-nvjjWRoJpKhy-NjiJWke0BcYkvo7IPka9drorQfux38QTYTBCQTAktq2l_h20JnFRZysQPTy44MCv0PS06JCF1h6bzKR2nuofxF0mP-tjeNn0cCxwBbiKn7SRLzIA" mode="aspectFill"></image>
+      <view class="absolute inset-0 z-20 flex flex-col justify-end p-8 pb-20">
+        <view class="mb-4 pr-24">
+          <text class="block text-on-primary text-4xl font-extrabold tracking-tight leading-none mb-4">扫码寻迹</text>
+        </view>
+        <view class="px-7 py-4 rounded-full font-bold text-base text-on-primary flex items-center justify-center border border-on-primary/40 backdrop-blur-md bg-on-primary/40 shadow-[0_12px_28px_rgba(0,0,0,0.14)] active:scale-95 transition-all w-fit" bindtap="openScanner">
+          <text class="whitespace-nowrap tracking-wide">开始溯源</text>
+        </view>
+      </view>
+      <view class="absolute top-6 right-6 z-20 w-24 h-24 border border-on-primary/12 rounded-full flex items-center justify-center backdrop-blur-sm bg-on-primary/8">
+        <view class="text-center">
+          <text class="block text-on-primary text-[9px] font-semibold tracking-[0.18em] leading-tight">AUTHENTIC</text>
+          <text class="block text-on-primary/90 text-[9px] font-medium tracking-[0.12em] leading-tight mt-1">HERBS</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Trust Overview -->
+    <view>
+      <view class="flex items-center justify-between mb-4 px-1">
+        <text class="text-primary text-xl font-bold tracking-tight">信任概览</text>
+        <text class="text-secondary text-xs font-medium opacity-60">实时同步中</text>
+      </view>
+      <view class="grid grid-cols-2 gap-4">
+        <view class="bg-surface-container-low p-5 rounded-lg flex flex-col justify-between h-40 relative overflow-hidden" wx:for="{{trustMetrics}}" wx:key="label">
+          <view class="z-10">
+            <view class="mb-3 ui-icon w-8 h-8 {{index === 0 ? 'text-primary' : 'text-tertiary'}}">
+              <block wx:if="{{index === 0}}">
+                <view class="ui-shield__shell"></view>
+                <view class="ui-check__short"></view>
+                <view class="ui-check__long"></view>
+              </block>
+              <block wx:else>
+                <view class="ui-link__left"></view>
+                <view class="ui-link__right"></view>
+                <view class="ui-link__bridge"></view>
+              </block>
+            </view>
+            <view class="text-primary font-bold text-sm leading-snug">{{item.label}}</view>
+            <view class="text-secondary text-[10px] mt-1 font-mono opacity-60">{{item.value}}</view>
+          </view>
+          <view class="z-10 mt-auto flex items-center gap-1">
+            <view class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></view>
+            <text class="text-primary/70 text-[10px] font-bold uppercase">{{item.note}}</text>
+          </view>
+          <!-- Removed large background text icon because emoji doesn't look as good transparently overlapping -->
+        </view>
+      </view>
+    </view>
+
+    <!-- Seasonal Health Tips -->
+    <view class="pb-8">
+      <view class="flex items-center justify-between mb-5 px-1">
+        <text class="text-primary text-xl font-bold tracking-tight">时令养单</text>
+        <view class="text-secondary text-xs font-bold flex items-center gap-1">
+          更多 <text class="text-sm font-bold">></text>
+        </view>
+      </view>
+      <view class="space-y-6">
+        <view class="flex gap-4 group" wx:for="{{seasonalFeed}}" wx:key="id">
+          <view class="w-28 h-28 rounded-lg overflow-hidden flex-shrink-0 relative">
+            <image class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJ6LeVSi9bf6eA_jcgg6xtOItUJKkVBxrGkj5dszafhaS47Y1K7EbdHDuiautewthxbQYWVEApReCK7SjmyIIF1zc5oO-AQDtbYjsUazVvw5s5yxGwOLCzhLPk038V8su3VKroIfv7PEY2xt4E8GF18E1fpFsW4VN8dC3YpXMxiWx6TOmaaVzJDHa-ZumXU2j3ScqnAcIOgkag6qJ6gw3GfwejAJZzCgX1RdCfr4eZOMJpmyu0uideQaiU8IWeRMSDVZhKue1rcg" mode="aspectFill"></image>
+            <view class="absolute inset-0 bg-primary/5 flex items-center justify-center">
+              <text class="text-white font-bold opacity-30">{{item.mark}}</text>
+            </view>
+          </view>
+          <view class="flex flex-col justify-center text-left flex-1 min-w-0">
+            <text class="text-secondary text-[10px] font-bold uppercase tracking-widest mb-1">{{item.tag}}</text>
+            <text class="text-primary text-base font-bold leading-tight group-hover:text-primary/80 transition-colors">{{item.title}}</text>
+            <text class="text-secondary/60 text-xs mt-2 line-clamp-2 leading-relaxed">{{item.excerpt}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+  </view>
+</view>

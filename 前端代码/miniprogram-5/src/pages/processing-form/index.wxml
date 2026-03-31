@@ -1,0 +1,67 @@
+<view class="page-container  processing-form-page">
+    <view class="page-aura aura-left"></view>
+    <view class="page-aura aura-right"></view>
+
+    <view class="topbar">
+        <view class="nav-ghost" bindtap="onBack">
+            <text class="nav-ghost-arrow">‹</text>
+        </view>
+        <text class="brand-title">{{form.id ? '编辑记录' : '手工录入'}}</text>
+        <view class="profile-chip">
+            <text class="profile-name">{{usernameRaw}}</text>
+            <text class="profile-role">{{roleLabel}}</text>
+        </view>
+    </view>
+
+    <view class="header">
+                <text class="desc">记录烘干、切片、包装等加工环节，也支持分包派生新的下游批次。</text>
+    </view>
+
+    <view class="">
+        <view class="hero-panel hero-panel-warning">
+            <view class="hero-pattern"></view>
+            <text class="hero-title">{{actionModes[actionModeIndex]}}</text>
+            <text class="hero-subtitle">追加工序保留同一批次，分包加工会自动扣减上游库存并生成新的批次号。</text>
+        </view>
+
+        <view class="card">
+            <view class="section-title">加工信息</view>
+            <view class="readonly-row" wx:if="{{form.id}}">
+                <view class="readonly-label">记录 ID</view>
+                <view class="readonly-value">#{{form.id}}</view>
+            </view>
+
+            <view class="field-label">原料批次号 (Parent Batch)</view>
+            <input class="input" placeholder="输入上游批次号" value="{{form.parentBatchNo}}" data-field="parentBatchNo" bindinput="onInput" />
+
+            <view class="field-label">产出批次号 (Child Batch)</view>
+            <input class="input" placeholder="留空则自动生成新批次号" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" />
+
+            <view class="field-label">生产线 / 工位名称</view>
+            <input class="input" placeholder="例如：1号清洗干燥线" value="{{form.lineName}}" data-field="lineName" bindinput="onInput" />
+
+            <view class="field-label">操作模式</view>
+            <picker bindchange="onActionModeChange" value="{{actionModeIndex}}" range="{{actionModes}}">
+                <view class="input">当前模式：{{actionModes[actionModeIndex]}}</view>
+            </picker>
+            <text class="meta processing-form-warn" wx:if="{{actionModeIndex == 1}}">分包模式下，系统将自动扣减原批次库存，并为您派生一张全新的追溯二维码。</text>
+
+            <view wx:if="{{actionModeIndex == 1}}">
+                <view class="field-label">消耗当前批次数量 (可选)</view>
+                <input class="input" type="digit" placeholder="例如：填入本次消耗的千克数" value="{{form.extractedQuantity}}" data-field="extractedQuantity" bindinput="onInput" />
+
+                <view class="field-label">产出新批次数量 (可选)</view>
+                <input class="input" type="digit" placeholder="新批次的初始数量" value="{{form.outputQuantity}}" data-field="outputQuantity" bindinput="onInput" />
+            </view>
+
+            <view class="field-label">详细说明</view>
+            <textarea class="textarea" placeholder="备注信息..." value="{{form.details}}" data-field="details" bindinput="onInput" />
+
+            <view class="action-row">
+                <button class="btn btn-primary" bindtap="save">保存</button>
+                <button class="btn btn-outline" bindtap="cancel">取消</button>
+            </view>
+            <button class="btn btn-warn single-action" wx:if="{{form.id}}" bindtap="remove">删除</button>
+        </view>
+    </view>
+</view>

@@ -1,0 +1,61 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ['./src/**/*.{wxml,js,wxs}'],
+  theme: {
+    extend: {
+      colors: {
+        "surface-container": "#f0eee8",
+        "inverse-primary": "#accebb",
+        "primary": "#173628",
+        "tertiary": "#412d00",
+        "on-primary": "#ffffff",
+        "on-error": "#ffffff",
+        "on-secondary-container": "#786044",
+        "on-secondary": "#ffffff",
+        "background": "#fcf9f3",
+        "on-primary-container": "#9bbdaa",
+        "surface-container-low": "#f6f3ed",
+        "on-tertiary": "#ffffff",
+        "secondary-container": "#fdddb9",
+        "tertiary-fixed": "#ffdea5",
+        "surface-bright": "#fcf9f3",
+        "surface-container-lowest": "#ffffff",
+        "secondary-fixed-dim": "#e0c29f",
+        "surface-container-high": "#ebe8e2",
+        "surface-variant": "#e5e2dc",
+        "on-surface-variant": "#424844",
+        "on-primary-fixed-variant": "#2e4d3e",
+        "on-secondary-fixed-variant": "#584329",
+        "error-container": "#ffdad6",
+        "outline-variant": "#c1c8c2",
+        "surface-tint": "#456555",
+        "primary-container": "#2e4d3e",
+        "primary-fixed": "#c7ebd6",
+        "secondary": "#715a3e",
+        "on-error-container": "#93000a",
+        "surface-dim": "#dcdad4",
+        "primary-fixed-dim": "#accebb",
+        "inverse-on-surface": "#f3f0ea",
+        "outline": "#727974",
+        "on-surface": "#1c1c18",
+        "on-tertiary-container": "#d6b067",
+        "tertiary-container": "#5d4201",
+        "on-tertiary-fixed": "#261900",
+        "on-secondary-fixed": "#281803",
+        "inverse-surface": "#31312d",
+        "surface-container-highest": "#e5e2dc",
+        "tertiary-fixed-dim": "#e9c176",
+        "secondary-fixed": "#fdddb9",
+        "on-tertiary-fixed-variant": "#5d4201",
+        "on-background": "#1c1c18",
+        "error": "#ba1a1a",
+        "surface": "#fcf9f3",
+        "on-primary-fixed": "#012114"
+      }
+    },
+  },
+  plugins: [],
+  corePlugins: {
+    preflight: false
+  }
+}

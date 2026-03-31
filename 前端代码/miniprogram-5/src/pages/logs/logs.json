@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "操作日志",
+  "navigationStyle": "custom",
+  "enablePullDownRefresh": true,
+  "usingComponents": {}
+}

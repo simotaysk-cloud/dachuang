@@ -1,0 +1,142 @@
+<view class="page-container  line-work-page">
+    <view class="page-aura aura-left"></view>
+    <view class="page-aura aura-right"></view>
+
+    <view class="topbar">
+        <view class="nav-ghost" bindtap="onBack">
+            <text class="nav-ghost-arrow">‹</text>
+        </view>
+        <text class="brand-title">{{batchNo ? '扫码开工' : '手工录入'}}</text>
+        <view class="profile-chip">
+            <text class="profile-name">{{usernameRaw}}</text>
+            <text class="profile-role">{{roleLabel}}</text>
+        </view>
+    </view>
+
+    <view class="header">
+                <text class="desc">围绕单个批次连续录入工序，完工结算后生成新的下游批次二维码。</text>
+    </view>
+
+    <view class="" wx:if="{{!batchNo}}">
+        <view class="card">
+            <view class="section-title">手工录入批次</view>
+            <text class="meta">请输入完整的溯源批次号，再进入本次作业模式。</text>
+            <view class="field-label">批次号</view>
+            <input class="input" placeholder="例如：BATCH2023..." bindinput="onManualInput" />
+            <view class="action-row">
+                <button class="btn btn-primary" bindtap="submitManualBatch">开始作业</button>
+                <button class="btn btn-outline" bindtap="onBack">取消</button>
+            </view>
+        </view>
+    </view>
+
+    <block wx:else>
+        <view class="ops-hero">
+            <view class="hero-pattern"></view>
+            <view class="ops-hero-head">
+                <view class="ops-hero-copy">
+                    <text class="ops-hero-eyebrow">当前作业批次</text>
+                    <text class="ops-hero-number">{{batchNo}}</text>
+                    <text class="ops-hero-desc" wx:if="{{batchInfo}}">{{batchInfo.name}} · {{batchInfo.category}} · {{batchInfo.origin}}</text>
+                </view>
+                <view class="ops-hero-badge">工序 {{sessionRecords.length}}</view>
+            </view>
+            <view class="ops-hero-grid">
+                <view class="ops-hero-stat">
+                    <text class="ops-hero-label">当前操作人</text>
+                    <text class="ops-hero-value">{{addForm.operator || '操作员'}}</text>
+                </view>
+                <view class="ops-hero-stat">
+                    <text class="ops-hero-label">默认产线</text>
+                    <text class="ops-hero-value">{{addForm.lineName}}</text>
+                </view>
+            </view>
+        </view>
+
+        <view class="ops-section-head">
+            <text class="section-title">本次工序</text>
+            <text class="meta">共 {{sessionRecords.length}} 条</text>
+        </view>
+
+        <view class="card">
+            <view class="empty-state" wx:if="{{sessionRecords.length === 0}}">
+                <text class="empty-title">暂无工序记录</text>
+                <text class="empty-desc">点击“添加工序”开始录入本次产线步骤。</text>
+            </view>
+
+            <view class="list" wx:if="{{sessionRecords.length > 0}}">
+                <view class="list-item" wx:for="{{sessionRecords}}" wx:key="id">
+                    <view class="list-index">
+                        <text class="list-index-text">{{index + 1}}</text>
+                    </view>
+                    <view class="list-main">
+                        <view class="list-head">
+                            <text class="list-title">{{item.processType || '-'}}</text>
+                            <view class="list-side">
+                                <text class="list-pill">已锁定</text>
+                            </view>
+                        </view>
+                        <text class="list-line list-line-strong">{{item.operator || '-'}} · {{item.lineName || '-'}}</text>
+                        <text class="list-line">本次作业记录会在结算时汇总到新的派生批次。</text>
+                    </view>
+                </view>
+            </view>
+        </view>
+
+        <view class="ops-section-head">
+            <text class="section-title">操作</text>
+        </view>
+
+        <view class="card">
+            <view class="ops-action-grid">
+                <view class="ops-action-tile ops-action-primary" bindtap="openAddDialog">
+                    <text class="ops-action-kicker">STEP</text>
+                    <text class="ops-action-title">添加工序</text>
+                    <text class="ops-action-desc">记录当前批次的单步加工动作</text>
+                </view>
+                <view class="ops-action-tile ops-action-secondary" bindtap="settleLine" wx:if="{{sessionRecords.length > 0}}">
+                    <text class="ops-action-kicker">SETTLE</text>
+                    <text class="ops-action-title">完工结算</text>
+                    <text class="ops-action-desc">汇总本次工序并派生新的下游批次</text>
+                </view>
+            </view>
+            <text class="meta line-work-meta">结算后会自动派生一个新批次并生成二维码。</text>
+        </view>
+
+        <view class="card line-work-inline-card" wx:if="{{showAddModal}}">
+                <view class="section-title">添加工序</view>
+                <text class="meta">此处仅记录不扣减库存的工步。如需输入物料消耗并分包出新批次，请在外部点击“完工结算”。</text>
+                <view class="field-label">工艺名称</view>
+                <input class="input" placeholder="如：清洗、烘干、取样" value="{{addForm.processType}}" data-form="add" data-field="processType" bindinput="onModalInput" />
+                <view class="field-label">说明（可选）</view>
+                <input class="input" placeholder="如：低温烘干 48h" value="{{addForm.details}}" data-form="add" data-field="details" bindinput="onModalInput" />
+                <view class="field-label">生产线名称</view>
+                <input class="input" placeholder="不填则使用默认" value="{{addForm.lineName}}" data-form="add" data-field="lineName" bindinput="onModalInput" />
+                <view class="field-label">操作人</view>
+                <input class="input" placeholder="姓名" value="{{addForm.operator}}" data-form="add" data-field="operator" bindinput="onModalInput" />
+                <view class="action-row">
+                    <button class="btn btn-primary" bindtap="confirmAdd">确认</button>
+                    <button class="btn btn-outline" bindtap="closeAddModal">取消</button>
+                </view>
+        </view>
+
+        <view class="card line-work-inline-card" wx:if="{{showSettleModal}}">
+                <view class="section-title">完工结算</view>
+                <text class="meta">完成当前工序后会生成新的下游批次二维码。</text>
+                <view class="field-label">消耗原批次数量 (可选)</view>
+                <input class="input" type="digit" placeholder="例如：投入的千克数" value="{{settleForm.extractedQuantity}}" data-form="settle" data-field="extractedQuantity" bindinput="onModalInput" />
+                <view class="field-label">产出新批次数量 (可选)</view>
+                <input class="input" type="digit" placeholder="例如：产出的千克数" value="{{settleForm.outputQuantity}}" data-form="settle" data-field="outputQuantity" bindinput="onModalInput" />
+                <view class="field-label">下游状态（可选，默认自动生成）</view>
+                <input class="input" placeholder="例如：研磨完成、切片完成、包装完成" value="{{settleForm.statusLabel}}" data-form="settle" data-field="statusLabel" bindinput="onModalInput" />
+                <view class="field-label">生产线名称</view>
+                <input class="input" placeholder="如：2号研磨线" value="{{settleForm.lineName}}" data-form="settle" data-field="lineName" bindinput="onModalInput" />
+                <view class="field-label">操作人</view>
+                <input class="input" placeholder="姓名" value="{{settleForm.operator}}" data-form="settle" data-field="operator" bindinput="onModalInput" />
+                <view class="action-row">
+                    <button class="btn btn-primary" bindtap="confirmSettle">确认并生成新码</button>
+                    <button class="btn btn-outline" bindtap="closeSettleModal">取消</button>
+                </view>
+        </view>
+    </block>
+</view>

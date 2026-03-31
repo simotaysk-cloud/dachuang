@@ -1,0 +1,90 @@
+<view class="page-container planting-dashboard-page">
+  <view class="page-aura aura-left"></view>
+  <view class="page-aura aura-right"></view>
+
+  <view class="topbar">
+    <view class="nav-ghost" bindtap="onBack">
+      <text class="nav-ghost-arrow">‹</text>
+    </view>
+    <text class="brand-title">种植统计</text>
+    <view class="profile-chip">
+      <text class="profile-name">{{usernameRaw}}</text>
+      <text class="profile-role">{{roleLabel}}</text>
+    </view>
+  </view>
+
+  <view class="header">
+        <text class="desc">查看当前药材品类、产地结构和种植批次分布。</text>
+  </view>
+
+  <view class="section-head">
+    <text class="section-title">概览</text>
+    <view class="section-action" bindtap="loadStats">
+      <text>{{loading ? '同步中' : '刷新数据'}}</text>
+    </view>
+  </view>
+
+  <view class="summary-grid">
+    <block wx:for="{{summaryCards}}" wx:key="key">
+      <view class="summary-card">
+        <text class="summary-value">{{item.value}}</text>
+        <text class="summary-label">{{item.label}}</text>
+        <text class="summary-note">{{item.note}}</text>
+      </view>
+    </block>
+  </view>
+
+  <view class="chart-card">
+    <view class="chart-head">
+      <text class="chart-title">药材分布</text>
+      <text class="chart-caption">按源头批次统计主要药材</text>
+    </view>
+    <view class="bar-list" wx:if="{{herbBars.length}}">
+      <block wx:for="{{herbBars}}" wx:key="name">
+        <view class="bar-row">
+          <text class="bar-name">{{item.name}}</text>
+          <view class="bar-track">
+            <view class="bar-fill" style="width: {{item.percent}}%;"></view>
+          </view>
+          <text class="bar-value">{{item.value}}</text>
+        </view>
+      </block>
+    </view>
+    <view class="empty-state" wx:else>暂无药材统计数据</view>
+  </view>
+
+  <view class="chart-card">
+    <view class="chart-head">
+      <text class="chart-title">产地分布</text>
+      <text class="chart-caption">按批次来源统计主要产地</text>
+    </view>
+    <view class="bar-list" wx:if="{{originBars.length}}">
+      <block wx:for="{{originBars}}" wx:key="name">
+        <view class="bar-row">
+          <text class="bar-name">{{item.name}}</text>
+          <view class="bar-track bar-track-gold">
+            <view class="bar-fill bar-fill-gold" style="width: {{item.percent}}%;"></view>
+          </view>
+          <text class="bar-value">{{item.value}}</text>
+        </view>
+      </block>
+    </view>
+    <view class="empty-state" wx:else>暂无产地统计数据</view>
+  </view>
+
+  <view class="chart-card">
+    <view class="chart-head">
+      <text class="chart-title">药材分类</text>
+      <text class="chart-caption">当前种植分类标签</text>
+    </view>
+    <view class="tag-list" wx:if="{{categoryTags.length}}">
+      <block wx:for="{{categoryTags}}" wx:key="name">
+        <view class="tag-item">
+          <text class="tag-name">{{item.name}}</text>
+          <text class="tag-value">{{item.value}}</text>
+        </view>
+      </block>
+    </view>
+    <view class="empty-state" wx:else>暂无分类统计数据</view>
+  </view>
+</view>

@@ -4,6 +4,12 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+if [[ -f "$ROOT_DIR/.env" ]]; then
+  set -a
+  source "$ROOT_DIR/.env"
+  set +a
+fi
+
 export APP_MOCK_DATA_ENABLED="${APP_MOCK_DATA_ENABLED:-true}"
 export APP_SERVER_PORT="${APP_SERVER_PORT:-8091}"
 
