@@ -1,0 +1,45 @@
+<view class="page-container  qrcode-page">
+  <view class="page-aura aura-left"></view>
+  <view class="page-aura aura-right"></view>
+
+  <view class="topbar">
+    <view class="nav-ghost" bindtap="back">
+      <text class="nav-ghost-arrow">‹</text>
+    </view>
+    <text class="brand-title">批次二维码</text>
+    <view class="profile-chip">
+      <text class="profile-name">{{usernameRaw}}</text>
+      <text class="profile-role">{{roleLabel}}</text>
+    </view>
+  </view>
+
+  <view class="header">
+        <text class="desc">将该二维码贴在容器或产物上，供下一工序继续扫码作业。</text>
+  </view>
+
+  <view class="">
+    <view class="hero-panel hero-panel-warning">
+      <text class="hero-title">{{batchNo}}</text>
+      <text class="hero-subtitle">这是当前批次的溯源码，可复制、打印并继续进入下游作业。</text>
+    </view>
+
+    <view class="card">
+      <view class="section-title">二维码</view>
+      <text class="meta" wx:if="{{loading}}">生成中...</text>
+      <image class="qr" mode="aspectFit" src="{{qrSrc}}" wx:if="{{qrSrc}}" />
+      <text class="meta" wx:if="{{!qrSrc && !loading}}">暂无二维码（请检查后端是否可用）</text>
+    </view>
+
+    <view class="card">
+      <view class="section-title">操作</view>
+      <view class="action-row">
+        <button class="btn btn-outline" bindtap="copy">复制溯源码</button>
+        <button class="btn btn-primary" bindtap="goLineWork">继续开工</button>
+      </view>
+      <view class="action-row">
+        <button class="btn btn-outline" bindtap="goTrace" wx:if="{{canViewBatchArchive}}">查看溯源档案</button>
+        <button class="btn btn-outline" bindtap="back">关闭</button>
+      </view>
+    </view>
+  </view>
+</view>

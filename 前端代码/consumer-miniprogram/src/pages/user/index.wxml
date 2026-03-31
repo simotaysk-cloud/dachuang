@@ -1,0 +1,161 @@
+<view class="text-on-surface bg-background min-h-screen pb-32 overflow-x-hidden">
+  <view class="pt-6 px-6 space-y-6 box-border">
+    <!-- User Profile Card -->
+    <view class="bg-surface-container-lowest rounded-lg p-6 flex items-center gap-4 shadow-sm relative overflow-hidden">
+      <!-- Decor -->
+      <view class="absolute -right-4 -top-4 opacity-5 pointer-events-none">
+        <view class="ui-icon w-20 h-20 text-primary">
+          <view class="ui-brand__ring"></view>
+          <view class="ui-leaf__left"></view>
+          <view class="ui-leaf__right"></view>
+          <view class="ui-leaf__stem"></view>
+        </view>
+      </view>
+
+      <block wx:if="{{hasUserInfo}}">
+        <view class="w-20 h-20 rounded-full border-2 border-primary/10 p-1 flex-shrink-0">
+          <image class="w-full h-full rounded-full object-cover" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+        </view>
+        <view class="flex flex-col gap-1.5 flex-1 min-w-0">
+          <view class="flex items-center gap-2 flex-wrap">
+            <text class="font-extrabold text-xl tracking-tight text-primary truncate max-w-full">{{userInfo.nickName}}</text>
+            <view class="flex items-center gap-1 bg-primary/5 px-2 py-0.5 rounded-full border border-primary/10">
+              <view class="ui-icon w-3.5 h-3.5 text-primary">
+                <view class="ui-check__short"></view>
+                <view class="ui-check__long"></view>
+              </view>
+              <text class="text-[10px] font-semibold text-primary uppercase tracking-wider">已实名</text>
+            </view>
+          </view>
+          <text class="text-secondary text-xs">{{userInfo.level}}</text>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="w-20 h-20 rounded-full border-2 border-primary/10 p-1 flex items-center justify-center bg-surface-container-low flex-shrink-0">
+          <view class="ui-icon w-10 h-10 text-primary/30">
+            <view class="ui-user__head"></view>
+            <view class="ui-user__neck"></view>
+            <view class="ui-user__shoulder"></view>
+          </view>
+        </view>
+        <view class="flex flex-col gap-2 items-start justify-center flex-1 min-w-0">
+          <view class="flex items-center gap-2">
+            <text class="font-extrabold text-xl tracking-tight text-primary">未登录</text>
+          </view>
+          <view class="bg-primary text-on-primary text-xs rounded-full px-4 py-1.5 font-bold shadow-sm active:scale-95 transition-all text-center" bindtap="getUserProfile">安全登录</view>
+        </view>
+      </block>
+    </view>
+
+    <!-- Stats Card (Traceability) -->
+    <view class="bg-primary rounded-lg p-8 text-on-primary shadow-sm relative overflow-hidden">
+      <view class="absolute top-0 right-0 w-32 h-32 bg-primary-container/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></view>
+      <view class="relative z-10 flex justify-between items-center text-center">
+        <view class="flex flex-col gap-1">
+          <text class="font-extrabold text-2xl tracking-tighter">{{userInfo.points || 0}}</text>
+          <text class="text-[10px] font-medium text-white/70 uppercase tracking-widest">本草积分</text>
+        </view>
+        <view class="h-8 w-px bg-white/10"></view>
+        <view class="flex flex-col gap-1">
+          <text class="font-extrabold text-2xl tracking-tighter">{{hasUserInfo ? certs.length : 0}}</text>
+          <text class="text-[10px] font-medium text-white/70 uppercase tracking-widest">数字凭证</text>
+        </view>
+        <view class="h-8 w-px bg-white/10"></view>
+        <view class="flex flex-col gap-1">
+          <text class="font-extrabold text-2xl tracking-tighter">{{hasUserInfo ? 2 : 0}}</text>
+          <text class="text-[10px] font-medium text-white/70 uppercase tracking-widest">助农订单</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Certs (Horizontal Scroll / Promotional Bento Style) -->
+    <view class="mt-4">
+      <view class="flex justify-between items-end mb-4">
+        <text class="text-xl font-bold text-primary tracking-tight">可信存证</text>
+      </view>
+      
+      <scroll-view wx:if="{{hasUserInfo}}" scroll-x class="whitespace-nowrap pb-4" style="width: 100%;">
+        <view wx:for="{{certs}}" wx:key="id" bindtap="showCert" data-cert="{{item}}" class="inline-block bg-secondary-container/30 rounded-lg p-5 w-48 aspect-square relative overflow-hidden group mr-4 align-top border border-primary/5">
+          <view class="relative z-10 flex flex-col h-full justify-between">
+            <view>
+              <text class="font-bold text-secondary text-base leading-tight block whitespace-normal">{{item.name}}</text>
+              <text class="text-[10px] text-secondary/60 mt-2 block">{{item.date}}</text>
+            </view>
+            <view class="mt-4">
+              <text class="text-xs text-secondary underline underline-offset-4">查看凭证</text>
+            </view>
+          </view>
+          <view class="absolute -right-1 -bottom-1 opacity-15 transition-transform duration-500">
+            <view class="ui-icon w-16 h-16 text-secondary">
+              <view class="ui-doc__page"></view>
+              <view class="ui-doc__line ui-doc__line--1"></view>
+              <view class="ui-doc__line ui-doc__line--2"></view>
+              <view class="ui-doc__line ui-doc__line--3"></view>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+
+      <view wx:else class="bg-surface-container-low rounded-lg p-6 text-center border border-outline-variant/30 flex flex-col items-center">
+        <view class="ui-icon w-12 h-12 text-primary/40 mb-2">
+          <view class="ui-lock__shackle"></view>
+          <view class="ui-lock__body"></view>
+        </view>
+        <text class="text-sm font-bold text-on-surface mb-1">当前尚未展示个人凭证</text>
+        <text class="text-xs text-on-surface-variant flex-wrap mb-4">先完成演示登录，再查看数字证书、权益记录和提醒状态。</text>
+        <view class="bg-primary text-on-primary rounded-full px-6 py-2 text-sm shadow-sm font-bold active:scale-95 transition-all" bindtap="getUserProfile">立即登录</view>
+      </view>
+    </view>
+
+    <!-- Function List -->
+    <view class="mt-4">
+      <view class="flex justify-between items-end mb-4">
+        <text class="text-xl font-bold text-primary tracking-tight">常用服务</text>
+      </view>
+      <view class="bg-surface-container-low rounded-lg overflow-hidden flex flex-col p-2 space-y-1">
+        
+        <block wx:for="{{serviceMenus}}" wx:key="action">
+          <view class="w-full flex items-center justify-between gap-3 p-4 bg-surface-container-lowest rounded-md transition-opacity active:scale-95 duration-200 box-border" data-action="{{item.action}}" bindtap="handleMenuAction">
+            <view class="flex items-center gap-4 flex-1 min-w-0">
+              <view class="w-10 h-10 rounded-full bg-primary/5 flex items-center justify-center">
+                <view class="ui-icon w-5 h-5 text-primary">
+                  <block wx:if="{{item.action === 'trace'}}">
+                    <view class="ui-search__ring"></view>
+                    <view class="ui-search__handle"></view>
+                  </block>
+                  <block wx:elif="{{item.action === 'reminder'}}">
+                    <view class="ui-bell__body"></view>
+                    <view class="ui-bell__clapper"></view>
+                  </block>
+                  <block wx:elif="{{item.action === 'service'}}">
+                    <view class="ui-bubble__back"></view>
+                    <view class="ui-bubble__front"></view>
+                  </block>
+                  <block wx:else>
+                    <view class="ui-doc__page"></view>
+                    <view class="ui-doc__line ui-doc__line--1"></view>
+                    <view class="ui-doc__line ui-doc__line--2"></view>
+                    <view class="ui-doc__line ui-doc__line--3"></view>
+                  </block>
+                </view>
+              </view>
+              <view class="flex flex-col flex-1 min-w-0">
+                <text class="font-semibold text-on-surface text-sm">{{item.title}}</text>
+                <text class="text-xs text-on-surface-variant line-clamp-1">{{item.desc}}</text>
+              </view>
+            </view>
+            <view class="flex items-center gap-2 flex-shrink-0 pl-2">
+              <text class="text-xs font-bold text-tertiary text-right">{{item.action === 'reminder' ? reminderText : item.meta}}</text>
+              <view class="ui-icon w-3.5 h-3.5 text-outline-variant">
+                <view class="ui-chevron__a"></view>
+                <view class="ui-chevron__b"></view>
+              </view>
+            </view>
+          </view>
+        </block>
+
+      </view>
+    </view>
+
+  </view>
+</view>

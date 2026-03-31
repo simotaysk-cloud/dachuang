@@ -1,0 +1,135 @@
+<view class="page-container  logistics-page">
+    <view class="page-aura aura-left"></view>
+    <view class="page-aura aura-right"></view>
+
+    <view class="topbar">
+        <view class="nav-ghost" bindtap="onBack">
+            <text class="nav-ghost-arrow">‹</text>
+        </view>
+        <text class="brand-title">物流追踪</text>
+        <view class="profile-chip">
+            <text class="profile-name">{{usernameRaw}}</text>
+            <text class="profile-role">{{roleLabel}}</text>
+        </view>
+    </view>
+
+    <view class="header">
+                <text class="desc">创建电子运单、跟踪在途状态，并维护批次的物流事件回传。</text>
+    </view>
+
+    <view class="ops-hero">
+        <view class="hero-pattern"></view>
+        <view class="ops-hero-head">
+            <view class="ops-hero-copy">
+                <text class="ops-hero-eyebrow">发运指令</text>
+                <text class="ops-hero-number">扫码发运</text>
+                <text class="ops-hero-desc">扫描待发批次后直接创建电子运单，也可以手工创建并持续补录运输轨迹。</text>
+            </view>
+            <view class="ops-hero-badge">运单 {{shipments.length || 0}}</view>
+        </view>
+        <view class="ops-hero-grid">
+            <view class="ops-hero-stat">
+                <text class="ops-hero-label">当前身份</text>
+                <text class="ops-hero-value">{{roleLabel}}</text>
+            </view>
+            <view class="ops-hero-stat">
+                <text class="ops-hero-label">在途方式</text>
+                <text class="ops-hero-value">扫码 / 手工创建</text>
+            </view>
+            <view class="ops-hero-stat ops-hero-stat-wide logistics-scan-card" bindtap="onScanStart">
+                <text class="ops-hero-label">快捷操作</text>
+                <text class="ops-hero-value">点击进入扫码发运</text>
+            </view>
+        </view>
+    </view>
+
+    <view class="ops-section-head">
+        <text class="section-title">操作区</text>
+    </view>
+
+    <view class="card">
+        <view class="ops-search-row">
+            <input class="ops-search-input" placeholder="输入批次号查运单" value="{{shipmentQueryBatchNo}}" bindinput="onShipmentQueryInput" />
+            <view class="ops-action-search-btn" bindtap="listShipments">检索</view>
+        </view>
+        <view class="ops-action-grid">
+            <view class="ops-action-tile ops-action-primary ops-action-wide" bindtap="onScanStart">
+                <text class="ops-action-title">扫码发运</text>
+            </view>
+            <view class="ops-action-tile ops-action-primary" bindtap="startCreateShipment">
+                <text class="ops-action-title">手工创建</text>
+            </view>
+            <view class="ops-action-tile ops-action-secondary" bindtap="listShipments">
+                <text class="ops-action-title">同步任务</text>
+            </view>
+        </view>
+    </view>
+
+    <view class="ops-section-head">
+        <text class="section-title">电子运单</text>
+        <text class="meta" wx:if="{{shipments.length}}">共 {{shipments.length}} 单</text>
+    </view>
+
+    <view class="card">
+        <view class="empty-state" wx:if="{{(!shipments || shipments.length === 0) && !loading}}">
+            <text class="empty-title">暂无物流单据</text>
+            <text class="empty-desc">可以先创建运单，或切换批次号重新检索。</text>
+        </view>
+
+        <view class="list" wx:if="{{shipments && shipments.length > 0}}">
+            <view class="list-item" wx:for="{{shipments}}" wx:key="id" bindtap="viewShipmentDetail" data-item="{{item}}">
+                <view class="list-index logistics-index">
+                    <text class="list-index-text">{{index + 1}}</text>
+                </view>
+                <view class="list-main">
+                    <view class="list-head">
+                        <text class="list-title">{{item.shipmentNo || '未生成单号'}}</text>
+                        <view class="list-side">
+                            <text class="list-pill">{{item.status || '在途'}}</text>
+                        </view>
+                    </view>
+                    <text class="list-line list-line-strong">批次：{{item.batchNo || '-'}}</text>
+                    <text class="list-line">收货组织：{{item.distributorName || '待指定'}}　承运商：{{item.carrier || '自有物流'}}</text>
+                </view>
+            </view>
+        </view>
+    </view>
+
+    <view class="modal-mask" wx:if="{{currentShipment}}">
+        <view class="modal logistics-modal modal-scroll">
+            <view class="modal-title">物流轨迹：{{currentShipment.shipmentNo}}</view>
+
+            <view class="timeline-container">
+                <view class="timeline-item" wx:for="{{events}}" wx:key="id">
+                    <view class="timeline-dots">
+                        <view class="dot {{index === 0 ? 'active' : ''}}"></view>
+                        <view class="line" wx:if="{{index < events.length - 1}}"></view>
+                    </view>
+                    <view class="timeline-content">
+                        <view class="time-header">
+                            <text class="t-status">{{item.status}}</text>
+                            <text class="t-time">{{item.eventTime}}</text>
+                        </view>
+                        <view class="t-location">📍 {{item.location}}</view>
+                        <view class="t-details" wx:if="{{item.details}}">{{item.details}}</view>
+                    </view>
+                </view>
+                <view class="empty-timeline" wx:if="{{!events || events.length === 0}}">
+                    该运单暂无详细位置回传记录
+                </view>
+            </view>
+
+            <view class="add-event-form">
+                <view class="form-title">更新实时位置</view>
+                <input class="input" placeholder="输入当前所在位置" value="{{shipmentEventForm.location}}" data-field="location" bindinput="onShipmentEventInput" />
+                <input class="input" placeholder="定义当前状态 (如：到达枢纽、配送中)" value="{{shipmentEventForm.status}}" data-field="status" bindinput="onShipmentEventInput" />
+                <textarea class="textarea" placeholder="详细备注说明" value="{{shipmentEventForm.details}}" data-field="details" bindinput="onShipmentEventInput" />
+
+                <view class="shipment-action-grid">
+                    <button class="btn btn-outline" bindtap="closeShipmentDetail">关闭</button>
+                    <button class="btn btn-primary" bindtap="addShipmentEvent">提交更新</button>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>

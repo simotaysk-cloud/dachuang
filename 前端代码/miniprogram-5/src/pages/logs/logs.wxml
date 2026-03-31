@@ -1,0 +1,104 @@
+<view class="page-container  log-page">
+  <view class="page-aura aura-left"></view>
+  <view class="page-aura aura-right"></view>
+
+  <view class="topbar">
+    <view class="nav-ghost" bindtap="onBack">
+      <text class="nav-ghost-arrow">‹</text>
+    </view>
+    <text class="brand-title">操作日志</text>
+    <view class="profile-chip">
+      <text class="profile-name">{{usernameRaw}}</text>
+      <text class="profile-role">{{roleLabel}}</text>
+    </view>
+  </view>
+
+  <view class="header">
+        <text class="desc">按模块和关键词检索全流程时间线与操作明细。</text>
+  </view>
+
+  <view class="">
+    <view class="card">
+      <view class="section-title">概览</view>
+      <text class="meta">最近同步：{{lastSyncAt}}</text>
+      <view class="dashboard-mini-grid logs-stats-grid">
+        <view class="dashboard-mini-card">
+          <text class="dashboard-mini-label">总条数</text>
+          <text class="dashboard-mini-value">{{stats.total}}</text>
+        </view>
+        <view class="dashboard-mini-card">
+          <text class="dashboard-mini-label">批次</text>
+          <text class="dashboard-mini-value">{{stats.batch}}</text>
+        </view>
+        <view class="dashboard-mini-card">
+          <text class="dashboard-mini-label">种植</text>
+          <text class="dashboard-mini-value">{{stats.planting}}</text>
+        </view>
+        <view class="dashboard-mini-card">
+          <text class="dashboard-mini-label">加工</text>
+          <text class="dashboard-mini-value">{{stats.processing}}</text>
+        </view>
+        <view class="dashboard-mini-card">
+          <text class="dashboard-mini-label">质检</text>
+          <text class="dashboard-mini-value">{{stats.inspection}}</text>
+        </view>
+        <view class="dashboard-mini-card">
+          <text class="dashboard-mini-label">物流</text>
+          <text class="dashboard-mini-value">{{stats.logistics}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="card">
+      <view class="section-title">筛选</view>
+      <view class="picker-row">
+        <view class="picker-label">模块</view>
+        <picker range="{{filterOptions}}" value="{{filterIndex}}" bindchange="onFilterChange">
+          <view class="picker-value">{{filterOptions[filterIndex]}}</view>
+        </picker>
+      </view>
+      <input class="input logs-search-input" placeholder="输入批次号或关键词" value="{{keyword}}" bindinput="onKeywordInput" />
+      <view class="action-row">
+        <button class="btn btn-primary" bindtap="search">查询</button>
+        <button class="btn btn-outline" bindtap="reload" loading="{{refreshing}}">刷新</button>
+      </view>
+      <button class="btn btn-outline single-action" bindtap="clearSearch">清空筛选</button>
+    </view>
+
+    <view class="card">
+      <view class="section-title">明细</view>
+      <view class="empty-state" wx:if="{{loading}}">
+        <text class="empty-title">正在加载...</text>
+      </view>
+      <view class="empty-state" wx:if="{{!loading && (!logs || logs.length === 0)}}">
+        <text class="empty-title">暂无日志</text>
+        <text class="empty-desc">可以更换筛选条件或刷新重试。</text>
+      </view>
+      <view class="list" wx:if="{{!loading && logs && logs.length > 0}}">
+        <view class="list-item logs-item mod-{{item.module.toLowerCase()}}" wx:for="{{logs}}" wx:key="id" wx:for-item="item" bindtap="openDetail" data-id="{{item.id}}">
+          <view class="list-index">
+            <text class="list-index-text">{{index + 1}}</text>
+          </view>
+          <view class="list-main">
+            <view class="list-head">
+              <text class="list-title">{{item.title}}</text>
+              <view class="list-side">
+                <text class="list-pill">{{item.moduleLabel}}</text>
+              </view>
+            </view>
+            <text class="list-line list-line-strong">{{item.timeText}}</text>
+            <text class="list-line">批次：{{item.batchNo}}　操作人：{{item.operator}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="modal-mask" wx:if="{{detailVisible}}" bindtap="closeDetail">
+    <view class="modal logs-modal" catchtap="noop">
+      <view class="modal-title">日志详情</view>
+      <view class="logs-detail-text">{{detailText}}</view>
+      <button class="btn btn-primary single-action" bindtap="closeDetail">关闭</button>
+    </view>
+  </view>
+</view>

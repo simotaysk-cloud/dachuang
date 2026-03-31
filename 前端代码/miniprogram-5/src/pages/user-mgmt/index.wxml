@@ -1,0 +1,104 @@
+<view class="page-container  user-mgmt-page">
+    <view class="page-aura aura-left"></view>
+    <view class="page-aura aura-right"></view>
+
+    <view class="topbar">
+        <view class="nav-ghost" bindtap="onBack">
+            <text class="nav-ghost-arrow">‹</text>
+        </view>
+        <text class="brand-title">系统权限</text>
+        <view class="profile-chip">
+            <text class="profile-name">{{usernameRaw}}</text>
+            <text class="profile-role">{{roleLabel}}</text>
+        </view>
+    </view>
+
+    <view class="header">
+                <text class="desc">维护系统账号、角色权限和基本联络信息。</text>
+    </view>
+
+    <view class="ops-hero">
+        <view class="hero-pattern"></view>
+        <view class="ops-hero-head">
+            <view class="ops-hero-copy">
+                <text class="ops-hero-eyebrow">管理台账</text>
+                <text class="ops-hero-number">{{users.length || 0}} 个系统用户</text>
+                <text class="ops-hero-desc">管理员可在这里新增、编辑和删除账号。</text>
+            </view>
+            <view class="ops-hero-badge">ADMIN</view>
+        </view>
+    </view>
+
+    <view class="ops-section-head">
+        <text class="section-title">操作区</text>
+    </view>
+
+    <view class="card">
+            <view class="ops-action-grid">
+                <view class="ops-action-tile ops-action-primary" bindtap="openCreate">
+                    <text class="ops-action-title">新增用户</text>
+                </view>
+                <view class="ops-action-tile ops-action-secondary" bindtap="loadUsers">
+                    <text class="ops-action-title">刷新列表</text>
+                </view>
+            </view>
+    </view>
+
+    <view class="ops-section-head">
+        <text class="section-title">用户列表</text>
+        <text class="meta" wx:if="{{users.length}}">共 {{users.length}} 项</text>
+    </view>
+
+    <view class="card">
+        <view class="empty-state" wx:if="{{!users || users.length === 0}}">
+            <text class="empty-title">暂无用户</text>
+            <text class="empty-desc">可以先创建一个新账号。</text>
+        </view>
+        <view class="list" wx:if="{{users && users.length > 0}}">
+            <view class="list-item" wx:for="{{users}}" wx:key="id">
+                <view class="list-index user-role-index">
+                    <text class="list-index-text">{{index + 1}}</text>
+                </view>
+                <view class="list-main">
+                    <view class="list-head">
+                        <text class="list-title">{{item.username}}</text>
+                        <view class="list-side">
+                            <text class="role-tag {{item.role}}">{{item.role}}</text>
+                        </view>
+                    </view>
+                    <text class="list-line list-line-strong">昵称：{{item.nickname || '-'}}</text>
+                    <text class="list-line">姓名：{{item.name || '-'}}　电话：{{item.phone || '-'}}</text>
+                    <view class="user-actions">
+                        <button class="btn-mini btn-mini-outline" data-user="{{item}}" bindtap="openEdit">编辑</button>
+                        <button class="btn-mini btn-mini-warn" data-id="{{item.id}}" bindtap="deleteUser">删除</button>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+
+    <view class="card user-mgmt-form-card" wx:if="{{showModal}}">
+            <view class="section-title">{{isEdit ? '编辑用户' : '新增用户'}}</view>
+            <view class="field-label">用户名</view>
+            <input class="input" placeholder="用户名" value="{{form.username}}" data-field="username" bindinput="onInput" disabled="{{isEdit}}" />
+            <view class="field-label">密码</view>
+            <input class="input" placeholder="{{isEdit ? '密码 (留空不修改)' : '密码'}}" value="{{form.password}}" data-field="password" bindinput="onInput" password />
+            <view class="field-label">昵称</view>
+            <input class="input" placeholder="昵称" value="{{form.nickname}}" data-field="nickname" bindinput="onInput" />
+            <view class="field-label">角色</view>
+            <picker range="{{roles}}" bindchange="onRoleChange">
+                <view class="picker-row">
+                    <view class="picker-label">当前</view>
+                    <view class="picker-value">{{form.role}}</view>
+                </view>
+            </picker>
+            <view class="field-label">真实姓名</view>
+            <input class="input" placeholder="真实姓名" value="{{form.name}}" data-field="name" bindinput="onInput" />
+            <view class="field-label">电话</view>
+            <input class="input" placeholder="电话" value="{{form.phone}}" data-field="phone" bindinput="onInput" />
+            <view class="action-row">
+                <button class="btn btn-outline" bindtap="closeModal">取消</button>
+                <button class="btn btn-primary" bindtap="submit">确认</button>
+            </view>
+    </view>
+</view>

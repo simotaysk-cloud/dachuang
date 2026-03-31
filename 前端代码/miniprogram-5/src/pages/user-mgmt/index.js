@@ -1,0 +1,173 @@
+const api = require('../../utils/api')
+
+Page({
+    data: {
+        usernameRaw: api.username || 'admin',
+        roleLabel: '',
+        users: [],
+        form: {
+            username: '',
+            password: '',
+            nickname: '',
+            role: 'FARMER', // Default
+            name: '',
+            phone: ''
+        },
+        roles: ['ADMIN', 'FARMER', 'MANUFACTURER', 'MERCHANT', 'FACTORY', 'LOGISTICS', 'QUALITY', 'REGULATOR'],
+        showModal: false,
+        isEdit: false,
+        editId: null
+    },
+
+    async onLoad() {
+        if (api.role !== 'ADMIN') {
+            wx.showToast({ title: '无权限（仅管理员可用）', icon: 'none' })
+            return wx.redirectTo({ url: '/pages/index/index' })
+        }
+        this.setData({ roleLabel: api.getRoleName(api.role) })
+        await this.loadProfile()
+        this.loadUsers()
+    },
+
+    async loadProfile() {
+        try {
+            const res = await api.getMe()
+            const profile = res?.data || {}
+            this.setData({
+                usernameRaw: profile?.username || profile?.name || api.username || 'admin',
+                roleLabel: api.getRoleName(profile?.role || api.role)
+            })
+        } catch (err) {
+        }
+    },
+
+    onBack() {
+        const pages = getCurrentPages()
+        if (pages.length > 1) return wx.navigateBack()
+        wx.reLaunch({ url: '/pages/index/index' })
+    },
+
+    async loadUsers() {
+        try {
+            const res = await api.request('/api/v1/users')
+            this.setData({ users: res?.data || [] })
+        } catch (error) {
+            console.error(error)
+            const code = error?.data?.code
+            if (code === 403) {
+                wx.showToast({ title: '无权限（仅管理员可用）', icon: 'none' })
+                return
+            }
+            wx.showToast({ title: error?.data?.message || '加载失败', icon: 'none' })
+        }
+    },
+
+    onInput(e) {
+        const field = e.currentTarget.dataset.field
+        this.setData({
+            [`form.${field}`]: e.detail.value
+        })
+    },
+
+    onRoleChange(e) {
+        this.setData({
+            'form.role': this.data.roles[e.detail.value]
+        })
+    },
+
+    openCreate() {
+        this.setData({
+            showModal: true,
+            isEdit: false,
+            form: {
+                username: '',
+                password: '',
+                nickname: '',
+                role: 'FARMER',
+                name: '',
+                phone: ''
+            }
+        })
+    },
+
+    openEdit(e) {
+        const user = e.currentTarget.dataset.user
+        this.setData({
+            showModal: true,
+            isEdit: true,
+            editId: user.id,
+            form: {
+                username: user.username,
+                password: '', // Leave blank to keep unchanged
+                nickname: user.nickname,
+                role: user.role,
+                name: user.name,
+                phone: user.phone
+            }
+        })
+    },
+
+    closeModal() {
+        this.setData({ showModal: false })
+    },
+
+    async submit() {
+        const { isEdit, editId, form } = this.data
+        if (!form.username) return wx.showToast({ title: '用户名必填', icon: 'none' })
+
+        try {
+            if (isEdit) {
+                const payload = {
+                    password: form.password,
+                    nickname: form.nickname,
+                    role: form.role,
+                    name: form.name,
+                    phone: form.phone
+                }
+                await api.request(`/api/v1/users/${editId}`, 'PUT', payload)
+            } else {
+                if (!form.password) return wx.showToast({ title: '密码必填', icon: 'none' })
+                const payload = {
+                    username: form.username,
+                    password: form.password,
+                    nickname: form.nickname,
+                    role: form.role,
+                    name: form.name,
+                    phone: form.phone
+                }
+                await api.request('/api/v1/users', 'POST', payload)
+            }
+            wx.showToast({ title: isEdit ? '更新成功' : '创建成功' })
+            this.closeModal()
+            this.loadUsers()
+        } catch (error) {
+            console.error(error)
+            const code = error?.data?.code
+            if (code === 403) {
+                wx.showToast({ title: '无权限（仅管理员可用）', icon: 'none' })
+                return
+            }
+            wx.showToast({ title: error?.data?.message || '操作失败', icon: 'none' })
+        }
+    },
+
+    async deleteUser(e) {
+        const id = e.currentTarget.dataset.id
+        const that = this
+        wx.showModal({
+            title: '确认删除',
+            content: '确定要删除该用户吗？',
+            success: async (res) => {
+                if (res.confirm) {
+                    try {
+                        await api.request(`/api/v1/users/${id}`, 'DELETE')
+                        wx.showToast({ title: '删除成功' })
+                        that.loadUsers()
+                    } catch (error) {
+                        console.error(error)
+                    }
+                }
+            }
+        })
+    }
+})

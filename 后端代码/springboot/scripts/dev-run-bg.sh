@@ -4,6 +4,12 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+if [[ -f "$ROOT_DIR/.env" ]]; then
+  set -a
+  source "$ROOT_DIR/.env"
+  set +a
+fi
+
 export APP_MOCK_DATA_ENABLED="${APP_MOCK_DATA_ENABLED:-true}"
 
 LOG_FILE="$ROOT_DIR/target/dev-run.log"
@@ -28,4 +34,3 @@ echo $! > "$PID_FILE"
 
 echo "Started (pid=$(cat "$PID_FILE"))."
 echo "Tail logs: tail -f '$LOG_FILE'"
-

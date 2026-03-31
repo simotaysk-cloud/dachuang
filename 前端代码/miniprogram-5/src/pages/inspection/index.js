@@ -1,0 +1,151 @@
+const api = require('../../utils/api')
+const { guardFeatureAccess } = require('../../utils/rbac')
+
+const REFRESH_KEY = 'inspectionNeedRefresh'
+const LAST_QUERY_KEY = 'inspectionLastQueryNo'
+
+Page({
+    data: {
+        records: [],
+        queryNo: '',
+        loading: false,
+        usernameRaw: 'user',
+        roleLabel: ''
+    },
+
+    async onLoad() {
+        if (!guardFeatureAccess(api.role, 'INSPECTION')) return
+        this.setData({
+            usernameRaw: api.username || 'user',
+            roleLabel: api.getRoleName(api.role)
+        })
+        await this.loadProfile()
+        this.listAll()
+    },
+
+    async loadProfile() {
+        try {
+            const res = await api.getMe()
+            const profile = res?.data || {}
+            this.setData({
+                usernameRaw: profile?.username || profile?.name || api.username || 'user',
+                roleLabel: api.getRoleName(profile?.role || api.role)
+            })
+        } catch (err) {
+            // Ignore profile errors and keep cached identity.
+        }
+    },
+
+    onBack() {
+        const pages = getCurrentPages()
+        if (pages.length > 1) {
+            wx.navigateBack()
+            return
+        }
+        wx.reLaunch({ url: '/pages/index/index' })
+    },
+
+    onShow() {
+        if (wx.getStorageSync(REFRESH_KEY)) {
+            wx.removeStorageSync(REFRESH_KEY)
+            const last = wx.getStorageSync(LAST_QUERY_KEY) || ''
+            if (last) this.setData({ queryNo: last })
+            if (this.data.queryNo) this.query()
+        }
+    },
+
+    onQueryInput(e) {
+        this.setData({ queryNo: e.detail.value })
+    },
+
+    startCreate() {
+        // Manual entry fallback: generate new batch and QR based on parent batch.
+        wx.navigateTo({ url: '/pages/inspection-form/index' })
+    },
+
+    parseBatchNoFromScanResult(raw) {
+        const s = String(raw || '').trim()
+        if (!s) return ''
+        // Prefer query param: ...?batchNo=XXX
+        const m1 = s.match(/[?&]batchNo=([^&]+)/i)
+        if (m1 && m1[1]) return decodeURIComponent(m1[1])
+        // If it's a URL-like path, take last segment.
+        if (s.startsWith('http://') || s.startsWith('https://') || s.includes('/')) {
+            const noHash = s.split('#')[0]
+            const noQuery = noHash.split('?')[0]
+            const parts = noQuery.split('/').filter(Boolean)
+            if (parts.length > 0) return decodeURIComponent(parts[parts.length - 1])
+        }
+        return s
+    },
+
+    async onScanStart() {
+        try {
+            const res = await new Promise((resolve, reject) => {
+                wx.scanCode({
+                    scanType: ['qrCode', 'barCode'],
+                    success: resolve,
+                    fail: reject
+                })
+            })
+            const raw = res?.result || ''
+            const batchNo = this.parseBatchNoFromScanResult(raw)
+            if (!batchNo) {
+                wx.showToast({ title: '未识别到批次号', icon: 'none' })
+                return
+            }
+            wx.navigateTo({
+                url: `/pages/inspection-form/index?parentBatchNo=${encodeURIComponent(batchNo)}&lockedParent=1`
+            })
+        } catch (err) {
+            // user canceled or failed
+        }
+    },
+
+    editFromList(e) {
+        const item = e.currentTarget.dataset.item
+        if (!item || item.id == null) return
+        wx.navigateTo({ url: `/pages/inspection-form/index?id=${encodeURIComponent(String(item.id))}` })
+    },
+
+    async listAll() {
+        this.setData({ loading: true })
+        try {
+            const res = await api.request('/api/v1/inspection')
+            this.setData({ records: res.data || [] })
+            if (!res.data || res.data.length === 0) {
+                wx.showToast({ title: '暂无记录', icon: 'none' })
+            }
+        } catch (err) {
+            console.error(err)
+            wx.showToast({ title: '加载失败', icon: 'none' })
+        } finally {
+            this.setData({ loading: false })
+        }
+    },
+
+    refreshList() {
+        this.setData({ queryNo: '' })
+        wx.removeStorageSync(LAST_QUERY_KEY)
+        this.listAll()
+    },
+
+    async query() {
+        if (!this.data.queryNo) return wx.showToast({ title: '请输入批次号', icon: 'none' })
+
+        this.setData({ loading: true })
+        try {
+            const res = await api.request(`/api/v1/inspection?batchNo=${this.data.queryNo}`)
+            this.setData({ records: res.data || [] })
+            wx.setStorageSync(LAST_QUERY_KEY, this.data.queryNo)
+            if (!res.data || res.data.length === 0) {
+                wx.showToast({ title: '未找到记录', icon: 'none' })
+            }
+        } catch (err) {
+            console.error(err)
+            wx.showToast({ title: '查询失败', icon: 'none' })
+        } finally {
+            this.setData({ loading: false })
+        }
+    },
+})

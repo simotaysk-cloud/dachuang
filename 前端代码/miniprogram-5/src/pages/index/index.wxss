@@ -1,0 +1,528 @@
+.brand-block {
+  display: inline-flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.brand-mark {
+  width: 52rpx;
+  height: 52rpx;
+  flex: 0 0 auto;
+}
+
+.home-page {
+  /* 统一继承自 app.wxss 全局变量 */
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  padding: 28rpx 24rpx 72rpx;
+  background: var(--page-bg);
+  color: var(--page-ink);
+}
+
+.trace-card {
+  overflow: hidden;
+  margin-bottom: 18rpx;
+  padding: 20rpx 22rpx;
+  border-radius: 32rpx;
+  background: var(--surface-soft);
+  box-shadow: 0 18rpx 42rpx rgba(27, 28, 21, 0.06);
+}
+
+.trace-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.trace-item {
+  display: flex;
+  gap: 14rpx;
+}
+
+.trace-marker-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 10rpx;
+}
+
+.trace-marker {
+  width: 18rpx;
+  height: 18rpx;
+  border-radius: 999rpx;
+  background: rgba(114, 121, 110, 0.35);
+  box-shadow: inset 0 0 0 4rpx rgba(255, 255, 255, 0.55);
+}
+
+.trace-marker-active {
+  background: var(--primary);
+  box-shadow: 0 0 18rpx rgba(45, 90, 39, 0.24);
+}
+
+.trace-line {
+  width: 2rpx;
+  flex: 1;
+  margin-top: 8rpx;
+  background: rgba(114, 121, 110, 0.26);
+}
+
+.trace-copy {
+  flex: 1;
+  padding-bottom: 4rpx;
+  border-bottom: 1rpx solid rgba(194, 201, 187, 0.32);
+}
+
+.trace-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12rpx;
+}
+
+.trace-name {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--page-ink);
+}
+
+.trace-status {
+  flex-shrink: 0;
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  font-size: 18rpx;
+  font-weight: 700;
+}
+
+.trace-status-active {
+  background: rgba(208, 230, 198, 0.8);
+  color: var(--primary-deep);
+}
+
+.trace-status-idle {
+  background: rgba(194, 201, 187, 0.32);
+  color: var(--page-muted);
+}
+
+.modules-head {
+  margin-top: 4rpx;
+}
+
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18rpx;
+}
+
+.module-card {
+  min-height: 164rpx;
+  padding: 24rpx;
+  border-radius: 30rpx;
+  box-shadow: 0 18rpx 42rpx rgba(27, 28, 21, 0.07);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14rpx;
+}
+
+.module-card-jade {
+  background: linear-gradient(155deg, #627255 0%, #4f5e45 68%, #414b39 100%);
+}
+
+.module-card-gold {
+  background: linear-gradient(155deg, #736f58 0%, #605c49 68%, #514d3d 100%);
+}
+
+.module-card-ink {
+  background: linear-gradient(155deg, #53634d 0%, #42503d 68%, #333d31 100%);
+}
+
+.module-card-sage {
+  background: linear-gradient(155deg, #6f7c5c 0%, #5e684e 68%, #4c5540 100%);
+}
+
+.module-symbol,
+.module-symbol-base,
+.module-symbol-accent,
+.module-symbol-detail,
+.module-name {
+  display: block;
+}
+
+.module-symbol {
+  position: relative;
+  width: 64rpx;
+  height: 64rpx;
+}
+
+.module-symbol-base,
+.module-symbol-accent,
+.module-symbol-detail {
+  position: absolute;
+}
+
+.module-symbol-base-planting {
+  left: 30rpx;
+  top: 20rpx;
+  width: 4rpx;
+  height: 26rpx;
+  border-radius: 999rpx;
+  background: rgba(251, 250, 238, 0.96);
+}
+
+.module-symbol-accent-planting {
+  left: 16rpx;
+  top: 10rpx;
+  width: 20rpx;
+  height: 14rpx;
+  border-radius: 20rpx 20rpx 20rpx 0;
+  transform: rotate(-28deg);
+  background: rgba(208, 230, 198, 0.82);
+}
+
+.module-symbol-detail-planting {
+  right: 12rpx;
+  top: 12rpx;
+  width: 20rpx;
+  height: 14rpx;
+  border-radius: 20rpx 20rpx 0 20rpx;
+  transform: rotate(28deg);
+  background: rgba(251, 250, 238, 0.66);
+}
+
+.module-symbol-base-batch {
+  left: 12rpx;
+  top: 18rpx;
+  width: 30rpx;
+  height: 22rpx;
+  border-radius: 10rpx;
+  border: 3rpx solid rgba(251, 250, 238, 0.92);
+}
+
+.module-symbol-accent-batch {
+  left: 22rpx;
+  top: 10rpx;
+  width: 30rpx;
+  height: 22rpx;
+  border-radius: 10rpx;
+  border: 3rpx solid rgba(243, 226, 185, 0.7);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.module-symbol-detail-batch {
+  left: 20rpx;
+  top: 28rpx;
+  width: 20rpx;
+  height: 3rpx;
+  border-radius: 999rpx;
+  background: rgba(251, 250, 238, 0.92);
+}
+
+.module-name {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.more-modules {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18rpx;
+  margin-top: 18rpx;
+  margin-bottom: 28rpx;
+}
+
+.module-card-compact {
+  min-height: 144rpx;
+  padding: 22rpx;
+}
+
+.module-card-compact .module-symbol {
+  width: 60rpx;
+  height: 60rpx;
+}
+
+.module-symbol-processing,
+.module-symbol-logistics,
+.module-symbol-inspection,
+.module-symbol-terminalQrcode,
+.module-symbol-security,
+.module-symbol-dashboard,
+.module-symbol-userMgmt {
+  transform: translate(2rpx, 2rpx);
+}
+
+.module-symbol-base-processing {
+  left: 11rpx;
+  top: 17rpx;
+  width: 40rpx;
+  height: 26rpx;
+  border-radius: 15rpx;
+  border: 3rpx solid rgba(251, 250, 238, 0.92);
+}
+
+.module-symbol-accent-processing {
+  left: 21rpx;
+  top: 9rpx;
+  width: 18rpx;
+  height: 18rpx;
+  border-radius: 50%;
+  border: 3rpx solid rgba(243, 226, 185, 0.82);
+}
+
+.module-symbol-detail-processing {
+  left: 17rpx;
+  top: 29rpx;
+  width: 28rpx;
+  height: 3rpx;
+  border-radius: 999rpx;
+  background: rgba(251, 250, 238, 0.88);
+  box-shadow: 0 -9rpx 0 rgba(251, 250, 238, 0.72);
+}
+
+.module-symbol-base-logistics {
+  left: 11rpx;
+  top: 20rpx;
+  width: 28rpx;
+  height: 18rpx;
+  border-radius: 8rpx;
+  border: 3rpx solid rgba(251, 250, 238, 0.92);
+}
+
+.module-symbol-accent-logistics {
+  left: 36rpx;
+  top: 23rpx;
+  width: 13rpx;
+  height: 15rpx;
+  border-radius: 4rpx;
+  border: 3rpx solid rgba(243, 226, 185, 0.78);
+  border-left: 0;
+}
+
+.module-symbol-detail-logistics {
+  left: 15rpx;
+  top: 40rpx;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  background: rgba(251, 250, 238, 0.9);
+  box-shadow: 22rpx 0 0 rgba(251, 250, 238, 0.9);
+}
+
+.module-symbol-base-inspection {
+  left: 16rpx;
+  top: 13rpx;
+  width: 30rpx;
+  height: 36rpx;
+  border-radius: 0 0 18rpx 18rpx;
+  border: 3rpx solid rgba(251, 250, 238, 0.9);
+  border-top: 0;
+}
+
+.module-symbol-accent-inspection {
+  left: 21rpx;
+  top: 8rpx;
+  width: 20rpx;
+  height: 9rpx;
+  border-radius: 999rpx;
+  background: rgba(243, 226, 185, 0.76);
+}
+
+.module-symbol-detail-inspection {
+  left: 23rpx;
+  top: 27rpx;
+  width: 18rpx;
+  height: 13rpx;
+  border-radius: 10rpx 10rpx 14rpx 14rpx;
+  background: rgba(208, 230, 198, 0.72);
+}
+
+.module-symbol-base-terminalQrcode {
+  left: 13rpx;
+  top: 13rpx;
+  width: 36rpx;
+  height: 36rpx;
+  border-radius: 10rpx;
+  border: 3rpx solid rgba(251, 250, 238, 0.9);
+}
+
+.module-symbol-accent-terminalQrcode {
+  left: 18rpx;
+  top: 18rpx;
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 3rpx;
+  background: rgba(243, 226, 185, 0.82);
+  box-shadow: 16rpx 0 0 rgba(243, 226, 185, 0.82), 0 16rpx 0 rgba(243, 226, 185, 0.82), 16rpx 16rpx 0 rgba(243, 226, 185, 0.82);
+}
+
+.module-symbol-detail-terminalQrcode {
+  left: 26rpx;
+  top: 26rpx;
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 2rpx;
+  background: rgba(251, 250, 238, 0.92);
+}
+
+.module-symbol-base-security {
+  left: 17rpx;
+  top: 12rpx;
+  width: 26rpx;
+  height: 34rpx;
+  border-radius: 16rpx 16rpx 18rpx 18rpx;
+  border: 3rpx solid rgba(251, 250, 238, 0.9);
+}
+
+.module-symbol-accent-security {
+  left: 23rpx;
+  top: 20rpx;
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 999rpx 999rpx 10rpx 10rpx;
+  background: rgba(208, 230, 198, 0.76);
+}
+
+.module-symbol-detail-security {
+  left: 28rpx;
+  top: 24rpx;
+  width: 6rpx;
+  height: 10rpx;
+  border-radius: 999rpx;
+  background: rgba(251, 250, 238, 0.92);
+}
+
+.module-symbol-base-dashboard {
+  left: 13rpx;
+  top: 15rpx;
+  width: 36rpx;
+  height: 30rpx;
+  border-radius: 10rpx;
+  border: 3rpx solid rgba(251, 250, 238, 0.9);
+}
+
+.module-symbol-accent-dashboard {
+  left: 18rpx;
+  top: 30rpx;
+  width: 6rpx;
+  height: 9rpx;
+  border-radius: 999rpx;
+  background: rgba(243, 226, 185, 0.82);
+  box-shadow: 11rpx -8rpx 0 rgba(243, 226, 185, 0.82), 22rpx -2rpx 0 rgba(243, 226, 185, 0.82);
+}
+
+.module-symbol-detail-dashboard {
+  left: 19rpx;
+  top: 22rpx;
+  width: 18rpx;
+  height: 3rpx;
+  border-radius: 999rpx;
+  background: rgba(251, 250, 238, 0.88);
+}
+
+.module-symbol-base-userMgmt {
+  left: 14rpx;
+  top: 15rpx;
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background: rgba(251, 250, 238, 0.9);
+  box-shadow: 18rpx 0 0 rgba(243, 226, 185, 0.82);
+}
+
+.module-symbol-accent-userMgmt {
+  left: 11rpx;
+  top: 32rpx;
+  width: 18rpx;
+  height: 11rpx;
+  border-radius: 14rpx 14rpx 10rpx 10rpx;
+  border: 3rpx solid rgba(251, 250, 238, 0.88);
+  border-top: 0;
+  box-shadow: 18rpx 0 0 -3rpx rgba(243, 226, 185, 0.82);
+}
+
+.module-symbol-detail-userMgmt {
+  left: 25rpx;
+  top: 17rpx;
+  width: 8rpx;
+  height: 20rpx;
+  border-radius: 999rpx;
+  background: rgba(208, 230, 198, 0.72);
+}
+
+.config-card {
+  padding: 24rpx;
+  border-radius: 28rpx;
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 14rpx 34rpx rgba(27, 28, 21, 0.05);
+}
+
+.config-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.config-title,
+.config-desc,
+.config-toggle {
+  display: block;
+}
+
+.config-title {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--page-ink);
+}
+
+.config-desc {
+  margin-top: 8rpx;
+  font-size: 18rpx;
+  line-height: 1.5;
+  color: var(--page-soft);
+  word-break: break-all;
+}
+
+.config-toggle {
+  font-size: 20rpx;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.config-panel {
+  margin-top: 22rpx;
+  padding-top: 22rpx;
+  border-top: 1rpx solid rgba(194, 201, 187, 0.4);
+}
+
+.config-input {
+  width: 100%;
+  height: 82rpx;
+  padding: 0 22rpx;
+  box-sizing: border-box;
+  border-radius: 20rpx;
+  background: var(--surface-soft);
+  border: 1rpx solid rgba(194, 201, 187, 0.55);
+  color: var(--page-ink);
+  font-size: 24rpx;
+}
+
+.config-actions {
+  margin-top: 18rpx;
+}
+
+.config-btn {
+  height: 82rpx;
+  border-radius: 20rpx;
+  text-align: center;
+  line-height: 82rpx;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.config-btn-primary {
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-deep) 100%);
+}

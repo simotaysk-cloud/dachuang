@@ -1,6 +1,7 @@
 {
   "compileType": "miniprogram",
-  "libVersion": "2.32.3",
+  "description": "项目配置文件",
+  "miniprogramRoot": "dist/",
   "packOptions": {
     "ignore": [],
     "include": []
@@ -12,16 +13,8 @@
     "minified": true,
     "enhance": true,
     "showShadowRootInWxmlPanel": true,
-    "packNpmRelationList": [],
-    "babelSetting": {
-      "ignore": [],
-      "disablePlugins": [],
-      "outputPath": ""
-    },
-    "compileWorklet": false,
-    "uglifyFileName": false,
-    "uploadWithSourceMap": true,
     "packNpmManually": false,
+    "packNpmRelationList": [],
     "minifyWXSS": true,
     "minifyWXML": true,
     "localPlugins": false,

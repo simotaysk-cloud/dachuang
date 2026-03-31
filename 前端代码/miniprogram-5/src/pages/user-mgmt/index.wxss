@@ -1,0 +1,50 @@
+.user-role-index {
+  background: linear-gradient(180deg, #ecefdf 0%, #dfe5d2 100%);
+}
+
+.user-actions {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 14rpx;
+}
+
+.user-mgmt-modal {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.97) 0%, rgba(245, 244, 232, 0.96) 100%);
+  border: 1rpx solid rgba(128, 141, 121, 0.12);
+  border-radius: 30rpx;
+  box-shadow: 0 24rpx 52rpx rgba(54, 66, 47, 0.18);
+}
+
+.role-tag {
+  display: inline-block;
+  padding: 8rpx 14rpx;
+  border-radius: 999rpx;
+  font-size: 18rpx;
+  font-weight: 700;
+  background: rgba(215, 231, 204, 0.92);
+  color: #42613a;
+}
+
+.role-tag.ADMIN {
+  background: rgba(205, 158, 112, 0.18);
+  color: #8b5e34;
+}
+
+.role-tag.FARMER {
+  background: rgba(215, 231, 204, 0.92);
+  color: #42613a;
+}
+
+.role-tag.FACTORY,
+.role-tag.MANUFACTURER,
+.role-tag.MERCHANT {
+  background: rgba(227, 224, 203, 0.9);
+  color: #645d45;
+}
+
+.role-tag.LOGISTICS,
+.role-tag.QUALITY,
+.role-tag.REGULATOR {
+  background: rgba(223, 227, 217, 0.92);
+  color: #55604d;
+}

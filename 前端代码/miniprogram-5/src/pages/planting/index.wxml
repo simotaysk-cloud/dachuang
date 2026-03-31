@@ -1,0 +1,110 @@
+<view class="page-container planting-page">
+    <view class="page-aura aura-left"></view>
+    <view class="page-aura aura-right"></view>
+
+    <view class="topbar">
+        <view class="nav-ghost" bindtap="onBack">
+            <text class="nav-ghost-arrow">‹</text>
+        </view>
+        <text class="brand-title">种植管理</text>
+        <view class="profile-chip" wx:if="{{profile}}">
+            <text class="profile-name">{{usernameRaw}}</text>
+            <text class="profile-role">{{roleLabel}}</text>
+        </view>
+        <view class="profile-chip profile-chip-placeholder" wx:else></view>
+    </view>
+
+    <view class="header">
+                <text class="desc">记录田间作业、地块信息和操作时间。</text>
+    </view>
+
+    <view class="batch-hero">
+        <view class="batch-hero-pattern"></view>
+        <view class="batch-hero-head">
+            <view class="batch-hero-copy">
+                <text class="batch-hero-eyebrow">当前批次</text>
+                <text class="batch-hero-number">{{currentBatch ? currentBatch.batchNo : '暂无可用批次'}}</text>
+            </view>
+            <picker mode="selector" range="{{batches}}" range-key="batchNo" value="{{batchIndex}}" bindchange="onBatchChange">
+                <view class="batch-switch">{{batches.length ? '切换批次' : '暂无批次'}}</view>
+            </picker>
+        </view>
+
+        <view class="batch-hero-grid" wx:if="{{currentBatch}}">
+            <view class="batch-highlight">
+                <text class="batch-highlight-label">名称</text>
+                <text class="batch-highlight-value">{{currentBatch.name || '-'}}</text>
+            </view>
+            <view class="batch-highlight">
+                <text class="batch-highlight-label">产地</text>
+                <text class="batch-highlight-value">{{currentBatch.origin || '-'}}</text>
+            </view>
+            <view class="batch-highlight">
+                <text class="batch-highlight-label">状态</text>
+                <text class="batch-highlight-value">{{currentBatch.status || '-'}}</text>
+            </view>
+            <view class="batch-highlight">
+                <text class="batch-highlight-label">GS1</text>
+                <text class="batch-highlight-value batch-highlight-code">{{currentBatch.gs1Code || '未生成'}}</text>
+            </view>
+        </view>
+
+        <view class="batch-empty" wx:else>
+            暂无批次，请先创建批次后再录入种植记录。
+        </view>
+    </view>
+
+    <view class="section-head">
+        <text class="section-title">操作区</text>
+    </view>
+
+    <view class="action-card">
+        <picker mode="selector" range="{{batches}}" range-key="batchNo" value="{{batchIndex}}" bindchange="onBatchChange" wx:if="{{batches.length}}">
+            <view class="picker-row action-picker-row">
+                <view class="picker-label">当前批次</view>
+                <view class="picker-value">{{currentBatch ? currentBatch.batchNo : '请选择批次'}}</view>
+            </view>
+        </picker>
+        <view class="action-search-row">
+            <input class="action-input" placeholder="输入ID、地块、操作人查询" value="{{queryKey}}" bindinput="onQueryInput" />
+            <view class="action-search-btn" bindtap="query">查询</view>
+        </view>
+        <view class="action-grid">
+            <view class="action-tile action-tile-primary" bindtap="startCreate">
+                <text class="action-tile-title">新增记录</text>
+            </view>
+            <view class="action-tile action-tile-secondary" bindtap="refresh">
+                <text class="action-tile-title">刷新列表</text>
+            </view>
+        </view>
+        <text class="action-meta" wx:if="{{lastUpdatedAt}}">最近刷新：{{lastUpdatedAt}}</text>
+    </view>
+
+    <view class="section-head">
+        <text class="section-title">记录列表</text>
+    </view>
+
+    <view class="records-card">
+        <view class="empty-state" wx:if="{{!loading && records.length === 0}}">
+            <text class="empty-title">暂无记录</text>
+            <text class="empty-desc">可以点击“新增记录”开始录入田间操作。</text>
+        </view>
+
+        <view class="records-list" wx:if="{{records.length > 0}}">
+            <view class="record-item" wx:for="{{records}}" wx:key="id" bindtap="editFromList" data-id="{{item.id}}">
+                <view class="record-index">
+                    <text class="record-index-number">{{item.id || '--'}}</text>
+                </view>
+                <view class="record-main">
+                    <view class="record-head">
+                        <text class="record-title">{{item.operation || '未填写操作'}}</text>
+                        <text class="record-edit">编辑</text>
+                    </view>
+                    <text class="record-line">批次：{{item.batchNo || '-'}}</text>
+                    <text class="record-line">地块：{{item.fieldName || '-'}}　操作人：{{item.operator || '-'}}</text>
+                    <text class="record-line" wx:if="{{item.operationTimeText}}">操作时间：{{item.operationTimeText}}</text>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>

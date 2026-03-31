@@ -1,0 +1,82 @@
+<view class="page-container  batch-form-page">
+    <view class="page-aura aura-left"></view>
+    <view class="page-aura aura-right"></view>
+
+    <view class="topbar">
+        <view class="nav-ghost" bindtap="onBack">
+            <text class="nav-ghost-arrow">‹</text>
+        </view>
+        <text class="brand-title">{{form.id ? '编辑批次' : '新建批次'}}</text>
+        <view class="profile-chip">
+            <text class="profile-name">{{usernameRaw}}</text>
+            <text class="profile-role">{{roleLabel}}</text>
+        </view>
+    </view>
+
+    <view class="header">
+                <text class="desc">批次是整条溯源链路的身份入口，这里维护基础属性、库存和 GS1 状态。</text>
+    </view>
+
+    <view class="">
+        <view class="hero-panel hero-panel-warning">
+            <view class="hero-pattern"></view>
+            <text class="hero-title">{{form.id ? (form.batchNo || '已有批次') : '新批次档案'}}</text>
+            <text class="hero-subtitle">{{form.id ? '当前在编辑既有批次，锁定后数量与单位不可修改。' : '新建时可留空批次号，由系统自动生成。'}}</text>
+        </view>
+
+        <view class="card">
+            <view class="section-title">基本信息</view>
+            <view class="readonly-row" wx:if="{{form.id}}">
+                <view class="readonly-label">内部 ID</view>
+                <view class="readonly-value">#{{form.id}}</view>
+            </view>
+            <view class="field-label">批次号 (BatchNo)</view>
+            <input class="input" placeholder="留空自动生成（推荐）" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" disabled="{{form.id || role === 'FARMER'}}" />
+            <text class="meta" wx:if="{{role === 'FARMER'}}">农户创建时批次号自动生成</text>
+
+            <view class="field-label">药材名称</view>
+            <input class="input" placeholder="例如：长白山人参" value="{{form.name}}" data-field="name" bindinput="onInput" />
+
+            <view class="field-label">类别 / 形态</view>
+            <picker bindchange="onCategoryChange" value="{{0}}" range="{{categories}}">
+                <view class="input">当前选择：{{form.category || '请选择'}}</view>
+            </picker>
+
+            <view class="field-label">产地</view>
+            <input class="input" placeholder="例如：吉林省抚松县" value="{{form.origin}}" data-field="origin" bindinput="onInput" />
+
+            <view class="field-label">当前状态</view>
+            <input class="input" placeholder="例如：PLANTING" value="{{form.status}}" data-field="status" bindinput="onInput" />
+        </view>
+
+        <view class="card">
+            <view class="section-title">重量与 GS1</view>
+            <text class="meta">收获重量和库存可以后补，锁定后不再允许修改。</text>
+
+            <view class="grid-2">
+                <view>
+                    <view class="field-label">数量</view>
+                    <input class="input input-compact" type="digit" value="{{form.quantity}}" data-field="quantity" bindinput="onInput" disabled="{{form.gs1Locked}}" />
+                </view>
+                <view>
+                    <view class="field-label">单位</view>
+                    <input class="input input-compact" value="{{form.unit}}" data-field="unit" bindinput="onInput" disabled="{{form.gs1Locked}}" />
+                </view>
+            </view>
+
+            <text class="meta batch-form-warn" wx:if="{{form.gs1Locked}}">注意：GS1 信息已锁定，不可修改数量与单位。</text>
+
+            <view class="field-label">备注</view>
+            <textarea class="textarea" placeholder="更多描述..." value="{{form.description}}" data-field="description" bindinput="onInput" />
+
+            <view class="action-row">
+                <button class="btn btn-primary" bindtap="save">保存</button>
+                <button class="btn btn-outline" bindtap="cancel">取消</button>
+            </view>
+
+            <button class="btn btn-warn single-action" wx:if="{{form.id}}" bindtap="remove">删除</button>
+            <button class="btn btn-warn single-action" wx:if="{{form.id && !form.gs1Locked}}" bindtap="lockGs1">锁定 GS1（打印贴标后）</button>
+            <text class="meta" wx:if="{{form.id && !form.gs1Locked}}">锁定后将无法修改数量，并生成最终条码。</text>
+        </view>
+    </view>
+</view>

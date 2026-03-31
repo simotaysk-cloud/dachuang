@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>药途寻迹 - 溯源详情</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b1326;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(23, 31, 51, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .text-gradient-primary {
+            background: linear-gradient(135deg, #4edea3 0%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glow-emerald {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+        }
+        .tonal-connector {
+            background: rgba(60, 74, 66, 0.2);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "tertiary-container": "#19aee8",
+                "on-surface": "#dae2fd",
+                "secondary-container": "#3a4a5f",
+                "surface-tint": "#4edea3",
+                "secondary": "#b7c8e1",
+                "on-secondary": "#213145",
+                "inverse-on-surface": "#283044",
+                "error": "#ffb4ab",
+                "surface-container-highest": "#2d3449",
+                "on-secondary-fixed": "#0b1c30",
+                "on-background": "#dae2fd",
+                "surface-dim": "#0b1326",
+                "on-tertiary-fixed-variant": "#004c69",
+                "surface-container-low": "#131b2e",
+                "background": "#0b1326",
+                "on-primary-container": "#00422b",
+                "surface-bright": "#31394d",
+                "primary-container": "#10b981",
+                "surface-container-lowest": "#060e20",
+                "surface-container-high": "#222a3d",
+                "outline-variant": "#3c4a42",
+                "on-primary-fixed": "#002113",
+                "primary-fixed-dim": "#4edea3",
+                "inverse-primary": "#006c49",
+                "on-tertiary-fixed": "#001e2c",
+                "surface": "#0b1326",
+                "on-error": "#690005",
+                "primary-fixed": "#6ffbbe",
+                "inverse-surface": "#dae2fd",
+                "surface-variant": "#2d3449",
+                "secondary-fixed-dim": "#b7c8e1",
+                "on-primary-fixed-variant": "#005236",
+                "secondary-fixed": "#d3e4fe",
+                "tertiary-fixed": "#c4e7ff",
+                "on-primary": "#003824",
+                "on-secondary-container": "#a9bad3",
+                "outline": "#86948a",
+                "on-tertiary": "#00354a",
+                "on-error-container": "#ffdad6",
+                "on-tertiary-container": "#003e55",
+                "on-surface-variant": "#bbcabf",
+                "on-secondary-fixed-variant": "#38485d",
+                "primary": "#4edea3",
+                "tertiary": "#7bd0ff",
+                "error-container": "#93000a",
+                "tertiary-fixed-dim": "#7bd0ff",
+                "surface-container": "#171f33"
+              },
+              fontFamily: {
+                "headline": ["Plus Jakarta Sans"],
+                "body": ["Plus Jakarta Sans"],
+                "label": ["Plus Jakarta Sans"]
+              },
+              borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+            },
+          },
+        }
+      </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface selection:bg-primary/30 min-h-screen pb-24">
+<!-- Top Navigation Anchor -->
+<header class="fixed top-0 w-full z-50 bg-slate-50/80 dark:bg-[#0b1326]/80 backdrop-blur-xl">
+<div class="flex items-center justify-between px-6 h-16 w-full max-w-7xl mx-auto">
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors rounded-full active:opacity-70 active:scale-95">
+<span class="material-symbols-outlined text-emerald-600 dark:text-[#10b981]">arrow_back</span>
+</button>
+<h1 class="text-xl font-bold text-emerald-900 dark:text-[#10b981] font-['Plus_Jakarta_Sans'] tracking-tight">溯源详情</h1>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-600 dark:text-[#10b981]">verified_user</span>
+</div>
+</div>
+<div class="bg-slate-200/50 dark:bg-slate-800/20 h-[1px] w-full"></div>
+</header>
+<main class="max-w-7xl mx-auto px-6 pt-24 space-y-12">
+<!-- Section 1: Digital Certificate Hero -->
+<section class="relative">
+<div class="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 mb-8">
+<div>
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 mb-4 glow-emerald">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-xs font-bold text-primary tracking-widest uppercase">真品认证</span>
+</div>
+<h2 class="text-4xl md:text-5xl font-extrabold tracking-tighter text-on-surface mb-2">
+                        Digital <span class="text-gradient-primary">Certificate</span>
+</h2>
+<p class="text-secondary text-sm font-medium tracking-wide">ID: AUTH-8829-XCJ-2024</p>
+</div>
+</div>
+<!-- Bento Metrics Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="glass-panel p-8 rounded-xl border-l-4 border-primary">
+<p class="text-secondary text-xs uppercase tracking-widest font-bold mb-4">综合安全评分</p>
+<div class="flex items-baseline gap-2">
+<span class="text-5xl font-extrabold text-on-surface">99</span>
+<span class="text-primary font-bold text-xl">分</span>
+</div>
+<div class="mt-4 h-1 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[99%] shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+</div>
+</div>
+<div class="glass-panel p-8 rounded-xl">
+<p class="text-secondary text-xs uppercase tracking-widest font-bold mb-4">权属确认状态</p>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary text-4xl" style="font-variation-settings: 'FILL' 1;">security</span>
+<span class="text-xl font-bold text-on-surface">区块链确权</span>
+</div>
+<p class="text-secondary/60 text-[10px] mt-4 font-mono">Hash: 0x71c...3f92</p>
+</div>
+<div class="glass-panel p-8 rounded-xl">
+<p class="text-secondary text-xs uppercase tracking-widest font-bold mb-4">流转周期</p>
+<div class="flex items-baseline gap-2">
+<span class="text-5xl font-extrabold text-on-surface">15</span>
+<span class="text-secondary font-bold text-xl">天</span>
+</div>
+<p class="text-secondary/60 text-xs mt-4">从源头采集到封装入库</p>
+</div>
+</div>
+</section>
+<!-- Section 2: Botanical Data (Asymmetrical Editorial) -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<div class="lg:col-span-5 order-2 lg:order-1">
+<h3 class="text-secondary text-xs font-bold tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+<span class="w-8 h-[1px] bg-primary"></span> 数字本草鉴赏
+                </h3>
+<h4 class="text-3xl font-bold mb-6 text-on-surface">长白山野生人参 <br/><span class="text-secondary/50 font-light italic">Panax Ginseng</span></h4>
+<div class="space-y-6">
+<div class="flex flex-wrap gap-3">
+<span class="px-4 py-2 bg-surface-container-high rounded-md border border-outline-variant/30 text-sm font-medium">性寒</span>
+<span class="px-4 py-2 bg-surface-container-high rounded-md border border-outline-variant/30 text-sm font-medium">味苦</span>
+<span class="px-4 py-2 bg-primary/10 border border-primary/30 text-primary text-sm font-bold">核心归经: 心经</span>
+</div>
+<div class="p-6 bg-surface-container-lowest rounded-xl border border-outline-variant/10 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl">science</span>
+</div>
+<p class="text-secondary text-xs font-bold uppercase tracking-widest mb-2">活性成分分析</p>
+<div class="flex items-end justify-between">
+<div>
+<span class="text-3xl font-bold text-primary">12.4%</span>
+<p class="text-on-surface-variant text-sm mt-1">人参皂苷 (Ginsenosides)</p>
+</div>
+<div class="text-right">
+<span class="text-tertiary font-bold text-sm">超标号: 0.00%</span>
+<p class="text-secondary/40 text-[10px] mt-1">重金属检测合格</p>
+</div>
+</div>
+</div>
+<p class="text-on-surface-variant leading-relaxed text-sm">
+                        本品采集于长白山西麓高海拔原始林区。经数字化微观成像技术分析，根茎纹理清晰，横切面呈明显的“放射状”构造，符合极品道地药材特征。
+                    </p>
+</div>
+</div>
+<div class="lg:col-span-7 order-1 lg:order-2">
+<div class="relative rounded-2xl overflow-hidden aspect-[4/3] group shadow-2xl">
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Macro photography of a high-quality dry ginseng root on a dark slate background, professional clinical studio lighting, botanical specimen style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgDRHwGABMZMYka814vYnU_4XckqNvy_U7tZt-qDaAeq3rsjUuLtYjHmim2l3VmVby_rkOaTwe_-1zrhBMrvvGakaUfy6C-ZAfpxQVMVALXr_MuXSbSXBN9gVlwy_X0_ZcUec8ZN6mCBa4jxMkeJA89dQ3IjTGvAOhzBNvb4Sx0Fhj5fSKXo3fxk43PJXf_0r8RSFbZRIvVBXS6RHP12k6Zv6eFPTlX4sadWsf3DNopShZws5BorEQts03CKP-nIJW6KuzDqjpYTA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60"></div>
+<div class="absolute bottom-6 left-6 p-4 glass-panel rounded-xl border border-white/10">
+<p class="text-[10px] text-primary font-bold uppercase tracking-[0.2em] mb-1">采集坐标</p>
+<p class="text-white font-mono text-xs">42.4357° N, 128.0924° E</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Ecology Parameters -->
+<section class="glass-panel p-10 rounded-2xl border border-outline-variant/10">
+<div class="flex items-center justify-between mb-12">
+<div>
+<h3 class="text-2xl font-bold text-on-surface">道地生态参数</h3>
+<p class="text-secondary text-sm mt-1">Authentic Ecological Parameters</p>
+</div>
+<div class="hidden md:block h-[1px] flex-grow mx-12 bg-outline-variant/20"></div>
+<span class="material-symbols-outlined text-primary text-3xl">eco</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+<div class="space-y-3">
+<span class="material-symbols-outlined text-secondary/40">mountain_flag</span>
+<p class="text-secondary/60 text-xs font-bold uppercase tracking-widest">山地海拔</p>
+<div class="flex items-baseline gap-1">
+<span class="text-3xl font-bold text-on-surface tracking-tighter">1800</span>
+<span class="text-secondary text-sm">m</span>
+</div>
+</div>
+<div class="space-y-3">
+<span class="material-symbols-outlined text-secondary/40">light_mode</span>
+<p class="text-secondary/60 text-xs font-bold uppercase tracking-widest">年日照量</p>
+<div class="flex items-baseline gap-1">
+<span class="text-3xl font-bold text-on-surface tracking-tighter">2800</span>
+<span class="text-secondary text-sm">h</span>
+</div>
+</div>
+<div class="space-y-3">
+<span class="material-symbols-outlined text-secondary/40">science</span>
+<p class="text-secondary/60 text-xs font-bold uppercase tracking-widest">土壤参数</p>
+<div class="flex items-baseline gap-1">
+<span class="text-secondary text-sm">pH</span>
+<span class="text-3xl font-bold text-on-surface tracking-tighter">6.5</span>
+</div>
+</div>
+<div class="space-y-3">
+<span class="material-symbols-outlined text-secondary/40">water_drop</span>
+<p class="text-secondary/60 text-xs font-bold uppercase tracking-widest">源泉降水</p>
+<div class="flex items-baseline gap-1">
+<span class="text-3xl font-bold text-on-surface tracking-tighter">1200</span>
+<span class="text-secondary text-sm">mm</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 4: Blockchain Timeline -->
+<section class="relative pb-12">
+<div class="mb-12 text-center max-w-2xl mx-auto">
+<h3 class="text-3xl font-bold mb-2">全域数据溯源图谱</h3>
+<p class="text-secondary text-sm tracking-wide">基于非对称加密算法的全链路环节追踪</p>
+</div>
+<div class="relative space-y-10 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-primary/40 before:via-outline-variant/20 before:to-transparent">
+<!-- Timeline Item: Planting -->
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+<div class="flex items-center justify-center w-10 h-10 rounded-full border border-primary/50 bg-surface shadow-[0_0_15px_rgba(16,185,129,0.2)] shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+<span class="w-3 h-3 rounded-full bg-primary glow-emerald"></span>
+</div>
+<div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] glass-panel p-6 rounded-xl border border-outline-variant/10">
+<div class="flex items-center justify-between mb-3">
+<h5 class="font-bold text-primary">采集与育种 (Planting)</h5>
+<time class="text-[10px] font-mono text-secondary">2024-03-12</time>
+</div>
+<p class="text-sm text-on-surface-variant">长白山标准化种植基地。选用五年期种苗，完成区块链初始上链。负责人：陈远道。</p>
+<div class="mt-4 pt-4 border-t border-outline-variant/10 flex gap-4">
+<span class="text-[10px] text-tertiary font-bold px-2 py-0.5 bg-tertiary/10 rounded">SEED-CERTIFIED</span>
+</div>
+</div>
+</div>
+<!-- Timeline Item: Harvest -->
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+<div class="flex items-center justify-center w-10 h-10 rounded-full border border-primary/50 bg-surface shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+<span class="w-3 h-3 rounded-full bg-primary glow-emerald"></span>
+</div>
+<div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] glass-panel p-6 rounded-xl border border-outline-variant/10">
+<div class="flex items-center justify-between mb-3">
+<h5 class="font-bold text-on-surface">采收与质检 (Harvest)</h5>
+<time class="text-[10px] font-mono text-secondary">2024-08-05</time>
+</div>
+<p class="text-sm text-on-surface-variant">手工采挖，避免根须损伤。现场完成药效成分抽检，皂苷含量达标。</p>
+</div>
+</div>
+<!-- Timeline Item: Processing -->
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+<div class="flex items-center justify-center w-10 h-10 rounded-full border border-primary/50 bg-surface shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+<span class="w-3 h-3 rounded-full bg-primary glow-emerald"></span>
+</div>
+<div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] glass-panel p-6 rounded-xl border border-outline-variant/10">
+<div class="flex items-center justify-between mb-3">
+<h5 class="font-bold text-on-surface">数字化加工 (Processing)</h5>
+<time class="text-[10px] font-mono text-secondary">2024-08-10</time>
+</div>
+<p class="text-sm text-on-surface-variant">40℃恒温洁净间脱水处理。采用低温冷链保存药材活性，全程监控。</p>
+</div>
+</div>
+<!-- Timeline Item: Logistics -->
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+<div class="flex items-center justify-center w-10 h-10 rounded-full border border-primary/50 bg-surface shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+<span class="w-3 h-3 rounded-full bg-primary glow-emerald"></span>
+</div>
+<div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] glass-panel p-6 rounded-xl border border-outline-variant/10">
+<div class="flex items-center justify-between mb-3">
+<h5 class="font-bold text-on-surface">智慧物流 (Logistics)</h5>
+<time class="text-[10px] font-mono text-secondary">2024-08-15</time>
+</div>
+<p class="text-sm text-on-surface-variant">进入SF冷链配送系统。当前状态：已交付至区域配送中心。</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-slate-50/90 dark:bg-[#0b1326]/90 backdrop-blur-lg border-t border-slate-200/50 dark:border-white/5 shadow-[0_-4px_20px_0_rgba(0,0,0,0.05)] dark:shadow-none">
+<div class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3">
+<button class="flex flex-col items-center justify-center text-emerald-600 dark:text-[#10b981] bg-emerald-50/50 dark:bg-emerald-500/10 rounded-xl px-3 py-1 active:scale-90 duration-150">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">track_changes</span>
+<span class="text-[10px] font-['Plus_Jakarta_Sans'] font-medium uppercase tracking-widest mt-1">Trace</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-[#b7c8e1] hover:text-emerald-500 dark:hover:text-[#4edea3] active:scale-90 duration-150">
+<span class="material-symbols-outlined">potted_plant</span>
+<span class="text-[10px] font-['Plus_Jakarta_Sans'] font-medium uppercase tracking-widest mt-1">Specimen</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-[#b7c8e1] hover:text-emerald-500 dark:hover:text-[#4edea3] active:scale-90 duration-150">
+<span class="material-symbols-outlined">encrypted</span>
+<span class="text-[10px] font-['Plus_Jakarta_Sans'] font-medium uppercase tracking-widest mt-1">Security</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-[#b7c8e1] hover:text-emerald-500 dark:hover:text-[#4edea3] active:scale-90 duration-150">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="text-[10px] font-['Plus_Jakarta_Sans'] font-medium uppercase tracking-widest mt-1">Profile</span>
+</button>
+</div>
+</nav>
+</body></html>

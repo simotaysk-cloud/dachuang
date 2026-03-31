@@ -1,0 +1,3 @@
+.batch-form-warn {
+  color: #8a642d;
+}

@@ -1,0 +1,119 @@
+<view class="page-container  batch-page">
+    <view class="page-aura aura-left"></view>
+    <view class="page-aura aura-right"></view>
+
+    <view class="topbar">
+        <view class="nav-ghost" bindtap="onBack">
+            <text class="nav-ghost-arrow">‹</text>
+        </view>
+        <text class="brand-title">批次档案</text>
+        <view class="profile-chip">
+            <text class="profile-name">{{usernameRaw}}</text>
+            <text class="profile-role">{{roleLabel}}</text>
+        </view>
+    </view>
+
+    <view class="header">
+                <text class="desc">维护源头批次档案与锁定状态。</text>
+    </view>
+
+    <view class="ops-hero">
+        <view class="hero-pattern"></view>
+        <view class="ops-hero-head">
+            <view class="ops-hero-copy">
+                <text class="ops-hero-eyebrow">源头台账</text>
+                <text class="ops-hero-number">{{batches.length || 0}} 个批次档案</text>
+            </view>
+            <view class="ops-hero-badge">{{lockedCount || 0}} 已锁定</view>
+        </view>
+        <view class="ops-hero-grid">
+            <view class="ops-hero-stat">
+                <text class="ops-hero-label">展示范围</text>
+                <text class="ops-hero-value">仅源头批次</text>
+            </view>
+            <view class="ops-hero-stat">
+                <text class="ops-hero-label">当前查询</text>
+                <text class="ops-hero-value">{{queryNo ? queryNo : '全部批次'}}</text>
+            </view>
+            <view class="ops-hero-stat">
+                <text class="ops-hero-label">当前身份</text>
+                <text class="ops-hero-value">{{roleLabel}}</text>
+            </view>
+        </view>
+    </view>
+
+    <view class="ops-section-head">
+        <text class="section-title">操作区</text>
+    </view>
+
+    <view class="card">
+        <view class="ops-search-row">
+            <input class="ops-search-input" placeholder="输入药材名或批次号查询" value="{{queryNo}}" bindinput="onQueryInput" />
+            <view class="ops-action-search-btn" bindtap="query">查询</view>
+        </view>
+        <view class="ops-action-grid">
+            <view class="ops-action-tile ops-action-primary" bindtap="startCreate" wx:if="{{role !== 'MANUFACTURER'}}">
+                <text class="ops-action-title">新建批次</text>
+                <text class="ops-action-desc">录入档案</text>
+            </view>
+            <view class="ops-action-tile ops-action-primary" bindtap="startExternalRegistration" wx:if="{{role === 'MANUFACTURER'}}">
+                <text class="ops-action-title">外源登记</text>
+                <text class="ops-action-desc">登记来源</text>
+            </view>
+            <view class="ops-action-tile ops-action-secondary" bindtap="listAll">
+                <text class="ops-action-title">同步数据</text>
+                <text class="ops-action-desc">刷新列表</text>
+            </view>
+        </view>
+    </view>
+
+    <view class="ops-section-head">
+        <text class="section-title">批次列表</text>
+        <text class="meta" wx:if="{{batches.length}}">共 {{batches.length}} 项</text>
+    </view>
+
+    <view class="card">
+        <view class="empty-state" wx:if="{{(!batches || batches.length === 0) && !loading}}">
+            <text class="empty-title">暂无批次档案</text>
+            <text class="empty-desc">可以先新建一个源头批次，或切换查询条件后再试。</text>
+        </view>
+
+        <view class="list" wx:if="{{batches && batches.length > 0}}">
+            <view class="list-item batch-list-item" wx:for="{{batches}}" wx:key="id" bindtap="editFromList" data-item="{{item}}">
+                <view class="list-index">
+                    <text class="list-index-text">{{index + 1}}</text>
+                </view>
+                <view class="list-main">
+                    <view class="list-head">
+                        <text class="list-title">{{item.name || '未命名药材'}}</text>
+                        <view class="list-side">
+                            <text class="list-pill">{{item.gs1Locked ? '已锁定' : '待锁定'}}</text>
+                        </view>
+                    </view>
+                    <text class="list-line list-line-strong">批次：{{item.batchNo || '-'}}</text>
+                    <text class="list-line">类别：{{item.category || '未填写'}}　产地：{{item.origin || '待完善'}}</text>
+                    <text class="list-line">库存：{{item.quantity || 0}} {{item.unit || ''}}</text>
+                    <view class="list-actions">
+                        <text class="list-action-pill" catchtap="showQrCode" data-item="{{item}}">二维码</text>
+                        <text class="list-action-pill list-action-pill-outline" catchtap="viewTrace" data-item="{{item}}">可视化溯源</text>
+                    </view>
+                </view>
+            </view>
+        </view>
+    </view>
+
+    <view class="modal-mask" wx:if="{{showQrModal}}" bindtap="hideQrModal">
+        <view class="modal batch-modal batch-modal-center" catchtap="return">
+            <view class="modal-title">溯源二维码</view>
+            <view class="qr-box">
+                <image class="qr-image" src="data:image/png;base64,{{qrCodeBase64}}" mode="aspectFit" />
+            </view>
+            <view class="batch-no-display">{{currentBatchNo}}</view>
+            <view class="modal-actions">
+                <button class="btn btn-primary" bindtap="saveQrCode">保存到系统相册</button>
+                <button class="btn btn-outline" bindtap="hideQrModal">关闭</button>
+            </view>
+        </view>
+    </view>
+
+</view>

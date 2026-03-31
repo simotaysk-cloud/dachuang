@@ -1,0 +1,21 @@
+.lineage-readonly {
+    margin-top: 14rpx;
+}
+
+.lineage-desc-box {
+    padding: 22rpx;
+    border-radius: 24rpx;
+    background: rgba(245, 244, 232, 0.96);
+    border: 1rpx solid rgba(128, 141, 121, 0.12);
+}
+
+.lineage-desc-text {
+    font-size: 22rpx;
+    line-height: 1.6;
+    color: #697060;
+    word-break: break-all;
+}
+
+.lineage-mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}

@@ -1,0 +1,72 @@
+<view class="page-container  external-reg-page">
+    <view class="page-aura aura-left"></view>
+    <view class="page-aura aura-right"></view>
+
+    <view class="topbar">
+        <view class="nav-ghost" bindtap="onBack">
+            <text class="nav-ghost-arrow">‹</text>
+        </view>
+        <text class="brand-title">外源登记</text>
+        <view class="profile-chip">
+            <text class="profile-name">{{usernameRaw}}</text>
+            <text class="profile-role">{{roleLabel}}</text>
+        </view>
+    </view>
+
+    <view class="header">
+                <text class="desc">登记采购原料批次，并上传对应的来源凭证和备注说明。</text>
+    </view>
+
+    <view class="">
+        <view class="hero-panel hero-panel-warning">
+            <view class="hero-pattern"></view>
+            <text class="hero-title">{{form.name || '待登记原料'}}</text>
+            <text class="hero-subtitle">该入口仅用于外源原料入库，不用于自有种植批次创建。</text>
+        </view>
+
+        <view class="card">
+            <view class="section-title">登记信息</view>
+            <view class="field-label">药材名称</view>
+            <input class="input" placeholder="请输入完整药材名" value="{{form.name}}" data-field="name" bindinput="onInput" />
+
+            <view class="grid-2">
+                <view>
+                    <view class="field-label">所属类别</view>
+                    <input class="input" placeholder="如：根茎类" value="{{form.category}}" data-field="category" bindinput="onInput" />
+                </view>
+                <view>
+                    <view class="field-label">产地 / 来源</view>
+                    <input class="input" placeholder="产地信息" value="{{form.origin}}" data-field="origin" bindinput="onInput" />
+                </view>
+            </view>
+
+            <view class="grid-2">
+                <view>
+                    <view class="field-label">入库数量</view>
+                    <input class="input" type="digit" placeholder="数值" value="{{form.quantity}}" data-field="quantity" bindinput="onInput" />
+                </view>
+                <view>
+                    <view class="field-label">计量单位</view>
+                    <input class="input" placeholder="单位" value="{{form.unit}}" data-field="unit" bindinput="onInput" />
+                </view>
+            </view>
+
+            <view class="field-label">实景凭证 (进货票据 / 原材照片)</view>
+            <view class="external-uploader" bindtap="chooseImage">
+                <image wx:if="{{form.imageUrl}}" class="external-preview-img" src="{{form.imageUrl}}" mode="aspectFill" />
+                <view wx:else class="external-upload-placeholder">
+                    <view class="external-upload-plus">+</view>
+                    <view class="external-upload-text">点击上传证照</view>
+                </view>
+            </view>
+
+            <view class="field-label">备注 (供应商及批次说明)</view>
+            <textarea class="textarea" placeholder="详细填写供应商信息..." value="{{form.description}}" data-field="description" bindinput="onInput" />
+
+            <view class="action-row">
+                <button class="btn btn-primary" bindtap="save">完成并提交登记</button>
+                <button class="btn btn-outline" bindtap="onBack">取消</button>
+            </view>
+        </view>
+    </view>
+</view>

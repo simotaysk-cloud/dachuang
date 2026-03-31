@@ -1,0 +1,86 @@
+<view class="page-container  inspection-form-page">
+    <view class="page-aura aura-left"></view>
+    <view class="page-aura aura-right"></view>
+
+    <view class="topbar">
+        <view class="nav-ghost" bindtap="onBack">
+            <text class="nav-ghost-arrow">‹</text>
+        </view>
+        <text class="brand-title">{{id ? '记录详情' : '手工录入'}}</text>
+        <view class="profile-chip">
+            <text class="profile-name">{{usernameRaw}}</text>
+            <text class="profile-role">{{roleLabel}}</text>
+        </view>
+    </view>
+
+    <view class="header">
+        <text class="desc">{{id ? '查看或修正已有质检记录。' : '提交后会派生新批次，并生成新的二维码。'}}</text>
+    </view>
+
+    <view class="" wx:if="{{!id}}">
+        <view class="hero-panel hero-panel-warning">
+            <view class="hero-pattern"></view>
+            <text class="hero-title">{{createForm.parentBatchNo || '待检批次'}}</text>
+            <text class="hero-subtitle">新建质检记录时会基于上游批次派生新的质检后批次。</text>
+        </view>
+
+        <view class="card">
+            <view class="section-title">质检信息</view>
+            <view class="field-label">被检批次号</view>
+            <input class="input {{parentLocked ? 'input-locked' : ''}}" placeholder="扫码或手工输入上游批次号" value="{{createForm.parentBatchNo}}" data-field="parentBatchNo" bindinput="onCreateInput" disabled="{{parentLocked}}" />
+
+            <view class="field-label">检测结果</view>
+            <input class="input" placeholder="例如：合格 / 优级 / 不合格" value="{{createForm.result}}" data-field="result" bindinput="onCreateInput" />
+
+            <view class="field-label">报告链接（可选）</view>
+            <input class="input" placeholder="PDF/图片 URL" value="{{createForm.reportUrl}}" data-field="reportUrl" bindinput="onCreateInput" />
+
+            <view class="field-label">质检员</view>
+            <input class="input" placeholder="姓名" value="{{createForm.inspector}}" data-field="inspector" bindinput="onCreateInput" />
+
+            <view class="field-label">备注说明（可选）</view>
+            <textarea class="textarea" placeholder="备注信息..." value="{{createForm.details}}" data-field="details" bindinput="onCreateInput" />
+
+            <view class="action-row">
+                <button class="btn btn-primary" bindtap="submitAndGenQr">提交并生成二维码</button>
+                <button class="btn btn-outline" bindtap="cancel">取消</button>
+            </view>
+        </view>
+    </view>
+
+    <view class="" wx:if="{{id}}">
+        <view class="hero-panel hero-panel-warning">
+            <view class="hero-pattern"></view>
+            <text class="hero-title">{{record.batchNo || '质检记录'}}</text>
+            <text class="hero-subtitle">可查看二维码、修正结果与撤回当前记录。</text>
+        </view>
+
+        <view class="card">
+            <view class="section-title">记录信息</view>
+            <view class="readonly-row">
+                <view class="readonly-label">记录 ID</view>
+                <view class="readonly-value">#{{record.id}}</view>
+            </view>
+            <view class="readonly-row inspection-readonly">
+                <view class="readonly-label">批次号</view>
+                <view class="readonly-value">{{record.batchNo}}</view>
+            </view>
+
+            <view class="field-label">检测结果</view>
+            <input class="input" placeholder="例如：合格 / 优级 / 不合格" value="{{record.result}}" data-field="result" bindinput="onRecordInput" />
+
+            <view class="field-label">报告链接（可选）</view>
+            <input class="input" placeholder="PDF/图片 URL" value="{{record.reportUrl}}" data-field="reportUrl" bindinput="onRecordInput" />
+
+            <view class="field-label">质检员</view>
+            <input class="input" placeholder="姓名" value="{{record.inspector}}" data-field="inspector" bindinput="onRecordInput" />
+
+            <view class="action-row">
+                <button class="btn btn-primary" bindtap="viewQr">查看二维码</button>
+                <button class="btn btn-outline" bindtap="saveRecord">保存修改</button>
+            </view>
+            <button class="btn btn-warn single-action" bindtap="revokeRecord">撤回记录</button>
+            <button class="btn btn-outline single-action" bindtap="cancel">关闭</button>
+        </view>
+    </view>
+</view>

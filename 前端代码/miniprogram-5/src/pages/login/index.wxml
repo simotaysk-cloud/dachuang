@@ -1,0 +1,48 @@
+<view class="page-container  login-page">
+    <view class="page-aura aura-left"></view>
+    <view class="page-aura aura-right"></view>
+
+    <view class="topbar login-topbar">
+        <view class="topbar-spacer"></view>
+        <text class="brand-title">登录</text>
+        <view class="profile-chip profile-chip-placeholder"></view>
+    </view>
+
+    <view class="login-brand">
+        <image class="logo-icon" src="../../assets/project-mark.png" mode="aspectFit"></image>
+        <text class="login-brand-title">药途寻迹</text>
+        <text class="login-brand-desc">中药材溯源管理平台</text>
+    </view>
+
+    <view class="card login-card">
+        <view class="login-card-head">
+            <view class="login-card-copy">
+                <text class="login-card-title">身份验证</text>
+                <text class="login-card-subtitle">根据当前角色进入对应的工作台与录入流程。</text>
+            </view>
+        </view>
+
+        <view class="field-label">身份选择</view>
+        <picker bindchange="onRoleChange" value="{{roleIndex}}" range="{{roleOptions}}" range-key="label">
+            <view class="picker-inner">
+                <text class="picker-value">{{roleOptions[roleIndex].label}}</text>
+                <text class="picker-arrow">▾</text>
+            </view>
+        </picker>
+
+        <view class="field-label">账号</view>
+        <input class="input" placeholder="请输入账号" data-field="username" bindinput="onInput" value="{{username}}" />
+
+        <view class="field-label">登录密码</view>
+        <input class="input" placeholder="请输入密码" password data-field="password" bindinput="onInput" value="{{password}}" />
+
+        <view class="picker-row login-remember-row">
+            <view class="picker-label">记住登录信息</view>
+            <switch color="#466238" checked="{{rememberLogin}}" bindchange="onRememberLoginChange" />
+        </view>
+
+        <button class="btn btn-primary btn-hero" bindtap="handleLogin">立即登录</button>
+        <text class="meta login-agreement">登录即代表您同意《药途寻迹用户协议》</text>
+    </view>
+    <view class="login-footer">版本 1.0.2</view>
+</view>

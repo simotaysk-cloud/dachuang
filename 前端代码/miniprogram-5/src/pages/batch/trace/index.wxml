@@ -1,0 +1,190 @@
+<view class="page-container trace-page">
+    <view class="topbar trace-topbar">
+        <view class="nav-ghost" bindtap="onBack">
+            <text class="nav-ghost-arrow">‹</text>
+        </view>
+        <text class="brand-title trace-brand-title">可视化溯源</text>
+        <view class="profile-chip">
+            <text class="profile-name">{{usernameRaw}}</text>
+            <text class="profile-role">{{roleLabel}}</text>
+        </view>
+    </view>
+
+    <view class="trace-shell">
+        <view class="trace-summary-card">
+            <view class="trace-summary-head">
+                <view class="trace-summary-copy">
+                    <text class="trace-summary-title">批次 {{batchNo || currentBatchNo || '--'}}</text>
+                    <text class="trace-summary-subtitle">查看种植、加工、质检、物流全链路记录</text>
+                </view>
+                <view class="trace-summary-badge">{{stations.length ? '已同步' : '加载中'}}</view>
+            </view>
+
+            <view class="trace-summary-grid">
+                <view class="trace-summary-item">
+                    <text class="trace-summary-label">产地</text>
+                    <text class="trace-summary-value">{{batchData.origin || '--'}}</text>
+                </view>
+                <view class="trace-summary-item">
+                    <text class="trace-summary-label">批次数量</text>
+                    <text class="trace-summary-value">{{batchData.quantity || '--'}} {{batchData.unit || ''}}</text>
+                </view>
+                <view class="trace-summary-item">
+                    <text class="trace-summary-label">链路节点</text>
+                    <text class="trace-summary-value">{{stations.length || 0}} 个</text>
+                </view>
+                <view class="trace-summary-item">
+                    <text class="trace-summary-label">状态</text>
+                    <text class="trace-summary-value">{{batchData.status || 'TRACE'}}</text>
+                </view>
+            </view>
+        </view>
+
+        <view class="section-head">
+            <text class="section-title">链路概览</text>
+        </view>
+
+        <view class="trace-list-card">
+            <view class="empty-state" wx:if="{{!loading && (!stations || stations.length === 0)}}">
+                <text class="empty-title">暂无链路记录</text>
+                <text class="empty-desc">系统正在同步该批次的溯源信息。</text>
+            </view>
+
+            <view class="trace-stage" wx:for="{{stations}}" wx:key="id" wx:for-index="index">
+                <view class="trace-stage-rail">
+                    <view class="trace-stage-dot">{{index + 1}}</view>
+                    <view class="trace-stage-line" wx:if="{{index < stations.length - 1}}"></view>
+                </view>
+
+                <view class="trace-stage-card">
+                    <view class="trace-stage-head">
+                        <view class="trace-stage-copy">
+                            <text class="trace-stage-title">{{item.title}}</text>
+                            <text class="trace-stage-time">{{item.time || '待更新'}}</text>
+                        </view>
+                        <view class="trace-stage-tag" wx:if="{{index < stations.length - 1}}" bindtap="verifyLogic" data-index="{{index}}">
+                            核验
+                        </view>
+                    </view>
+
+                    <view class="trace-stage-records">
+                        <view class="trace-stage-record" wx:for="{{item.records}}" wx:key="index" wx:for-item="rec">
+                            <text class="trace-stage-bullet"></text>
+                            <text class="trace-stage-text">{{rec.content}}</text>
+                        </view>
+                    </view>
+
+                    <view class="trace-progress" wx:if="{{item.type === 'processing' && item.progress}}">
+                        <view class="trace-progress-bar">
+                            <view class="trace-progress-fill" style="width: {{item.progress}}%"></view>
+                        </view>
+                        <text class="trace-progress-text">{{item.currentStep}} {{item.progress}}%</text>
+                    </view>
+
+                    <view class="trace-stage-foot" wx:if="{{item.outputQty}}">
+                        <text class="trace-stage-foot-label">产出</text>
+                        <text class="trace-stage-foot-value">{{item.outputQty}} {{item.unit}}</text>
+                    </view>
+                </view>
+            </view>
+        </view>
+
+        <view class="section-head">
+            <text class="section-title">链上凭证</text>
+        </view>
+
+        <view class="trace-cert-card">
+            <view class="trace-cert-row">
+                <text class="trace-cert-label">智能合约</text>
+                <text class="trace-cert-value">{{mockCert.contractAddr || '点击查看后生成链上凭证'}}</text>
+            </view>
+            <view class="trace-cert-row">
+                <text class="trace-cert-label">批次编号</text>
+                <text class="trace-cert-value">{{batchNo || currentBatchNo || '--'}}</text>
+            </view>
+            <view class="action-row trace-action-row">
+                <view class="btn btn-primary" bindtap="showBlockCert">查看凭证</view>
+                <view class="btn btn-outline" bindtap="showLedgerViz">账本可视化</view>
+            </view>
+        </view>
+    </view>
+
+    <view class="modal-mask" wx:if="{{showCertModal}}" bindtap="closeBlockCert">
+        <view class="cert-modal" catchtap="stopProp">
+            <view class="cert-header">
+                <view class="cert-title">腾讯云至信链</view>
+                <view class="cert-subtitle">数据不可篡改存证凭证</view>
+            </view>
+            <view class="cert-body">
+                <view class="cert-row">
+                    <view class="label">存证主体：</view>
+                    <view class="value auth-text">大创数字本草实验室</view>
+                </view>
+                <view class="cert-row">
+                    <view class="label">溯源批次号：</view>
+                    <view class="value">{{batchNo}}</view>
+                </view>
+                <view class="cert-row">
+                    <view class="label">智能合约地址：</view>
+                    <view class="value hash-text">{{mockCert.contractAddr}}</view>
+                </view>
+                <view class="cert-row">
+                    <view class="label">本次存证区块高度：</view>
+                    <view class="value height-text">{{mockCert.blockHeight}}</view>
+                </view>
+                <view class="cert-row">
+                    <view class="label">确权时间戳：</view>
+                    <view class="value">{{mockCert.timestamp}}</view>
+                </view>
+                <view class="cert-row-col">
+                    <view class="label">SHA-256 数据哈希签章：</view>
+                    <view class="value hash-text hash-box">{{mockCert.txHash}}</view>
+                </view>
+            </view>
+            <view class="cert-footer">
+                <button class="cert-btn" bindtap="closeBlockCert">完成查验</button>
+            </view>
+        </view>
+    </view>
+
+    <view class="ledger-viz-modal" wx:if="{{showLedgerViz}}">
+        <view class="ledger-header">
+            <view class="title">账本可视化</view>
+            <view class="subtitle">查看当前批次的区块链记录</view>
+            <view class="close-btn" bindtap="closeLedgerViz">×</view>
+        </view>
+
+        <view class="ledger-section">
+            <view class="ledger-section-title">共识节点</view>
+            <view class="ledger-node-row">
+                <view class="ledger-node">工厂</view>
+                <view class="ledger-node-line"></view>
+                <view class="ledger-node ledger-node-active">主链</view>
+                <view class="ledger-node-line"></view>
+                <view class="ledger-node">监管</view>
+            </view>
+        </view>
+
+        <view class="ledger-section">
+            <view class="ledger-section-title">区块信息</view>
+            <view class="ledger-block-card">
+                <text class="ledger-block-row">高度：{{mockCert.blockHeight}}</text>
+                <text class="ledger-block-row">批次：{{batchNo}}</text>
+                <text class="ledger-block-row">时间：{{mockCert.timestamp}}</text>
+                <text class="ledger-block-row ledger-hash">哈希：{{currHashShort || mockCert.txHash}}</text>
+            </view>
+        </view>
+
+        <view class="ledger-section">
+            <view class="ledger-section-title">事务报文</view>
+            <scroll-view scroll-y class="code-terminal">
+                <view class="code-line">> ACTION: SMART_CONTRACT_INVOKE</view>
+                <view class="code-line">> BATCH_NO: {{batchNo}}</view>
+                <view class="code-line">> CONTRACT: {{mockCert.contractAddr}}</view>
+                <view class="code-line">> TIMESTAMP: {{mockCert.timestamp}}</view>
+                <view class="code-line ledger-hash">> SHA256_HASH: {{mockCert.txHash}}</view>
+                <view class="code-line success">> STATUS: PACKED_IN_BLOCK</view>
+            </scroll-view>
+        </view>
+    </view>
+</view>

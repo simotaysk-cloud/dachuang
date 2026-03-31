@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "末端二维码",
-  "usingComponents": {
-    "supply-chain-steps": "../../components/supply-chain-steps/index"
-  }
-}
-

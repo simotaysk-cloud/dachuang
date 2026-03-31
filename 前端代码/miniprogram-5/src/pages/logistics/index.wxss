@@ -1,0 +1,103 @@
+.logistics-index {
+  background: linear-gradient(180deg, #efe9dc 0%, #ddd4c2 100%);
+}
+
+.logistics-scan-card {
+  border: 1rpx solid rgba(255, 255, 255, 0.14);
+}
+
+.logistics-modal {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.97) 0%, rgba(245, 244, 232, 0.96) 100%);
+  border: 1rpx solid rgba(128, 141, 121, 0.12);
+  border-radius: 30rpx;
+  box-shadow: 0 24rpx 52rpx rgba(54, 66, 47, 0.18);
+}
+
+.timeline-container {
+  margin-top: 10rpx;
+  padding: 6rpx 2rpx 0;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 18rpx;
+}
+
+.timeline-dots {
+  width: 28rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.dot {
+  width: 18rpx;
+  height: 18rpx;
+  margin-top: 10rpx;
+  border-radius: 999rpx;
+  background: rgba(148, 160, 139, 0.9);
+}
+
+.dot.active {
+  background: #42613a;
+}
+
+.line {
+  width: 2rpx;
+  flex: 1;
+  background: rgba(157, 169, 148, 0.46);
+}
+
+.timeline-content {
+  flex: 1;
+  padding-bottom: 26rpx;
+}
+
+.time-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.t-status {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #33412e;
+}
+
+.t-time,
+.t-location,
+.t-details,
+.empty-timeline {
+  font-size: 21rpx;
+  line-height: 1.6;
+  color: #6c7464;
+}
+
+.t-location,
+.t-details {
+  display: block;
+  margin-top: 6rpx;
+}
+
+.add-event-form {
+  margin-top: 18rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid rgba(128, 141, 121, 0.16);
+}
+
+.form-title {
+  margin-bottom: 12rpx;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: #33412e;
+}
+
+.shipment-action-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16rpx;
+  margin-top: 18rpx;
+}

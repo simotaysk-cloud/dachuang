@@ -1,0 +1,97 @@
+<view class="page-container  inspection-page">
+    <view class="page-aura aura-left"></view>
+    <view class="page-aura aura-right"></view>
+
+    <view class="topbar">
+        <view class="nav-ghost" bindtap="onBack">
+            <text class="nav-ghost-arrow">‹</text>
+        </view>
+        <text class="brand-title">质量检测</text>
+        <view class="profile-chip">
+            <text class="profile-name">{{usernameRaw}}</text>
+            <text class="profile-role">{{roleLabel}}</text>
+        </view>
+    </view>
+
+    <view class="header">
+                <text class="desc">集中维护检测记录、合规结论与批次对应的电子质检档案。</text>
+    </view>
+
+    <view class="ops-hero">
+        <view class="hero-pattern"></view>
+        <view class="ops-hero-head">
+            <view class="ops-hero-copy">
+                <text class="ops-hero-eyebrow">质检作业</text>
+                <text class="ops-hero-number">扫码执行质检</text>
+                <text class="ops-hero-desc">从批次码进入质检表单，补录实验室结论，或人工创建独立的质检报告。</text>
+            </view>
+            <view class="ops-hero-badge">档案 {{records.length || 0}}</view>
+        </view>
+        <view class="ops-hero-grid">
+            <view class="ops-hero-stat">
+                <text class="ops-hero-label">当前身份</text>
+                <text class="ops-hero-value">{{roleLabel}}</text>
+            </view>
+            <view class="ops-hero-stat">
+                <text class="ops-hero-label">工作模式</text>
+                <text class="ops-hero-value">扫码 / 人工录入</text>
+            </view>
+            <view class="ops-hero-stat ops-hero-stat-wide inspection-scan-card" bindtap="onScanStart">
+                <text class="ops-hero-label">快捷操作</text>
+                <text class="ops-hero-value">点击进入扫码质检</text>
+            </view>
+        </view>
+    </view>
+
+    <view class="ops-section-head">
+        <text class="section-title">操作区</text>
+    </view>
+
+    <view class="card">
+        <view class="ops-search-row">
+            <input class="ops-search-input" placeholder="输入待查批次号" value="{{queryNo}}" bindinput="onQueryInput" />
+            <view class="ops-action-search-btn" bindtap="query">检索</view>
+        </view>
+        <view class="ops-action-grid">
+            <view class="ops-action-tile ops-action-primary ops-action-wide" bindtap="onScanStart">
+                <text class="ops-action-title">扫码质检</text>
+            </view>
+            <view class="ops-action-tile ops-action-primary" bindtap="startCreate">
+                <text class="ops-action-title">手工录入</text>
+            </view>
+            <view class="ops-action-tile ops-action-secondary" bindtap="refreshList">
+                <text class="ops-action-title">同步台账</text>
+            </view>
+        </view>
+    </view>
+
+    <view class="ops-section-head">
+        <text class="section-title">质检档案</text>
+        <text class="meta" wx:if="{{records.length}}">共 {{records.length}} 项</text>
+    </view>
+
+    <view class="card">
+        <view class="empty-state" wx:if="{{(!records || records.length === 0) && !loading}}">
+            <text class="empty-title">暂无质检档案</text>
+            <text class="empty-desc">可以先录入一份质检记录，或通过批次号重新检索。</text>
+        </view>
+
+        <view class="list" wx:if="{{records && records.length > 0}}">
+            <view class="list-item inspection-item" wx:for="{{records}}" wx:key="id" bindtap="editFromList" data-item="{{item}}">
+                <view class="list-index inspection-index">
+                    <text class="list-index-text">{{item.id || index + 1}}</text>
+                </view>
+                <view class="list-main">
+                    <view class="list-head">
+                        <text class="list-title">{{item.result || '审核中'}}</text>
+                        <view class="list-side">
+                            <text class="list-pill">{{item.batchNo || '未关联批次'}}</text>
+                        </view>
+                    </view>
+                    <text class="list-line list-line-strong">质检员：{{item.inspector || '待指派'}}</text>
+                    <text class="list-line">批次：{{item.batchNo || '-'}}　报告编号：#{{item.id || '--'}}</text>
+                </view>
+            </view>
+        </view>
+    </view>
+</view>

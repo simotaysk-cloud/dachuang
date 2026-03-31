@@ -1,0 +1,50 @@
+<view class="page-container  shipment-form-page">
+    <view class="page-aura aura-left"></view>
+    <view class="page-aura aura-right"></view>
+
+    <view class="topbar">
+        <view class="nav-ghost" bindtap="onBack">
+            <text class="nav-ghost-arrow">‹</text>
+        </view>
+        <text class="brand-title">{{form.id ? '编辑发运' : '手工创建'}}</text>
+        <view class="profile-chip">
+            <text class="profile-name">{{usernameRaw}}</text>
+            <text class="profile-role">{{roleLabel}}</text>
+        </view>
+    </view>
+
+    <view class="header">
+        <text class="desc">创建电子运单后，可在运单列表继续维护在途轨迹事件。</text>
+    </view>
+
+    <view class="">
+        <view class="hero-panel hero-panel-warning">
+            <view class="hero-pattern"></view>
+            <text class="hero-title">{{form.batchNo || '待发批次'}}</text>
+            <text class="hero-subtitle">扫码进入时批次号会自动锁定，避免发运时误改目标批次。</text>
+        </view>
+
+        <view class="card">
+            <view class="section-title">发运信息</view>
+            <view class="field-label">成品批次号</view>
+            <input class="input {{batchLocked ? 'input-locked' : ''}}" placeholder="输入批次号" value="{{form.batchNo}}" data-field="batchNo" bindinput="onInput" disabled="{{batchLocked}}" />
+
+            <view class="field-label">收货方 / 经销商</view>
+            <input class="input" placeholder="例如：某连锁药店" value="{{form.distributorName}}" data-field="distributorName" bindinput="onInput" />
+
+            <view class="field-label">承运商</view>
+            <input class="input" placeholder="例如：顺丰冷链" value="{{form.carrier}}" data-field="carrier" bindinput="onInput" />
+
+            <view class="field-label">物流运单号</view>
+            <input class="input" placeholder="快递单号" value="{{form.trackingNo}}" data-field="trackingNo" bindinput="onInput" />
+
+            <view class="field-label">备注</view>
+            <textarea class="textarea" placeholder="发货备注..." value="{{form.remarks}}" data-field="remarks" bindinput="onInput" />
+
+            <view class="action-row">
+                <button class="btn btn-primary" bindtap="create">创建</button>
+                <button class="btn btn-outline" bindtap="cancel">取消</button>
+            </view>
+        </view>
+    </view>
+</view>

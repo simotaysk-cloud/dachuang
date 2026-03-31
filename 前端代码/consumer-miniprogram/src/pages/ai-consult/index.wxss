@@ -1,0 +1,252 @@
+.page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 24rpx 24rpx 0;
+  box-sizing: border-box;
+  background:
+    radial-gradient(circle at top right, rgba(197, 214, 192, 0.16), transparent 28%),
+    linear-gradient(180deg, #fbfaf6 0%, #f5f2ea 100%);
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4rpx;
+  margin-bottom: 18rpx;
+}
+
+.topbar-main {
+  min-width: 0;
+}
+
+.topbar-title {
+  display: block;
+  font-size: 32rpx;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #203329;
+}
+
+.topbar-caption {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 20rpx;
+  line-height: 1.4;
+  color: #68726b;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+}
+
+.topbar-icon {
+  width: 42rpx;
+  height: 42rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #506055;
+  font-size: 22rpx;
+}
+
+.intro-card {
+  flex-shrink: 0;
+  padding: 28rpx;
+  border-radius: 24rpx;
+  background: linear-gradient(145deg, #113d2a 0%, #1d4a31 100%);
+  box-shadow: 0 16rpx 40rpx rgba(40, 49, 43, 0.06);
+}
+
+.intro-title {
+  display: block;
+  font-size: 40rpx;
+  line-height: 1.2;
+  font-weight: 700;
+  color: #f7f3ea;
+}
+
+.intro-desc {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 22rpx;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.76);
+}
+
+.prompt-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 20rpx;
+}
+
+.prompt-chip {
+  padding: 12rpx 18rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.12);
+  color: #f4f0e6;
+  font-size: 20rpx;
+}
+
+.chat-box {
+  flex: 1;
+  margin-top: 20rpx;
+}
+
+.chat-hint {
+  margin-bottom: 18rpx;
+  padding: 18rpx 20rpx;
+  border-radius: 18rpx;
+  background: rgba(255, 255, 255, 0.74);
+}
+
+.chat-hint-text {
+  display: block;
+  font-size: 20rpx;
+  color: #667068;
+}
+
+.message,
+.typing-row {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20rpx;
+}
+
+.message.user {
+  justify-content: flex-end;
+}
+
+.avatar {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 24rpx;
+  font-weight: 700;
+}
+
+.ai-avatar {
+  background: #e5ece4;
+  color: #2f533c;
+}
+
+.user-avatar {
+  background: #294632;
+  color: #ffffff;
+}
+
+.bubble,
+.typing-bubble {
+  max-width: 72%;
+  padding: 22rpx 24rpx;
+  border-radius: 22rpx;
+  font-size: 24rpx;
+  line-height: 1.7;
+  word-break: break-word;
+  box-sizing: border-box;
+}
+
+.ai .bubble,
+.typing-bubble {
+  margin-left: 16rpx;
+  background: rgba(255, 255, 255, 0.88);
+  color: #253128;
+}
+
+.user .bubble {
+  margin-right: 16rpx;
+  background: #294632;
+  color: #ffffff;
+}
+
+.assist-card {
+  margin-top: 16rpx;
+  padding: 16rpx 18rpx;
+  border-radius: 18rpx;
+  background: #f4efe4;
+}
+
+.assist-card-title {
+  display: block;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #294632;
+}
+
+.assist-card-desc {
+  display: block;
+  margin-top: 6rpx;
+  font-size: 20rpx;
+  color: #6b756d;
+}
+
+.typing-bubble {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  min-height: 64rpx;
+}
+
+.dot {
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  background: #47624f;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: -0.32s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0.5); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+.chat-pad {
+  height: 36rpx;
+}
+
+.input-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  padding: 18rpx 0 calc(18rpx + env(safe-area-inset-bottom));
+}
+
+.chat-input {
+  flex: 1;
+  height: 84rpx;
+  padding: 0 28rpx;
+  border-radius: 18rpx;
+  background: rgba(255, 255, 255, 0.88);
+  font-size: 24rpx;
+  color: #243128;
+  box-sizing: border-box;
+}
+
+.send-btn {
+  margin: 0 !important;
+  width: 132rpx !important;
+  height: 84rpx;
+  line-height: 84rpx;
+  padding: 0;
+  border-radius: 18rpx;
+  background: #294632;
+  color: #ffffff;
+  font-size: 24rpx;
+}

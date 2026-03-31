@@ -1,0 +1,160 @@
+<view class="text-on-surface bg-background min-h-screen overflow-x-hidden">
+  <!-- TopAppBar -->
+  <view class="fixed top-0 w-full z-50 bg-[#fcf9f3]/80 backdrop-blur-xl shadow-sm opacity-90">
+    <view class="flex justify-between items-center gap-3 px-6 h-16 w-full box-border">
+      <view class="flex items-center gap-3 flex-1 min-w-0 pr-2">
+        <view class="ui-icon w-6 h-6 text-[#173628]">
+          <view class="ui-bubble__back"></view>
+          <view class="ui-bubble__front"></view>
+        </view>
+        <text class="font-bold text-[#173628] tracking-tighter text-xl truncate">智问本草</text>
+      </view>
+      <view class="flex items-center gap-2 flex-shrink-0">
+        <view class="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-stone-200/50 transition-colors active:scale-95 duration-200 text-stone-500 whitespace-nowrap" bindtap="clearConversation">
+          <view class="ui-icon w-4 h-4 text-stone-500">
+            <view class="ui-bin__lid"></view>
+            <view class="ui-bin__body"></view>
+            <view class="ui-bin__line ui-bin__line--1"></view>
+            <view class="ui-bin__line ui-bin__line--2"></view>
+            <view class="ui-bin__line ui-bin__line--3"></view>
+          </view>
+          <text class="text-xs font-semibold uppercase tracking-wider">清空对话</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Chat Flow Container -->
+  <scroll-view
+    scroll-y
+    scroll-into-view="{{scrollToId}}"
+    scroll-with-animation
+    class="pt-20 min-h-screen w-full box-border px-4"
+    style="padding-bottom: 320rpx;"
+  >
+    <!-- Welcome Section -->
+    <view class="mb-8 text-center pt-8" id="msg-intro">
+      <view class="inline-block p-4 rounded-full bg-surface-container mb-4">
+        <view class="ui-icon w-10 h-10 text-primary">
+          <view class="ui-brand__ring"></view>
+          <view class="ui-leaf__left"></view>
+          <view class="ui-leaf__right"></view>
+          <view class="ui-leaf__stem"></view>
+        </view>
+      </view>
+      <view class="font-bold text-2xl text-primary tracking-tight mb-2">欢迎来到药途智问</view>
+      <view class="text-on-surface-variant text-sm leading-relaxed px-6">
+        提供配伍、食养与基础使用建议。优先回答配伍、饮片、食养与批次阅读问题。
+      </view>
+    </view>
+
+    <view wx:if="{{traceContext}}" class="mx-1 mb-5 px-4 py-3 rounded-2xl bg-surface-container-low border border-outline-variant/30">
+      <view class="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary/65">当前问药对象</view>
+      <view class="mt-2 text-primary text-base font-bold">{{traceContext.name || '当前批次药材'}}</view>
+      <view class="mt-1 text-on-surface-variant text-xs leading-relaxed">
+        <text>{{traceContext.batchNo}}</text>
+        <text wx:if="{{traceContext.origin}}"> · {{traceContext.origin}}</text>
+        <text wx:if="{{traceContext.currentStatus}}"> · {{traceContext.currentStatus}}</text>
+      </view>
+      <view class="mt-2 text-on-surface-variant text-xs">
+        AI 会优先结合当前扫码批次给出配伍、食养与风险提示。
+      </view>
+    </view>
+
+    <!-- Quick Prompts -->
+    <view class="flex flex-wrap gap-2 justify-center py-4 mb-4">
+      <view class="px-5 py-2.5 rounded-full bg-surface-container-low text-primary text-xs font-medium border border-outline-variant/30 active:scale-95 transition-all" wx:for="{{quickPrompts}}" wx:key="text" data-text="{{item.text}}" bindtap="applyPrompt">
+        {{item.text}}
+      </view>
+    </view>
+
+    <!-- Chat History -->
+    <view class="space-y-6">
+      <block wx:for="{{messages}}" wx:key="id">
+        
+        <!-- Bot Message -->
+        <view wx:if="{{item.role === 'ai'}}" class="flex items-start gap-3 max-w-[85%]" id="msg-{{item.id}}">
+          <view class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0 shadow-sm overflow-hidden">
+            <view class="ui-icon w-5 h-5 text-primary">
+              <view class="ui-spark__core"></view>
+              <view class="ui-spark__ray-a"></view>
+              <view class="ui-spark__ray-b"></view>
+            </view>
+          </view>
+          <view class="flex flex-col gap-1">
+            <view class="bg-surface-container-low px-5 py-4 rounded-t-2xl rounded-br-2xl text-on-surface leading-relaxed shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
+              <view class="text-[15px] leading-7 whitespace-pre-wrap break-words">{{item.displayText || item.text}}</view>
+              <view wx:if="{{item.showProduct}}" bindtap="mockPurchase" class="mt-3 bg-white p-3 rounded-lg border border-primary/10 shadow-sm active:bg-stone-50">
+                <view class="text-sm font-bold text-primary">黄连百合定神汤</view>
+                <view class="text-xs text-secondary mt-1">进入问药清单</view>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- User Message -->
+        <view wx:if="{{item.role === 'user'}}" class="flex items-start gap-3 max-w-[85%] flex-row-reverse ml-auto" id="msg-{{item.id}}">
+          <view class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center flex-shrink-0 shadow-sm">
+            <view class="ui-icon w-5 h-5 text-white">
+              <view class="ui-user__head"></view>
+              <view class="ui-user__neck"></view>
+              <view class="ui-user__shoulder"></view>
+            </view>
+          </view>
+          <view class="flex flex-col gap-1 items-end">
+            <view class="bg-primary-container text-white px-5 py-4 rounded-t-2xl rounded-bl-2xl leading-relaxed shadow-lg">
+              <view class="text-[15px] leading-7 whitespace-pre-wrap break-words">{{item.displayText || item.text}}</view>
+            </view>
+          </view>
+        </view>
+
+      </block>
+
+      <!-- Typing Indicator -->
+      <view class="flex items-start gap-3 max-w-[85%]" wx:if="{{isTyping}}">
+        <view class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center flex-shrink-0 shadow-sm overflow-hidden">
+          <view class="ui-icon w-5 h-5 text-primary">
+            <view class="ui-spark__core"></view>
+            <view class="ui-spark__ray-a"></view>
+            <view class="ui-spark__ray-b"></view>
+          </view>
+        </view>
+        <view class="flex flex-col gap-1">
+          <view class="bg-surface-container-low px-5 py-4 rounded-t-2xl rounded-br-2xl text-on-surface leading-relaxed flex gap-1 items-center h-12">
+            <view class="w-2 h-2 bg-primary rounded-full animate-bounce" style="animation-delay: 0s;"></view>
+            <view class="w-2 h-2 bg-primary rounded-full animate-bounce" style="animation-delay: 0.2s;"></view>
+            <view class="w-2 h-2 bg-primary rounded-full animate-bounce" style="animation-delay: 0.4s;"></view>
+          </view>
+        </view>
+      </view>
+
+      <view id="chat-bottom-anchor" style="height: 120rpx;"></view>
+    </view>
+  </scroll-view>
+
+  <!-- Bottom Input Area -->
+  <view
+    class="fixed z-50 pt-2 bg-[#fcf9f3]/90 backdrop-blur-md"
+    style="left: 50%; transform: translateX(-50%); width: 82%; bottom: calc(130rpx + env(safe-area-inset-bottom)); padding-bottom: 6rpx;"
+  >
+    <view class="flex items-center gap-2 bg-surface-container-low py-2 pl-5 pr-2 rounded-full shadow-[0_-4px_20px_rgba(28,28,24,0.04)] ring-1 ring-on-surface/5">
+      <input 
+        class="flex-grow bg-transparent border-none focus:ring-0 text-on-surface text-[13px] placeholder:text-stone-400" 
+        placeholder="例如：熬夜多适合怎么调理？" 
+        type="text"
+        value="{{inputValue}}"
+        bindinput="handleInput"
+        bindconfirm="sendMessage"
+        confirm-type="send"
+        cursor-spacing="20"
+      />
+      <view class="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center transition-all active:scale-90 shadow-lg flex-shrink-0" bindtap="sendMessage">
+        <view class="ui-icon w-4 h-4 text-white">
+          <view class="ui-send__stem"></view>
+          <view class="ui-send__head-a"></view>
+          <view class="ui-send__head-b"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

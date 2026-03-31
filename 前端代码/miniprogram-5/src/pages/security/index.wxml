@@ -1,0 +1,64 @@
+<view class="page-container  security-page">
+    <view class="page-aura aura-left"></view>
+    <view class="page-aura aura-right"></view>
+
+    <view class="topbar">
+        <view class="nav-ghost" bindtap="onBack">
+            <text class="nav-ghost-arrow">‹</text>
+        </view>
+        <text class="brand-title">防伪管理</text>
+        <view class="profile-chip">
+            <text class="profile-name">{{usernameRaw}}</text>
+            <text class="profile-role">{{roleLabel}}</text>
+        </view>
+    </view>
+
+    <view class="header">
+                <text class="desc">维护双码防伪、隐形码核验和链上存证操作。</text>
+    </view>
+
+    <view class="">
+        <view class="security-icon-row">
+            <view class="security-icon-badge">
+                <view class="security-icon">
+                    <view class="security-icon-core"></view>
+                    <view class="security-icon-tick"></view>
+                </view>
+                <view class="security-icon-copy">
+                    <text class="security-icon-title">双码校验</text>
+                </view>
+            </view>
+        </view>
+
+        <view class="card">
+            <view class="section-title">双码防伪认证</view>
+            <view class="field-label">批次存证编号</view>
+            <input class="input" placeholder="请输入受控批次号" value="{{batchNo}}" bindinput="onBatchInput" />
+            <view class="action-row">
+                <button class="btn btn-primary" bindtap="generate">签发防伪标识</button>
+                <button class="btn btn-outline" bindtap="queryBC">查询链上特征</button>
+            </view>
+
+            <view class="field-label">隐形码效力核验</view>
+            <input class="input" placeholder="输入待核验的识别码" value="{{invisibleCode}}" bindinput="onCodeInput" />
+            <button class="btn btn-outline single-action" bindtap="verify">立即比对待校验值</button>
+        </view>
+
+        <view class="card">
+            <view class="section-title">区块链存证</view>
+            <view class="field-label">存证附加摘要</view>
+            <input class="input" placeholder="输入上链备注数据 (可选)" value="{{bcData}}" bindinput="onBCDataInput" />
+            <view class="action-row">
+                <button class="btn btn-primary" bindtap="recordBC">触发数据上链</button>
+                <button class="btn btn-outline" bindtap="verifyBC">完整性验证</button>
+            </view>
+        </view>
+
+        <view class="card" wx:if="{{result}}">
+            <view class="section-title">实时核验回馈</view>
+            <view class="security-result-box">
+                <text class="security-result-text">{{result}}</text>
+            </view>
+        </view>
+    </view>
+</view>
