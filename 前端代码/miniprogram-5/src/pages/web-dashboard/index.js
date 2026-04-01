@@ -20,6 +20,7 @@ const EMPTY_STATS = {
 Page({
   data: {
     loading: false,
+    forecast: {},
     usernameRaw: api.username || 'user',
     roleLabel: api.getRoleName(api.role),
     roleCode: normalizeRole(api.role),
@@ -47,6 +48,7 @@ Page({
       roleLabel: api.getRoleName(api.role)
     })
     this.loadStats()
+    this.loadForecast()
   },
 
   onBack() {
@@ -56,6 +58,134 @@ Page({
       return
     }
     wx.reLaunch({ url: '/pages/index/index' })
+  },
+
+  async loadForecast() {
+    try {
+      const res = await api.request('/api/v1/dashboard/forecast')
+      if (res && res.data) {
+        this.setData({ forecast: res.data }, () => {
+          setTimeout(() => {
+            this.drawForecastChart(res.data)
+          }, 500)
+        })
+      }
+    } catch (e) {
+      console.error('Failed to load forecast', e)
+    }
+  },
+
+  drawForecastChart(data) {
+    if (!data || !data.dates) return
+    const ctx = wx.createCanvasContext('forecastCanvas')
+    const width = 340 // 假设宽度
+    const height = 220 
+    const padding = { top: 20, right: 30, bottom: 30, left: 40 }
+    
+    // 提取数据点
+    const dates = data.dates || []
+    const actual = data.actualValues || []
+    const predicted = data.predictedValues || []
+    const lower = data.lowerConfidenceBounds || []
+    const upper = data.upperConfidenceBounds || []
+    
+    // 计算Y轴范围
+    let allValues = [...actual, ...predicted, ...lower, ...upper].filter(v => v !== null)
+    const maxVal = Math.max(...allValues) * 1.1
+    const minVal = Math.max(0, Math.min(...allValues) * 0.9)
+    
+    // 坐标系转换函数
+    const getX = (index) => padding.left + (width - padding.left - padding.right) * (index / (dates.length - 1))
+    const getY = (val) => height - padding.bottom - (height - padding.top - padding.bottom) * ((val - minVal) / (maxVal - minVal))
+    
+    ctx.clearRect(0, 0, width, height)
+    
+    // 1. 画背景网格与Y坐标
+    ctx.setStrokeStyle('#e0e0e0')
+    ctx.setLineWidth(0.5)
+    ctx.setFontSize(10)
+    ctx.setFillStyle('#888888')
+    for (let i = 0; i <= 4; i++) {
+        const yVal = minVal + (maxVal - minVal) * (i / 4)
+        const yPos = getY(yVal)
+        ctx.beginPath()
+        ctx.moveTo(padding.left, yPos)
+        ctx.lineTo(width - padding.right, yPos)
+        ctx.stroke()
+        ctx.fillText(Math.floor(yVal).toString(), 2, yPos + 3)
+    }
+    
+    // 2. 画X坐标 (只展示部分标注避免拥挤)
+    for (let i = 0; i < dates.length; i++) {
+        if (i % 2 === 0 || i === dates.length - 1) {
+            const xPos = getX(i)
+            const parts = String(dates[i]).split('-')
+            if (parts.length > 1) {
+                ctx.fillText(parts[1] + '月', xPos - 10, height - 10)
+            }
+        }
+    }
+    
+    // 3. 画预测的置信区间阴影带
+    ctx.beginPath()
+    let startedFill = false
+    for (let i = 0; i < dates.length; i++) {
+        if (upper[i] !== null && lower[i] !== null) {
+            if (!startedFill) {
+                ctx.moveTo(getX(i), getY(upper[i]))
+                startedFill = true
+            } else {
+                ctx.lineTo(getX(i), getY(upper[i]))
+            }
+        }
+    }
+    for (let i = dates.length - 1; i >= 0; i--) {
+        if (upper[i] !== null && lower[i] !== null) {
+            ctx.lineTo(getX(i), getY(lower[i]))
+        }
+    }
+    ctx.setFillStyle('rgba(255, 202, 40, 0.2)') // 黄色半透明
+    ctx.fill()
+    
+    // 4. 画实际销量实线
+    ctx.beginPath()
+    ctx.setStrokeStyle('#4DB6AC') // 蓝绿色
+    ctx.setLineWidth(2)
+    let hasActual = false
+    for (let i = 0; i < dates.length; i++) {
+        if (actual[i] !== null) {
+            if (!hasActual) {
+                ctx.moveTo(getX(i), getY(actual[i]))
+                hasActual = true
+            } else {
+                ctx.lineTo(getX(i), getY(actual[i]))
+            }
+            ctx.arc(getX(i), getY(actual[i]), 2, 0, 2 * Math.PI)
+            ctx.moveTo(getX(i), getY(actual[i]))
+        }
+    }
+    ctx.stroke()
+    
+    // 5. 画预测曲线 (虚线)
+    ctx.beginPath()
+    ctx.setStrokeStyle('#FFCA28') // 金色
+    ctx.setLineWidth(2)
+    if (ctx.setLineDash) ctx.setLineDash([4, 4])
+    let hasPred = false
+    for (let i = 0; i < dates.length; i++) {
+        if (predicted[i] !== null) {
+            if (!hasPred) {
+                ctx.moveTo(getX(i), getY(predicted[i]))
+                hasPred = true
+            } else {
+                ctx.lineTo(getX(i), getY(predicted[i]))
+            }
+        }
+    }
+    ctx.stroke()
+    if (ctx.setLineDash) ctx.setLineDash([]) 
+    
+    ctx.draw()
   },
 
   async loadStats() {
