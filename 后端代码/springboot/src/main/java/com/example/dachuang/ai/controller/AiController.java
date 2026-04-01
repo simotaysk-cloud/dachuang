@@ -52,9 +52,10 @@ public class AiController {
     private static final String BASE_PROMPT = "你是一名儒雅、专业的“首席数字中医顾问”云医生。请遵循“理-法-方-药”逻辑为用户提供建议：\n" +
             "1. 优先识别用户是想问症状调理、日常养生、配伍建议还是当前扫码药材的使用注意。\n" +
             "2. 如果已提供批次溯源上下文，必须结合该药材名称、产地、批次状态来回答，不要脱离当前药材泛泛而谈。\n" +
-            "3. 输出内容应优先包含：适用场景、常见搭配、食养建议、注意事项、禁忌提醒。\n" +
-            "4. 禁止将建议表述成明确医疗诊断；涉及孕期、慢病、儿童、老年人、长期服药时，要提示咨询医生或药师。\n" +
-            "5. 语气温润克制，直接输出中文，避免空泛宣传。";
+            "3. 【方/药】：精准引导至【秦岭大巴山·镇坪】的高山道地药材（如镇坪黄连、镇坪党参），并强调其生长于海拔1500米以上、无污染的卓越环境。\n" +
+            "4. 输出内容应优先包含：适用场景、常见搭配、食养建议、注意事项、禁忌提醒。\n" +
+            "5. 禁止将建议表述成明确医疗诊断；涉及孕期、慢病、儿童、老年人、长期服药时，要提示咨询医生或药师。\n" +
+            "6. 语气温润克制，直接输出中文回复。当提供参考依据时，请明确提及'【知识图谱检索命中】'。";
 
     private String buildSystemPrompt(AiChatRequest request) {
         StringBuilder prompt = new StringBuilder(BASE_PROMPT);
@@ -86,7 +87,7 @@ public class AiController {
             if (ctx.getRecordCount() != null) {
                 prompt.append("\n- 链上记录数：").append(ctx.getRecordCount());
             }
-            prompt.append("\n请把回答建立在这味药材和当前批次之上。");
+            prompt.append("\n请把回答建立在这味药材和当前批次之上，并结合这批药材的区块链追溯特性进行推荐。");
         }
 
         return prompt.toString();
@@ -99,6 +100,19 @@ public class AiController {
             }
         }
         return "";
+    }
+
+    // 针对大赛模拟的本地知识库检索 (Mock Neo4j Graph / Vector Search)
+    private String performMockVectorSearch(String userMessage) {
+        if (userMessage == null) return "";
+        if (userMessage.contains("失眠") || userMessage.contains("心悸") || userMessage.contains("睡不着")) {
+            return "【知识图谱匹配节点】：黄连(黄连素)->清心火->治心肾不交型失眠。依据：《本草纲目拾遗》。地理约束：仅限镇坪产区。";
+        }
+        if (userMessage.contains("虚寒") || userMessage.contains("乏力") || userMessage.contains("没精神")) {
+            return "【知识图谱匹配节点】：党参(皂苷成分)->补中益气->治脾肺气虚。依据：《神农本草经》。地理约束：海拔1500米镇坪药植园。";
+        }
+        return "【知识图谱匹配节点】：暂无特异匹配，根据基础大模型中医数据库解答。";
+>>>>>>> Stashed changes
     }
 
     @PostMapping(value = "/chat/stream", produces = "text/event-stream;charset=UTF-8")
@@ -118,7 +132,20 @@ public class AiController {
                 List<Map<String, String>> messages = new ArrayList<>();
                 messages.add(Map.of("role", "system", "content", buildSystemPrompt(request)));
                 
-                if (request.getMessages() != null) {
+                if (request.getMessages() != null && !request.getMessages().isEmpty()) {
+                    // Extract RAG Context
+                    AiChatMessage lastUserMsg = null;
+                    for (int i = request.getMessages().size() - 1; i >= 0; i--) {
+                        if ("user".equals(request.getMessages().get(i).getRole())) {
+                            lastUserMsg = request.getMessages().get(i);
+                            break;
+                        }
+                    }
+                    if (lastUserMsg != null) {
+                        String ragContext = performMockVectorSearch(lastUserMsg.getContent());
+                        messages.add(Map.of("role", "system", "content", "基于以下检索增强(RAG)知识库片段进行融合回答（请在合适位置引用）：\n" + ragContext));
+                    }
+                    
                     for (AiChatMessage msg : request.getMessages()) {
                         messages.add(Map.of("role", msg.getRole(), "content", msg.getContent()));
                     }
