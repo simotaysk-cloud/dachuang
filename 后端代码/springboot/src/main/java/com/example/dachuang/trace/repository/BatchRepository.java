@@ -30,6 +30,9 @@ public interface BatchRepository extends JpaRepository<Batch, Long> {
     @Query("SELECT COUNT(DISTINCT b.name) FROM Batch b")
     long countDistinctHerbNames();
 
+    @Query("SELECT DISTINCT b.name FROM Batch b")
+    List<String> findDistinctHerbNames();
+
     @Query("SELECT b.origin as name, COUNT(b) as value FROM Batch b GROUP BY b.origin")
     List<Map<String, Object>> countByOrigin();
 }

@@ -1,6 +1,6 @@
 const config = {
-    apiBaseUrl: 'http://192.168.1.102:8091',
-    debug: true
+    apiBaseUrl: 'https://cpuzhbc.cn',
+    debug: false
 }
 
 module.exports = config

@@ -85,7 +85,7 @@
                     <view class="list-head">
                         <text class="list-title">{{item.result || '审核中'}}</text>
                         <view class="list-side">
-                            <text class="list-pill">{{item.batchNo || '未关联批次'}}</text>
+                            <text class="list-pill list-pill-{{item.inspectionType === 'RAW' ? 'sage' : (item.inspectionType === 'FINISHED' ? 'gold' : 'ink')}}">{{item.inspectionType === 'RAW' ? '原料质检' : (item.inspectionType === 'FINISHED' ? '成品质检' : (item.inspectionType === 'IN-PROCESS' ? '过程抽检' : '质检记录'))}}</text>
                         </view>
                     </view>
                     <text class="list-line list-line-strong">质检员：{{item.inspector || '待指派'}}</text>

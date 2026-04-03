@@ -80,6 +80,21 @@ Page({
   },
 
   handleAdopt(e) {
+    const app = getApp();
+    if (!app.globalData.userInfo) {
+      wx.showModal({
+        title: '演示账号未登录',
+        content: '助农认养与链上存证需要实名身份。是否前往登录“VIP评委”账号？',
+        confirmText: '去登录',
+        success: (res) => {
+          if (res.confirm) {
+            wx.switchTab({ url: '/pages/user/index' });
+          }
+        }
+      });
+      return;
+    }
+
     const { name } = e.currentTarget.dataset;
     wx.showModal({
       title: '发起认养',

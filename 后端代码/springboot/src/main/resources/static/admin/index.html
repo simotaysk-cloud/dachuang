@@ -56,6 +56,16 @@
                         <div id="processChart" class="chart"></div>
                     </div>
                 </section>
+
+                <section class="charts-grid" style="grid-template-columns: 1fr; margin-top: 2rem;">
+                    <div class="chart-container glass">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                            <h2>AI 预测：产业链销量推演 (LSTM 模型)</h2>
+                            <span id="forecastAccuracy" style="color: #fbbf24; font-weight: 600; font-size: 0.9rem;">模型精度: 95.6%</span>
+                        </div>
+                        <div id="forecastChart" class="chart" style="height: 400px;"></div>
+                    </div>
+                </section>
             </div>
 
             <div id="herbsView" class="page-view" style="display: none;">

@@ -87,9 +87,14 @@ public class DashboardController {
         return Result.success(stats);
     }
 
+    @GetMapping("/herbs")
+    public Result<List<String>> getHerbs() {
+        return Result.success(batchRepository.findDistinctHerbNames());
+    }
+
     @GetMapping("/forecast")
-    public Result<DashboardForecastDTO> getForecast() {
-        // Mocking an ARIMA/LSTM time-series prediction output for Internet+ Competition
+    public Result<DashboardForecastDTO> getForecast(@org.springframework.web.bind.annotation.RequestParam(required = false) String herb) {
+        // Mocking an ARIMA/LSTM time-series prediction output
         List<String> dates = new ArrayList<>();
         List<Double> actual = new ArrayList<>();
         List<Double> predicted = new ArrayList<>();
@@ -99,29 +104,33 @@ public class DashboardController {
         LocalDate now = LocalDate.now();
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM");
 
+        // 如果指定了具体药材，数值范围缩小（代表单一品种）
+        double baseVal = (herb == null || herb.isEmpty()) ? 1000.0 : 200.0;
+        double trendFactor = (herb == null || herb.isEmpty()) ? 150.0 : 30.0;
+
         // 过去7个月的实际数据
         for (int i = 7; i > 0; i--) {
             dates.add(now.minusMonths(i).format(fmt));
-            actual.add(Math.round((1000.0 + Math.random() * 500) * 100.0) / 100.0);
+            actual.add(Math.round((baseVal + Math.random() * (baseVal/2)) * 100.0) / 100.0);
             predicted.add(null);
             lower.add(null);
             upper.add(null);
         }
 
         // 当前月作为连接点
-        double currentVal = Math.round((1200.0 + Math.random() * 200) * 100.0) / 100.0;
+        double currentVal = Math.round((baseVal * 1.2 + Math.random() * (baseVal/5)) * 100.0) / 100.0;
         dates.add(now.format(fmt));
         actual.add(currentVal);
         predicted.add(currentVal);
         lower.add(currentVal);
         upper.add(currentVal);
 
-        // 未来3个月的预测数据 (呈增长趋势)
+        // 未来3个月的预测数据
         for (int i = 1; i <= 3; i++) {
             dates.add(now.plusMonths(i).format(fmt));
             actual.add(null);
             
-            double pred = Math.round((currentVal + (i * 150.0) + (Math.random() * 100)) * 100.0) / 100.0;
+            double pred = Math.round((currentVal + (i * trendFactor) + (Math.random() * (trendFactor/2))) * 100.0) / 100.0;
             predicted.add(pred);
             lower.add(Math.round(pred * 0.9 * 100.0) / 100.0);
             upper.add(Math.round(pred * 1.1 * 100.0) / 100.0);
@@ -133,8 +142,8 @@ public class DashboardController {
                 .predictedValues(predicted)
                 .lowerConfidenceBounds(lower)
                 .upperConfidenceBounds(upper)
-                .modelRmse(42.15)
-                .modelAccuracy(0.956)
+                .modelRmse(herb == null ? 42.15 : 8.43)
+                .modelAccuracy(herb == null ? 0.956 : 0.978)
                 .build();
 
         return Result.success(dto);

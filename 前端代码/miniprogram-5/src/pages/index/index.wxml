@@ -7,7 +7,7 @@
       <image class="brand-mark" src="../../assets/project-mark.png" mode="aspectFit"></image>
       <text class="brand-title">药途寻迹</text>
     </view>
-    <view class="profile-chip">
+    <view class="profile-chip" bindtap="onProfileClick">
       <text class="profile-name">{{usernameRaw}}</text>
       <text class="profile-role">{{roleLabel}}</text>
     </view>
@@ -42,7 +42,7 @@
   <view class="trace-card">
     <view class="trace-grid">
       <block wx:for="{{flowNodes}}" wx:key="id">
-        <view class="trace-item">
+        <view class="trace-item" bindtap="onNodeClick" data-id="{{item.id}}">
           <view class="trace-marker-column">
             <view class="trace-marker {{item.active ? 'trace-marker-active' : ''}}"></view>
             <view class="trace-line" wx:if="{{!item.isLast}}"></view>

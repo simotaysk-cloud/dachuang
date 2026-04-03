@@ -83,6 +83,21 @@ Page({
   },
 
   sendMessage() {
+    const app = getApp();
+    if (!app.globalData.userInfo) {
+      wx.showModal({
+        title: '需要安全登录',
+        content: '智问功能仅对实名认证用户开放，是否前往“我的”页面进行演示登录？',
+        confirmText: '前往登录',
+        success: (res) => {
+          if (res.confirm) {
+            wx.switchTab({ url: '/pages/user/index' });
+          }
+        }
+      });
+      return;
+    }
+
     const text = this.data.inputValue.trim();
     if (!text) return;
 
@@ -113,6 +128,10 @@ Page({
       url: 'https://cpuzhbc.cn/api/v1/ai/chat/stream',
       method: 'POST',
       enableChunked: true,
+      header: {
+        'Authorization': `Bearer ${app.globalData.authToken || ''}`,
+        'Content-Type': 'application/json'
+      },
       data: {
         sessionSource: this.data.traceContext ? 'trace' : 'general',
         traceContext: this.data.traceContext,
@@ -120,19 +139,30 @@ Page({
           .filter(item => !(item.role === 'ai' && item.id === aiMsgId))
           .map(item => ({ role: item.role, content: item.text }))
       },
-      success: () => {
+      success: (res) => {
         this.setData({ isTyping: false });
+        console.log('Request complete', res);
       },
-      fail: () => {
+      fail: (err) => {
         this.setData({ isTyping: false });
-        wx.showToast({ title: '服务连通性异常', icon: 'none' });
+        console.error('Request failed', err);
+        wx.showToast({ title: 'AI连通失败', icon: 'none' });
       }
     });
 
-    const decoder = new TextDecoder('utf-8');
     requestTask.onChunkReceived((response) => {
       try {
-        const textChunk = decoder.decode(response.data, { stream: true });
+        // 小程序中没有 TextDecoder，使用以下方式兼容并尝试解析
+        const uint8Array = new Uint8Array(response.data);
+        // 尝试用 decodeURIComponent(escape()) 进行快速 UTF8 转换，如果失败则回退
+        let textChunk = '';
+        try {
+          textChunk = decodeURIComponent(escape(String.fromCharCode.apply(null, uint8Array)));
+        } catch (e) {
+          // 对二进制分卷不完整的情况做基础容错，后续通过 chunk 拼接逐步解析
+          textChunk = String.fromCharCode.apply(null, uint8Array);
+        }
+
         if (!textChunk) return;
 
         const lines = textChunk.split('\n');
@@ -142,12 +172,15 @@ Page({
           const safeLine = line.trim();
           if (!safeLine.startsWith('data:')) return;
           const payload = safeLine.substring(5).trim();
-          if (payload === '[DONE]') return;
+          if (payload === '[DONE]') {
+            this.setData({ isTyping: false });
+            return;
+          }
           try {
             const obj = JSON.parse(payload);
             if (obj.content) appended += obj.content;
           } catch (error) {
-            console.warn('Partial JSON chunk ignored:', payload);
+            // 忽略非 JSON 或者是分卷导致的 JSON 截断
           }
         });
 

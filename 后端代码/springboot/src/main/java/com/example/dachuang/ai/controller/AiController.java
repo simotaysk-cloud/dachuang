@@ -24,7 +24,7 @@ import java.util.concurrent.Executors;
 
 @RestController
 @RequestMapping("/api/v1/ai")
-@CrossOrigin(origins = "*") // 允许小程序跨域调用
+@CrossOrigin(origins = "*")
 public class AiController {
 
     @Value("${ai.compat.api-key:}")
@@ -59,103 +59,140 @@ public class AiController {
 
     private String buildSystemPrompt(AiChatRequest request) {
         StringBuilder prompt = new StringBuilder(BASE_PROMPT);
-
         if (request.getTraceContext() != null) {
             AiTraceContext ctx = request.getTraceContext();
             prompt.append("\n\n当前扫码上下文：");
-            if (ctx.getName() != null && !ctx.getName().isBlank()) {
-                prompt.append("\n- 药材名称：").append(ctx.getName());
-            }
-            if (ctx.getBatchNo() != null && !ctx.getBatchNo().isBlank()) {
-                prompt.append("\n- 批次号：").append(ctx.getBatchNo());
-            }
-            if (ctx.getOrigin() != null && !ctx.getOrigin().isBlank()) {
-                prompt.append("\n- 原产区：").append(ctx.getOrigin());
-            }
-            if (ctx.getCategory() != null && !ctx.getCategory().isBlank()) {
-                prompt.append("\n- 品类：").append(ctx.getCategory());
-            }
-            if (ctx.getProductionDate() != null && !ctx.getProductionDate().isBlank()) {
-                prompt.append("\n- 生产日期：").append(ctx.getProductionDate());
-            }
-            if (ctx.getCurrentStatus() != null && !ctx.getCurrentStatus().isBlank()) {
-                prompt.append("\n- 当前状态：").append(ctx.getCurrentStatus());
-            }
-            if (ctx.getLatestNodeTitle() != null && !ctx.getLatestNodeTitle().isBlank()) {
-                prompt.append("\n- 最近节点：").append(ctx.getLatestNodeTitle());
-            }
-            if (ctx.getRecordCount() != null) {
-                prompt.append("\n- 链上记录数：").append(ctx.getRecordCount());
-            }
-            prompt.append("\n请把回答建立在这味药材和当前批次之上，并结合这批药材的区块链追溯特性进行推荐。");
+            if (ctx.getName() != null && !ctx.getName().isBlank()) prompt.append("\n- 药材名称：").append(ctx.getName());
+            if (ctx.getBatchNo() != null && !ctx.getBatchNo().isBlank()) prompt.append("\n- 批次号：").append(ctx.getBatchNo());
+            if (ctx.getOrigin() != null && !ctx.getOrigin().isBlank()) prompt.append("\n- 原产区：").append(ctx.getOrigin());
+            prompt.append("\n请把回答建立在这味药材和当前批次之上。");
         }
-
         return prompt.toString();
     }
 
     private String firstNonBlank(String... values) {
         for (String value : values) {
-            if (value != null && !value.isBlank()) {
-                return value;
-            }
+            if (value != null && !value.isBlank()) return value;
         }
         return "";
     }
 
-    // 针对大赛模拟的本地知识库检索 (Mock Neo4j Graph / Vector Search)
     private String performMockVectorSearch(String userMessage) {
         if (userMessage == null) return "";
-        if (userMessage.contains("失眠") || userMessage.contains("心悸") || userMessage.contains("睡不着")) {
-            return "【知识图谱匹配节点】：黄连(黄连素)->清心火->治心肾不交型失眠。依据：《本草纲目拾遗》。地理约束：仅限镇坪产区。";
-        }
-        if (userMessage.contains("虚寒") || userMessage.contains("乏力") || userMessage.contains("没精神")) {
-            return "【知识图谱匹配节点】：党参(皂苷成分)->补中益气->治脾肺气虚。依据：《神农本草经》。地理约束：海拔1500米镇坪药植园。";
+        if (userMessage.contains("失眠") || userMessage.contains("睡不着")) {
+            return "【知识图谱匹配节点】：黄连->清心火->治心肾不交型失眠。依据：《本草纲目拾遗》。";
         }
         return "【知识图谱匹配节点】：暂无特异匹配，根据基础大模型中医数据库解答。";
->>>>>>> Stashed changes
+    }
+
+    @PostMapping("/chat/sync")
+    public Map<String, Object> chatSync(@RequestBody AiChatRequest request) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            String apiKey = firstNonBlank(System.getenv("AI_API_KEY"), compatApiKey, openAiApiKey);
+            String baseUrl = firstNonBlank(compatBaseUrl, openAiBaseUrl);
+            String modelName = firstNonBlank(compatModelName, openAiModelName);
+
+            List<Map<String, String>> messages = new ArrayList<>();
+            messages.add(Map.of("role", "system", "content", buildSystemPrompt(request)));
+            
+            boolean hasUserMsg = false;
+            if (request.getMessages() != null && !request.getMessages().isEmpty()) {
+                for (AiChatMessage msg : request.getMessages()) {
+                    String role = "ai".equalsIgnoreCase(msg.getRole()) ? "assistant" : msg.getRole();
+                    messages.add(Map.of("role", role, "content", msg.getContent()));
+                    if ("user".equalsIgnoreCase(role)) hasUserMsg = true;
+                }
+            }
+
+            if (!hasUserMsg) {
+                String defaultMsg = "你好，请结合当前上下文为我提供一些专业建议。";
+                if (request.getTraceContext() != null && request.getTraceContext().getName() != null) {
+                    defaultMsg = "你好，请为我介绍一下这味" + request.getTraceContext().getName() + "。";
+                }
+                messages.add(Map.of("role", "user", "content", defaultMsg));
+            }
+
+            Map<String, Object> reqBody = new HashMap<>();
+            reqBody.put("model", modelName);
+            reqBody.put("messages", messages);
+            reqBody.put("stream", false);
+
+            String jsonBody = objectMapper.writeValueAsString(reqBody);
+
+            HttpRequest httpRequest = HttpRequest.newBuilder()
+                    .uri(URI.create(baseUrl + "/chat/completions"))
+                    .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + apiKey)
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonBody, StandardCharsets.UTF_8))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            String body = response.body();
+            JsonNode root = objectMapper.readTree(body);
+            
+            if (root.has("choices") && root.path("choices").size() > 0) {
+                result.put("success", true);
+                result.put("content", root.path("choices").get(0).path("message").path("content").asText());
+            } else {
+                result.put("success", false);
+                result.put("error", body);
+            }
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", e.getMessage());
+        }
+        return result;
     }
 
     @PostMapping(value = "/chat/stream", produces = "text/event-stream;charset=UTF-8")
     public SseEmitter chatStream(@RequestBody AiChatRequest request) {
-        SseEmitter emitter = new SseEmitter(240000L); // 4分钟超时
-
+        SseEmitter emitter = new SseEmitter(240000L);
         executor.execute(() -> {
             try {
-                String apiKey = firstNonBlank(compatApiKey, openAiApiKey);
+                String apiKey = firstNonBlank(System.getenv("AI_API_KEY"), compatApiKey, openAiApiKey);
                 String baseUrl = firstNonBlank(compatBaseUrl, openAiBaseUrl);
                 String modelName = firstNonBlank(compatModelName, openAiModelName);
 
-                if (apiKey.isBlank() || baseUrl.isBlank() || modelName.isBlank()) {
-                    throw new IllegalStateException("AI configuration incomplete: apiKey/baseUrl/model is missing");
+                System.out.println("[AI] Starting stream request for model: " + modelName);
+                if (apiKey == null || apiKey.isBlank() || apiKey.equals("sk-placeholder")) {
+                    System.err.println("[AI] WARNING: AI_API_KEY is empty or placeholder!");
                 }
 
                 List<Map<String, String>> messages = new ArrayList<>();
-                messages.add(Map.of("role", "system", "content", buildSystemPrompt(request)));
+                StringBuilder systemContent = new StringBuilder(buildSystemPrompt(request));
                 
                 if (request.getMessages() != null && !request.getMessages().isEmpty()) {
-                    // Extract RAG Context
-                    AiChatMessage lastUserMsg = null;
-                    for (int i = request.getMessages().size() - 1; i >= 0; i--) {
-                        if ("user".equals(request.getMessages().get(i).getRole())) {
-                            lastUserMsg = request.getMessages().get(i);
-                            break;
-                        }
-                    }
-                    if (lastUserMsg != null) {
-                        String ragContext = performMockVectorSearch(lastUserMsg.getContent());
-                        messages.add(Map.of("role", "system", "content", "基于以下检索增强(RAG)知识库片段进行融合回答（请在合适位置引用）：\n" + ragContext));
-                    }
-                    
+                    AiChatMessage lastUserMsg = request.getMessages().get(request.getMessages().size() - 1);
+                    String ragContext = performMockVectorSearch(lastUserMsg.getContent());
+                    systemContent.append("\n\nRAG上下文：\n").append(ragContext);
+                }
+                
+                messages.add(Map.of("role", "system", "content", systemContent.toString()));
+                
+                boolean hasUserMsg = false;
+                if (request.getMessages() != null && !request.getMessages().isEmpty()) {
                     for (AiChatMessage msg : request.getMessages()) {
-                        messages.add(Map.of("role", msg.getRole(), "content", msg.getContent()));
+                        String role = "ai".equalsIgnoreCase(msg.getRole()) ? "assistant" : msg.getRole();
+                        messages.add(Map.of("role", role, "content", msg.getContent()));
+                        if ("user".equalsIgnoreCase(role)) hasUserMsg = true;
                     }
+                }
+
+                // API requirement: messages list must end with a 'user' message. 
+                // If it's empty (e.g. after scan) or ends with assistant, append/ensure user prompt.
+                if (!hasUserMsg) {
+                    String defaultMsg = "你好，请结合当前上下文为我提供一些专业建议。";
+                    if (request.getTraceContext() != null && request.getTraceContext().getName() != null) {
+                        defaultMsg = "你好，请为我介绍一下这味" + request.getTraceContext().getName() + "。";
+                    }
+                    messages.add(Map.of("role", "user", "content", defaultMsg));
                 }
 
                 Map<String, Object> reqBody = new HashMap<>();
                 reqBody.put("model", modelName);
                 reqBody.put("messages", messages);
-                reqBody.put("stream", false); // 关闭流式，解决中文字符切分乱码问题
-                reqBody.put("temperature", 0.75);
+                reqBody.put("stream", true);
 
                 String jsonBody = objectMapper.writeValueAsString(reqBody);
 
@@ -166,24 +203,64 @@ public class AiController {
                         .POST(HttpRequest.BodyPublishers.ofString(jsonBody, StandardCharsets.UTF_8))
                         .build();
 
-                HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
-                String body = response.body();
-                
-                System.out.println("DEBUG AI RESPONSE: " + body);
+                httpClient.sendAsync(httpRequest, HttpResponse.BodyHandlers.ofInputStream())
+                        .thenAccept(response -> {
+                            int statusCode = response.statusCode();
+                            System.out.println("[AI] Received response headers. Status: " + statusCode);
+                            
+                            if (statusCode >= 400) {
+                                try (java.io.InputStream is = response.body();
+                                     java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(is, StandardCharsets.UTF_8))) {
+                                    StringBuilder errorBody = new StringBuilder();
+                                    String line;
+                                    while ((line = reader.readLine()) != null) errorBody.append(line);
+                                    System.err.println("[AI] ERROR Body from Provider: " + errorBody.toString());
+                                } catch (Exception e) {
+                                    System.err.println("[AI] Failed to read error body: " + e.getMessage());
+                                }
+                                emitter.completeWithError(new RuntimeException("AI Provider returned " + statusCode));
+                                return;
+                            }
 
-                JsonNode root = objectMapper.readTree(body);
-                String fullContent = root.path("choices").get(0).path("message").path("content").asText();
-                
-                if (fullContent != null && !fullContent.isEmpty()) {
-                    Map<String, String> res = new HashMap<>();
-                    res.put("content", fullContent);
-                    emitter.send(SseEmitter.event().data(res, MediaType.APPLICATION_JSON));
-                }
-                
-                emitter.send(SseEmitter.event().data("[DONE]"));
-                emitter.complete();
+                            try (java.io.InputStream is = response.body();
+                                 java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(is, StandardCharsets.UTF_8))) {
+                                
+                                String line;
+                                while ((line = reader.readLine()) != null) {
+                                    if (line.isBlank()) continue;
+                                    
+                                    if (line.startsWith("data:")) {
+                                        String data = line.substring(line.indexOf(":") + 1).strip();
+                                        if ("[DONE]".equals(data)) {
+                                            emitter.send(SseEmitter.event().data("[DONE]"));
+                                            emitter.complete();
+                                            return;
+                                        }
+                                        
+                                        try {
+                                            JsonNode node = objectMapper.readTree(data);
+                                            JsonNode delta = node.path("choices").get(0).path("delta");
+                                            if (delta.has("content")) {
+                                                String content = delta.get("content").asText();
+                                                System.out.print(content); // Log to backend.log
+                                                Map<String, String> res = Map.of("content", content);
+                                                emitter.send(SseEmitter.event().data(res, MediaType.APPLICATION_JSON));
+                                            }
+                                        } catch (Exception e) {
+                                            // Handle case where SSE data isn't full JSON or mixed
+                                        }
+                                    }
+                                }
+                                emitter.complete();
+                            } catch (Exception e) {
+                                emitter.completeWithError(e);
+                            }
+                        })
+                        .exceptionally(ex -> {
+                            emitter.completeWithError(ex);
+                            return null;
+                        });
             } catch (Exception e) {
-                System.err.println("AI Error: " + e.getMessage());
                 emitter.completeWithError(e);
             }
         });

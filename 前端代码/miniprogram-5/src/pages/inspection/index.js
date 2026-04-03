@@ -13,12 +13,22 @@ Page({
         roleLabel: ''
     },
 
-    async onLoad() {
+    async onLoad(options) {
+        const type = options?.type || ''
+        let typeLabel = ''
+        if (type === 'RAW') typeLabel = '原料质检记录'
+        if (type === 'FINISHED') typeLabel = '成品质量检验'
+
         if (!guardFeatureAccess(api.role, 'INSPECTION')) return
         this.setData({
             usernameRaw: api.username || 'user',
-            roleLabel: api.getRoleName(api.role)
+            roleLabel: api.getRoleName(api.role),
+            type,
+            typeLabel
         })
+        if (typeLabel) {
+            wx.setNavigationBarTitle({ title: typeLabel })
+        }
         await this.loadProfile()
         this.listAll()
     },
@@ -59,8 +69,11 @@ Page({
     },
 
     startCreate() {
-        // Manual entry fallback: generate new batch and QR based on parent batch.
-        wx.navigateTo({ url: '/pages/inspection-form/index' })
+        let url = '/pages/inspection-form/index'
+        if (this.data.type) {
+            url += `?type=${encodeURIComponent(this.data.type)}`
+        }
+        wx.navigateTo({ url })
     },
 
     parseBatchNoFromScanResult(raw) {

@@ -40,6 +40,7 @@ async function loadDashboard() {
             updateDashboardStats(result.data);
             initOriginChart(result.data.originDist);
             initProcessChart(result.data.processTypeDist);
+            loadForecast(); // Added forecast load
         }
     } catch (error) { console.error(error); }
 }
@@ -188,6 +189,89 @@ function initProcessChart(data) {
             }
         }]
     };
+    chart.setOption(option);
+    window.addEventListener('resize', () => chart.resize());
+}
+
+async function loadForecast() {
+    try {
+        const response = await fetch('/api/v1/dashboard/forecast');
+        const result = await response.json();
+        if (result.code === 200) {
+            initForecastChart(result.data);
+        }
+    } catch (error) { console.error('Forecast load failed', error); }
+}
+
+function initForecastChart(data) {
+    const container = document.getElementById('forecastChart');
+    if (!container) return;
+    const chart = echarts.init(container, 'dark', { backgroundColor: 'transparent' });
+    
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'cross' }
+        },
+        legend: {
+            data: ['实际销量', 'AI 预测', '置信区间'],
+            textStyle: { color: '#a1a1aa' },
+            top: 0
+        },
+        grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: data.dates.map(d => {
+                const parts = d.split('-');
+                return parts.length > 1 ? `${parts[1]}月` : d;
+            }),
+            axisLabel: { color: '#71717a' }
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: { color: '#71717a' },
+            splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } }
+        },
+        series: [
+            {
+                name: '置信区间(下)',
+                type: 'line',
+                data: data.lowerConfidenceBounds,
+                lineStyle: { opacity: 0 },
+                stack: 'confidence',
+                symbol: 'none'
+            },
+            {
+                name: '置信区间',
+                type: 'line',
+                data: data.upperConfidenceBounds.map((v, i) => v - data.lowerConfidenceBounds[i]),
+                lineStyle: { opacity: 0 },
+                stack: 'confidence',
+                areaStyle: { color: 'rgba(251, 191, 36, 0.15)' },
+                symbol: 'none'
+            },
+            {
+                name: '实际销量',
+                type: 'line',
+                data: data.actualValues,
+                itemStyle: { color: '#10b981' },
+                lineStyle: { width: 3 },
+                symbol: 'circle',
+                symbolSize: 8
+            },
+            {
+                name: 'AI 预测',
+                type: 'line',
+                data: data.predictedValues,
+                itemStyle: { color: '#fbbf24' },
+                lineStyle: { width: 3, type: 'dashed' },
+                symbol: 'diamond',
+                symbolSize: 10
+            }
+        ]
+    };
+    
     chart.setOption(option);
     window.addEventListener('resize', () => chart.resize());
 }
