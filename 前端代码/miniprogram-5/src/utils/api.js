@@ -97,6 +97,17 @@ const api = {
                 headers.Authorization = `Bearer ${this.token}`
             }
             const quiet = options.quiet || false
+
+            const handle401 = () => {
+                this.setToken('')
+                this.setRole('')
+                const pages = getCurrentPages()
+                if (pages.length > 0 && pages[pages.length - 1].route !== 'pages/login/index') {
+                    wx.showToast({ title: '登录已过期', icon: 'none' })
+                    setTimeout(() => wx.reLaunch({ url: '/pages/login/index' }), 800)
+                }
+            }
+
             wx.request({
                 url: `${this.baseUrl}${path}`,
                 method,
@@ -106,15 +117,26 @@ const api = {
                     const payload = res.data
                     const error = { statusCode: res.statusCode, data: payload }
 
+                    // Backend returning 401 at HTTP level
+                    if (res.statusCode === 401) {
+                        handle401()
+                        reject(error)
+                        return
+                    }
+
                     // Backend always returns HTTP 200 with business `code`.
                     if (res.statusCode >= 200 && res.statusCode < 300) {
                         if (payload && typeof payload === 'object' && 'code' in payload && payload.code !== 200) {
-                            console.error('API Business Error:', payload.code, payload.message)
-                            if (!quiet) {
-                                wx.showToast({
-                                    title: payload?.message || '请求失败',
-                                    icon: 'none'
-                                })
+                            if (payload.code === 401) {
+                                handle401()
+                            } else {
+                                if (!quiet) {
+                                    console.error('API Business Error:', payload.code, payload.message)
+                                    wx.showToast({
+                                        title: payload?.message || '请求失败',
+                                        icon: 'none'
+                                    })
+                                }
                             }
                             reject(error)
                             return
@@ -196,6 +218,17 @@ const api = {
                 header.Authorization = `Bearer ${this.token}`
             }
             const quiet = options.quiet || false
+
+            const handle401 = () => {
+                this.setToken('')
+                this.setRole('')
+                const pages = getCurrentPages()
+                if (pages.length > 0 && pages[pages.length - 1].route !== 'pages/login/index') {
+                    wx.showToast({ title: '登录已过期', icon: 'none' })
+                    setTimeout(() => wx.reLaunch({ url: '/pages/login/index' }), 800)
+                }
+            }
+
             wx.uploadFile({
                 url: `${this.baseUrl}/api/v1/files/upload`,
                 filePath,
@@ -209,9 +242,20 @@ const api = {
                         payload = null
                     }
                     const error = { statusCode: res.statusCode, data: payload }
+
+                    if (res.statusCode === 401) {
+                        handle401()
+                        reject(error)
+                        return
+                    }
+
                     if (res.statusCode >= 200 && res.statusCode < 300) {
                         if (payload && typeof payload === 'object' && 'code' in payload && payload.code !== 200) {
-                            if (!quiet) wx.showToast({ title: payload?.message || '上传失败', icon: 'none' })
+                            if (payload.code === 401) {
+                                handle401()
+                            } else {
+                                if (!quiet) wx.showToast({ title: payload?.message || '上传失败', icon: 'none' })
+                            }
                             reject(error)
                             return
                         }

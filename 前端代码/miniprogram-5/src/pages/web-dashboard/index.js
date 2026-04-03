@@ -37,7 +37,13 @@ Page({
     chainSectionTitle: '链上存证',
     chainSectionCaption: '查看最近一次同步到链上的批次记录。',
     chainRecords: [],
-    chainEmptyText: '暂无链上存证记录'
+    chainEmptyText: '暂无链上存证记录',
+    // AI 预测相关
+    herbOptions: ['中药材 (全品种)'],
+    herbIndex: 0,
+    herbLoading: false,
+    macroForecast: null,
+    herbForecast: null
   },
 
   onLoad() {
@@ -48,7 +54,22 @@ Page({
       roleLabel: api.getRoleName(api.role)
     })
     this.loadStats()
-    this.loadForecast()
+    this.loadHerbs() 
+    this.loadMacroForecast()
+    this.loadHerbForecast()
+  },
+
+  onPullDownRefresh() {
+    this.setData({ loading: true })
+    Promise.all([
+      this.loadStats(),
+      this.loadHerbs(),
+      this.loadMacroForecast(),
+      this.loadHerbForecast()
+    ]).finally(() => {
+      wx.stopPullDownRefresh()
+      this.setData({ loading: false })
+    })
   },
 
   onBack() {
@@ -60,132 +81,230 @@ Page({
     wx.reLaunch({ url: '/pages/index/index' })
   },
 
-  async loadForecast() {
+  normalizeHerbName(name) {
+    if (!name) return ''
+    let n = name.trim()
+    // 1. 彻底剔除加工形态词 (饮片、颗粒、药材、粉等)
+    const forms = [
+      '配方颗粒', '颗粒剂', '颗粒', '中药饮片', '饮片', '中药材', '原药材', '药材', 
+      '提取物', '打粉', '粉末', '粉', '切段', '原木', '干货', '鲜货', '成品', '原料'
+    ]
+    forms.forEach(f => {
+      // 使用全局正则替换所有出现的形态词
+      const reg = new RegExp(f, 'g')
+      n = n.replace(reg, '')
+    })
+
+    // 2. 彻底剔除等级、规格与描述词 (特级、一级、统货、头等)
+    const markers = [
+      '特级', '一级', '二级', '三级', '一等', '二等', '三等', 
+      '分拣', '精选', '优质', '道地', '原生', '出口', '内销', 
+      '统货', '选货', '机制', '手工', '头'
+    ]
+    markers.forEach(m => {
+      const reg = new RegExp(m, 'g')
+      n = n.replace(reg, '')
+    })
+
+    // 3. 彻底清理各类符号括号及其内容
+    n = n.replace(/\(.*\)|（.*）|\[.*\]|【.*】/g, '')
+
+    // 4. 清理数字 (处理像 "20头", "30头" 里的数字)
+    n = n.replace(/\d+/g, '')
+
+    // 5. 清理首尾的多余符号、空格与连接符
+    return n.trim().replace(/^[-\s·/、,，。]+|[-\s·/、,，。]+$/g, '')
+  },
+
+  async loadHerbs() {
     try {
-      const res = await api.request('/api/v1/dashboard/forecast')
-      if (res && res.data) {
-        this.setData({ forecast: res.data }, () => {
-          setTimeout(() => {
-            this.drawForecastChart(res.data)
-          }, 500)
+      let discoveredNames = []
+
+      // --- 尝试发现 1: 扫描所有批次 (不带过滤器) ---
+      try {
+        const resBatches = await api.request('/api/v1/batches', 'GET', null, { quiet: true })
+        if (resBatches?.data && Array.isArray(resBatches.data)) {
+          const names = [...new Set(resBatches.data.map(b => b.name).filter(n => !!n))]
+          if (names.length > 0) discoveredNames = names
+        }
+      } catch (e) { console.log('Batches discovery skip', e) }
+
+      // --- 尝试发现 2: 专有接口 ---
+      if (discoveredNames.length === 0) {
+        try {
+          const resHerbs = await api.request('/api/v1/dashboard/herbs', 'GET', null, { quiet: true })
+          if (resHerbs?.data && Array.isArray(resHerbs.data)) discoveredNames = resHerbs.data
+        } catch (e) {}
+      }
+
+      // --- 尝试发现 3: 尝试公共接口 (兜底) ---
+      if (discoveredNames.length === 0) {
+        try {
+          const resPublic = await api.request('/api/v1/public/herbs', 'GET', null, { quiet: true })
+          if (resPublic?.data && Array.isArray(resPublic.data)) discoveredNames = resPublic.data
+        } catch (e) {}
+      }
+
+      if (discoveredNames.length > 0) {
+        // 核心逻辑：智能聚类核心品种 (Core Species Aggregation)
+        const coreNames = discoveredNames.map(name => this.normalizeHerbName(name)).filter(n => !!n)
+        const cleanNames = [...new Set(coreNames)].sort()
+        
+        console.log('Final Species Aggregation:', cleanNames.length)
+        this.setData({ 
+          herbOptions: ['中药材 (全品种)', ...cleanNames]
         })
+      } else {
+        console.warn('Still no herbs discovered after deep scan.')
       }
     } catch (e) {
-      console.error('Failed to load forecast', e)
+      console.error('Deep herb discovery critical failure', e)
     }
   },
 
-  drawForecastChart(data) {
-    if (!data || !data.dates) return
-    const ctx = wx.createCanvasContext('forecastCanvas')
-    const width = 340 // 假设宽度
-    const height = 220 
-    const padding = { top: 20, right: 30, bottom: 30, left: 40 }
+  async loadMacroForecast() {
+    try {
+      const res = await api.request('/api/v1/dashboard/forecast')
+      if (res && res.data) {
+        this.setData({ macroForecast: res.data }, () => {
+          this.redrawAllCharts()
+        })
+      }
+    } catch (e) { console.error(e) }
+  },
+
+  async loadHerbForecast(herbName = '') {
+    this.setData({ herbLoading: true })
+    try {
+      const url = herbName ? `/api/v1/dashboard/forecast?herb=${encodeURIComponent(herbName)}` : '/api/v1/dashboard/forecast'
+      const res = await api.request(url)
+      if (res && res.data) {
+        this.setData({ herbForecast: res.data }, () => {
+          this.redrawAllCharts()
+        })
+      }
+    } catch (e) { console.error(e) }
+    finally { this.setData({ herbLoading: false }) }
+  },
+
+  redrawAllCharts() {
+    // 增加延迟确保 WXML 完全渲染完毕 (wx:if 挂载完成)
+    setTimeout(() => {
+      if (this.data.macroForecast) {
+        this.drawForecastChart('fc_v6_macro_legacy', this.data.macroForecast, '#FFCA28')
+      }
+    }, 500)
     
-    // 提取数据点
-    const dates = data.dates || []
-    const actual = data.actualValues || []
-    const predicted = data.predictedValues || []
-    const lower = data.lowerConfidenceBounds || []
-    const upper = data.upperConfidenceBounds || []
-    
-    // 计算Y轴范围
-    let allValues = [...actual, ...predicted, ...lower, ...upper].filter(v => v !== null)
-    const maxVal = Math.max(...allValues) * 1.1
-    const minVal = Math.max(0, Math.min(...allValues) * 0.9)
-    
-    // 坐标系转换函数
-    const getX = (index) => padding.left + (width - padding.left - padding.right) * (index / (dates.length - 1))
-    const getY = (val) => height - padding.bottom - (height - padding.top - padding.bottom) * ((val - minVal) / (maxVal - minVal))
-    
-    ctx.clearRect(0, 0, width, height)
-    
-    // 1. 画背景网格与Y坐标
-    ctx.setStrokeStyle('#e0e0e0')
-    ctx.setLineWidth(0.5)
-    ctx.setFontSize(10)
-    ctx.setFillStyle('#888888')
-    for (let i = 0; i <= 4; i++) {
-        const yVal = minVal + (maxVal - minVal) * (i / 4)
-        const yPos = getY(yVal)
-        ctx.beginPath()
-        ctx.moveTo(padding.left, yPos)
-        ctx.lineTo(width - padding.right, yPos)
-        ctx.stroke()
-        ctx.fillText(Math.floor(yVal).toString(), 2, yPos + 3)
+    setTimeout(() => {
+      if (this.data.herbForecast) {
+        this.drawForecastChart('fc_v6_herb_legacy', this.data.herbForecast, '#4DB6AC')
+      }
+    }, 1000)
+  },
+
+  onHerbChange(e) {
+    const idx = parseInt(e.detail.value)
+    const herbName = idx === 0 ? '' : this.data.herbOptions[idx]
+    this.setData({ herbIndex: idx })
+    this.loadHerbForecast(herbName)
+  },
+
+  drawForecastChart(canvasId, data, themeColor) {
+    if (!data || !data.dates || data.dates.length === 0) {
+      console.warn('drawForecastChart: No data to draw', canvasId)
+      return
     }
-    
-    // 2. 画X坐标 (只展示部分标注避免拥挤)
-    for (let i = 0; i < dates.length; i++) {
-        if (i % 2 === 0 || i === dates.length - 1) {
+
+    const ctx = wx.createCanvasContext(canvasId, this)
+    const width = 340 // 默认宽度，稍后通过 query 优化
+    const height = 200 // 默认高度
+
+    this.createSelectorQuery().in(this)
+      .select('[canvas-id="' + canvasId + '"]')
+      .fields({ size: true })
+      .exec((res) => {
+        const w = (res && res[0]) ? res[0].width : width
+        const h = (res && res[0]) ? res[0].height : height
+        
+        const padding = { top: 20, right: 30, bottom: 30, left: 40 }
+        const dates = data.dates || []
+        const actual = data.actualValues || []
+        const predicted = data.predictedValues || []
+        const lower = data.lowerConfidenceBounds || []
+        const upper = data.upperConfidenceBounds || []
+
+        const allValues = [...actual, ...predicted, ...lower, ...upper].filter(v => v !== null)
+        const maxVal = Math.max(...allValues) * 1.1
+        const minVal = Math.max(0, Math.min(...allValues) * 0.9)
+
+        const getX = (index) => padding.left + (w - padding.left - padding.right) * (index / (dates.length - 1))
+        const getY = (val) => h - padding.bottom - (h - padding.top - padding.bottom) * ((val - minVal) / (maxVal - minVal))
+
+        // 1. 网格 (Legacy API: setStrokeStyle instead of strokeStyle)
+        ctx.setStrokeStyle('#e0e0e0')
+        ctx.setLineWidth(0.5)
+        ctx.setFontSize(10)
+        ctx.setFillStyle('#888888')
+        
+        for (let i = 0; i <= 4; i++) {
+          const yVal = minVal + (maxVal - minVal) * (i / 4)
+          const yPos = getY(yVal)
+          ctx.beginPath()
+          ctx.moveTo(padding.left, yPos)
+          ctx.lineTo(w - padding.right, yPos)
+          ctx.stroke()
+          ctx.fillText(Math.floor(yVal).toString(), 5, yPos - 5)
+        }
+
+        // 2. X轴
+        for (let i = 0; i < dates.length; i++) {
+          if (i % 2 === 0 || i === dates.length - 1) {
             const xPos = getX(i)
             const parts = String(dates[i]).split('-')
             if (parts.length > 1) {
-                ctx.fillText(parts[1] + '月', xPos - 10, height - 10)
+              ctx.fillText(parts[1] + '月', xPos - 10, h - 10)
             }
+          }
         }
-    }
-    
-    // 3. 画预测的置信区间阴影带
-    ctx.beginPath()
-    let startedFill = false
-    for (let i = 0; i < dates.length; i++) {
-        if (upper[i] !== null && lower[i] !== null) {
-            if (!startedFill) {
-                ctx.moveTo(getX(i), getY(upper[i]))
-                startedFill = true
-            } else {
-                ctx.lineTo(getX(i), getY(upper[i]))
-            }
-        }
-    }
-    for (let i = dates.length - 1; i >= 0; i--) {
-        if (upper[i] !== null && lower[i] !== null) {
-            ctx.lineTo(getX(i), getY(lower[i]))
-        }
-    }
-    ctx.setFillStyle('rgba(255, 202, 40, 0.2)') // 黄色半透明
-    ctx.fill()
-    
-    // 4. 画实际销量实线
-    ctx.beginPath()
-    ctx.setStrokeStyle('#4DB6AC') // 蓝绿色
-    ctx.setLineWidth(2)
-    let hasActual = false
-    for (let i = 0; i < dates.length; i++) {
-        if (actual[i] !== null) {
+
+        // 3. 实际销量 (实线)
+        ctx.beginPath()
+        ctx.setStrokeStyle('#4DB6AC')
+        ctx.setLineWidth(2)
+        let hasActual = false
+        for (let i = 0; i < dates.length; i++) {
+          if (actual[i] !== null) {
             if (!hasActual) {
-                ctx.moveTo(getX(i), getY(actual[i]))
-                hasActual = true
+              ctx.moveTo(getX(i), getY(actual[i]))
+              hasActual = true
             } else {
-                ctx.lineTo(getX(i), getY(actual[i]))
+              ctx.lineTo(getX(i), getY(actual[i]))
             }
-            ctx.arc(getX(i), getY(actual[i]), 2, 0, 2 * Math.PI)
-            ctx.moveTo(getX(i), getY(actual[i]))
+          }
         }
-    }
-    ctx.stroke()
-    
-    // 5. 画预测曲线 (虚线)
-    ctx.beginPath()
-    ctx.setStrokeStyle('#FFCA28') // 金色
-    ctx.setLineWidth(2)
-    if (ctx.setLineDash) ctx.setLineDash([4, 4])
-    let hasPred = false
-    for (let i = 0; i < dates.length; i++) {
-        if (predicted[i] !== null) {
+        ctx.stroke()
+
+        // 4. 预测曲线 (虚划线)
+        ctx.beginPath()
+        ctx.setStrokeStyle('#FFCA28')
+        ctx.setLineWidth(2)
+        if (ctx.setLineDash) ctx.setLineDash([4, 4], 0)
+        let hasPred = false
+        for (let i = 0; i < dates.length; i++) {
+          if (predicted[i] !== null) {
             if (!hasPred) {
-                ctx.moveTo(getX(i), getY(predicted[i]))
-                hasPred = true
+              ctx.moveTo(getX(i), getY(predicted[i]))
+              hasPred = true
             } else {
-                ctx.lineTo(getX(i), getY(predicted[i]))
+              ctx.lineTo(getX(i), getY(predicted[i]))
             }
+          }
         }
-    }
-    ctx.stroke()
-    if (ctx.setLineDash) ctx.setLineDash([]) 
-    
-    ctx.draw()
+        ctx.stroke()
+        if (ctx.setLineDash) ctx.setLineDash([], 0)
+
+        ctx.draw()
+      })
   },
 
   async loadStats() {
@@ -497,5 +616,30 @@ Page({
       value: Number(item.value || 0),
       percent: Math.max(12, Math.round((Number(item.value || 0) / max) * 100))
     }))
+  },
+
+  onProfileClick() {
+    wx.showActionSheet({
+      itemList: ['切换账号', '取消'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          api.setToken('')
+          api.setRole('')
+          api.setUsername('')
+          
+          wx.showToast({
+            title: '已退出登录',
+            icon: 'success',
+            duration: 800
+          })
+          
+          setTimeout(() => {
+            wx.reLaunch({
+              url: '/pages/login/index'
+            })
+          }, 800)
+        }
+      }
+    })
   }
 })

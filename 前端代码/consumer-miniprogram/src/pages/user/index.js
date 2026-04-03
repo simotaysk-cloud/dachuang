@@ -28,19 +28,34 @@ Page({
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({ selected: 3 });
     }
+    const app = getApp();
+    if (app.globalData.userInfo) {
+      this.setData({
+        userInfo: app.globalData.userInfo,
+        hasUserInfo: true
+      });
+    }
   },
 
   getUserProfile() {
     wx.showLoading({ title: '安全验证中...' });
     setTimeout(() => {
       wx.hideLoading();
+      const app = getApp();
+      const mockUser = {
+        avatarUrl: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0',
+        nickName: '药途VIP评委',
+        points: 1280,
+        level: '至信本草大师'
+      };
+      
+      app.globalData.userInfo = mockUser;
+      app.globalData.authToken = 'mock_vip_token_for_demo'; 
+      wx.setStorageSync('userInfo', mockUser);
+      wx.setStorageSync('authToken', 'mock_vip_token_for_demo');
+
       this.setData({
-        userInfo: {
-          avatarUrl: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0',
-          nickName: '药途VIP评委',
-          points: 1280,
-          level: '至信本草大师'
-        },
+        userInfo: mockUser,
         hasUserInfo: true
       });
       wx.showToast({ title: '授权成功', icon: 'success' });

@@ -29,6 +29,13 @@
             <view class="field-label">被检批次号</view>
             <input class="input {{parentLocked ? 'input-locked' : ''}}" placeholder="扫码或手工输入上游批次号" value="{{createForm.parentBatchNo}}" data-field="parentBatchNo" bindinput="onCreateInput" disabled="{{parentLocked}}" />
 
+            <view class="field-label">质检环节 (类型)</view>
+            <picker bindchange="onCreateTypeChange" value="{{createTypeIndex}}" range="{{typeOptions}}">
+                <view class="input" style="{{createTypeIndex == -1 ? 'color:#999;' : ''}}">
+                    {{createTypeIndex == -1 ? '请选择质检类型...' : typeOptions[createTypeIndex]}}
+                </view>
+            </picker>
+
             <view class="field-label">检测结果</view>
             <input class="input" placeholder="例如：合格 / 优级 / 不合格" value="{{createForm.result}}" data-field="result" bindinput="onCreateInput" />
 
@@ -65,6 +72,13 @@
                 <view class="readonly-label">批次号</view>
                 <view class="readonly-value">{{record.batchNo}}</view>
             </view>
+
+            <view class="field-label">质检环节 (类型)</view>
+            <picker bindchange="onRecordTypeChange" value="{{recordTypeIndex}}" range="{{typeOptions}}">
+                <view class="input" style="{{recordTypeIndex == -1 ? 'color:#999;' : ''}}">
+                    {{recordTypeIndex == -1 ? '请选择质检类型...' : typeOptions[recordTypeIndex]}}
+                </view>
+            </picker>
 
             <view class="field-label">检测结果</view>
             <input class="input" placeholder="例如：合格 / 优级 / 不合格" value="{{record.result}}" data-field="result" bindinput="onRecordInput" />

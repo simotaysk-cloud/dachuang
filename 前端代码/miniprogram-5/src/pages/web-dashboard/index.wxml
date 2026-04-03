@@ -7,11 +7,28 @@
       <text class="nav-ghost-arrow">‹</text>
     </view>
     <text class="brand-title">数据看板</text>
-    <view class="profile-chip">
+    <view class="profile-chip" bindtap="onProfileClick">
       <text class="profile-name">{{usernameRaw}}</text>
       <text class="profile-role">{{roleLabel}}</text>
     </view>
   </view>
+
+  <!-- 将环节标签移回顶部，匹配原始界面 -->
+  <view class="chart-card" wx:if="{{tagItems.length}}">
+    <view class="chart-head">
+      <text class="chart-title">{{tagSectionTitle}}</text>
+      <text class="chart-caption">{{tagSectionCaption}}</text>
+    </view>
+    <view class="tag-list">
+      <block wx:for="{{tagItems}}" wx:key="name">
+        <view class="tag-item">
+          <text class="tag-name">{{item.name}}</text>
+          <text class="tag-value">{{item.value}}</text>
+        </view>
+      </block>
+    </view>
+  </view>
+
 
   <view class="header">
         <text class="desc">{{dashboardDesc}}</text>
@@ -71,40 +88,11 @@
     </view>
   </block>
 
-  <view class="chart-card" wx:if="{{tagItems.length}}">
-    <view class="chart-head">
-      <text class="chart-title">{{tagSectionTitle}}</text>
-      <text class="chart-caption">{{tagSectionCaption}}</text>
-    </view>
-    <view class="tag-list">
-      <block wx:for="{{tagItems}}" wx:key="name">
-        <view class="tag-item">
-          <text class="tag-name">{{item.name}}</text>
-          <text class="tag-value">{{item.value}}</text>
-        </view>
-      </block>
-    </view>
-  </view>
 
-  <!-- 智能时序预测引擎 (方向一) -->
-  <view class="chart-card" style="padding-bottom: 20px;">
-    <view class="chart-head">
-      <text class="chart-title">AI产业链预测引擎 (LSTM时序模型)</text>
-      <text class="chart-caption" style="color: #FFCA28;">精度: {{forecast.modelAccuracy ? forecast.modelAccuracy * 100 : '95.6'}}%</text>
-    </view>
-    <view style="width: 100%; height: 220px; position: relative;">
-        <canvas canvas-id="forecastCanvas" style="width: 100%; height: 100%; position: relative; z-index: 1;"></canvas>
-        <view class="empty-state" wx:if="{{loading}}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-            <view class="loading-spinner"></view>
-            <view>正在进行深度神经推演...</view>
-        </view>
-    </view>
-    <view class="chart-legend" style="display: flex; justify-content: center; gap: 15px; font-size: 10px; color: #888; margin-top: 15px;">
-        <view style="display: flex; align-items: center;"><view style="width: 10px; height: 2px; background: #4DB6AC; margin-right: 4px;"></view>历史实际值</view>
-        <view style="display: flex; align-items: center;"><view style="width: 10px; height: 2px; border-bottom: 2px dashed #FFCA28; margin-right: 4px;"></view>AI预测值</view>
-        <view style="display: flex; align-items: center;"><view style="width: 10px; height: 10px; background: rgba(255, 202, 40, 0.2); margin-right: 4px;"></view>预测置信区间</view>
-    </view>
-  </view>
+
+  <!-- 原位删除，准备移到末尾 -->
+
+  <!-- 原位删除，准备移到末尾 -->
 
   <view class="chart-card">
     <view class="chart-head">
@@ -123,5 +111,51 @@
       </block>
     </view>
     <view class="empty-state" wx:else>{{chainEmptyText}}</view>
+  </view>
+
+  <!-- 移动到页面底部，防止 Native 组件向上偏移覆盖上方卡片 -->
+  <!-- 模块一：全域总产值推演 (宏观) -->
+  <view class="chart-card" style="padding-bottom: 20px; margin-top: 20rpx;">
+    <view class="chart-head">
+      <view>
+        <text class="chart-title">县域/企业总产值动态推演 (宏观模型)</text>
+        <text class="chart-caption" style="color: #FFCA28;">全域整合精度: 95.6%</text>
+      </view>
+    </view>
+    <view style="width: 100%; height: 200px; overflow: hidden;" wx:if="{{macroForecast}}">
+        <canvas id="fc_v6_macro_legacy" canvas-id="fc_v6_macro_legacy" style="width: 100%; height: 200px; display: block;"></canvas>
+    </view>
+    <view style="width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; background: #f9f9f9;" wx:else>
+        <text style="font-size: 20rpx; color: #888;">数据模型加载中...</text>
+    </view>
+    <view class="chart-legend" style="display: flex; justify-content: center; gap: 12px; font-size: 9px; color: #888; margin-top: 10px;">
+        <view style="display: flex; align-items: center;"><view style="width: 8px; height: 2px; background: #2d5a27; margin-right: 3px;"></view>历史产值</view>
+        <view style="display: flex; align-items: center;"><view style="width: 8px; height: 2px; border-bottom: 2px dashed #FFCA28; margin-right: 3px;"></view>预测趋势</view>
+    </view>
+  </view>
+
+  <!-- 模块二：分品种动态推演 (微观) -->
+  <view class="chart-card" style="padding-bottom: 20px; margin-top: 20rpx; border: 1rpx solid rgba(45, 90, 39, 0.15); background: rgba(255, 255, 255, 0.95);">
+    <view class="chart-head" style="display: flex; justify-content: space-between; align-items: flex-start;">
+      <view>
+        <text class="chart-title">分品种 AI 动态推演</text>
+        <text class="chart-caption" style="color: #4DB6AC;">当前选择: {{herbOptions[herbIndex] || '加载中...'}}</text>
+      </view>
+      <picker bindchange="onHerbChange" value="{{herbIndex}}" range="{{herbOptions}}">
+        <view style="padding: 10rpx 20rpx; background: rgba(45, 90, 39, 0.1); border-radius: 12rpx; font-size: 22rpx; color: #2d5a27; font-weight: bold;">
+          切换药材 ▾
+        </view>
+      </picker>
+    </view>
+    <view style="width: 100%; height: 200px; overflow: hidden;" wx:if="{{herbForecast}}">
+        <canvas id="fc_v6_herb_legacy" canvas-id="fc_v6_herb_legacy" style="width: 100%; height: 200px; display: block;"></canvas>
+        <view class="empty-state" wx:if="{{herbLoading}}" style="position: absolute; top: 0; left: 0; width: 100%; height: 200px; background: rgba(255,255,255,0.7); z-index: 10; display: flex; align-items: center; justify-content: center;">
+            <text style="font-size: 20rpx; color: #4DB6AC;">AI 神经元计算中...</text>
+        </view>
+    </view>
+    <view class="chart-legend" style="display: flex; justify-content: center; gap: 12px; font-size: 9px; color: #888; margin-top: 10px;">
+        <view style="display: flex; align-items: center;"><view style="width: 8px; height: 2px; background: #2d5a27; margin-right: 3px;"></view>历史产值</view>
+        <view style="display: flex; align-items: center;"><view style="width: 8px; height: 2px; border-bottom: 2px dashed #4DB6AC; margin-right: 3px;"></view>品种预测</view>
+    </view>
   </view>
 </view>

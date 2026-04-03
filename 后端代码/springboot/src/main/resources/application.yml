@@ -1,6 +1,9 @@
 spring:
   profiles:
     active: dev
+  mvc:
+    async:
+      request-timeout: 300000 # 5分钟，防止 AI 慢速输出时超时
   application:
     name: dachuang
   main:

@@ -1,0 +1,8 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "你好，请问你是谁？"
+    }
+  ]
+}

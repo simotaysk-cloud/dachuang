@@ -87,6 +87,10 @@ Page({
         const { batch, processingRecords, logisticsRecords, inspectionRecords } = traceData
         const stations = []
 
+        const rawInspections = (inspectionRecords || []).filter(r => r.inspectionType === 'RAW')
+        const processInspections = (inspectionRecords || []).filter(r => r.inspectionType === 'IN-PROCESS')
+        const finishedInspections = (inspectionRecords || []).filter(r => r.inspectionType === 'FINISHED' || !r.inspectionType)
+
         // 1. 种植/源头工位
         stations.push({
             id: 'p1',
@@ -103,9 +107,28 @@ Page({
             unit: batch.unit
         })
 
-        // 2. 加工工位 (如果有记录)
+        // 2. 原料初检
+        const hasRaw = rawInspections.length > 0
+        stations.push({
+            id: 'p_raw',
+            type: 'inspection',
+            title: '原料初检',
+            active: hasRaw,
+            icon: '🔬',
+            time: hasRaw ? this.formatTime(rawInspections[0].createdAt) : '',
+            records: hasRaw
+                ? rawInspections.map(r => ({ content: `结果：${r.result} (${r.inspector || '系统'})` }))
+                : [{ content: '等待产地初检确认' }],
+            outputQty: '原料',
+            unit: '入库'
+        })
+
+        // 3. 加工工位 (如果有记录)
         if (processingRecords && processingRecords.length > 0) {
             const lastProc = processingRecords[processingRecords.length - 1]
+            const procRecords = processingRecords.map(r => ({ content: `${r.processType}: ${r.lineName}` }))
+            processInspections.forEach(r => procRecords.push({ content: `[抽检] ${r.result}` }))
+
             stations.push({
                 id: 'p2',
                 type: 'processing',
@@ -113,14 +136,14 @@ Page({
                 active: true,
                 icon: '🏭',
                 time: this.formatTime(lastProc.createdAt),
-                records: processingRecords.map(r => ({ content: `${r.processType}: ${r.lineName}` })),
+                records: procRecords,
                 progress: 100,
                 currentStep: '加工已完成',
                 outputQty: lastProc.outputQuantity || batch.quantity,
                 unit: lastProc.outputUnit || batch.unit
             })
         } else {
-            // Mock 一个正在处理的状态，如果是在比赛演示中可能有用
+            // Mock 一个正在处理的状态
             stations.push({
                 id: 'p2',
                 type: 'processing',
@@ -129,27 +152,27 @@ Page({
                 icon: '🏭',
                 records: [{ content: '正在读取车间传感器数据...' }],
                 progress: 65,
-                currentStep: '烘干处理中'
+                currentStep: '工序流转中'
             })
         }
 
-        // 3. 质检工位
-        const hasInspection = inspectionRecords && inspectionRecords.length > 0
+        // 4. 成品质检
+        const hasFinished = finishedInspections.length > 0
         stations.push({
-            id: 'p3',
+            id: 'p_fin',
             type: 'inspection',
-            title: '质量检测',
-            active: hasInspection,
-            icon: '🔬',
-            time: hasInspection ? this.formatTime(inspectionRecords[0].createdAt) : '',
-            records: hasInspection 
-                ? inspectionRecords.map(r => ({ content: `${r.checkItem}: ${r.result}` }))
-                : [{ content: '等待批次质检报告发布' }],
-            outputQty: '合格率',
-            unit: '100%'
+            title: '成品出厂检',
+            active: hasFinished,
+            icon: '📋',
+            time: hasFinished ? this.formatTime(finishedInspections[0].createdAt) : '',
+            records: hasFinished 
+                ? finishedInspections.map(r => ({ content: `放行：${r.result}` }))
+                : [{ content: '等待批次检验放行单' }],
+            outputQty: '质签',
+            unit: '达标'
         })
 
-        // 4. 物流/分发
+        // 5. 物流/分发
         const lastLog = (logisticsRecords && logisticsRecords.length > 0) ? logisticsRecords[logisticsRecords.length-1] : null
         stations.push({
             id: 'p4',
@@ -160,7 +183,7 @@ Page({
             time: lastLog ? this.formatTime(lastLog.createdAt) : '',
             records: lastLog 
                 ? [{ content: `当前位置：${lastLog.location}` }, { content: `运输状态：${lastLog.status}` }]
-                : [{ content: '待入库分发' }],
+                : [{ content: '待集仓出库' }],
             outputQty: '物流',
             unit: '运输中'
         })

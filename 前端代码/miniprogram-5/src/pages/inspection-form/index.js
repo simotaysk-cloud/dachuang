@@ -13,6 +13,11 @@ Page({
         loading: false,
         parentLocked: false,
 
+        typeOptions: ['原料初检 (RAW)', '成品出厂检 (FINISHED)', '过程抽检 (IN-PROCESS)'],
+        typeValues: ['RAW', 'FINISHED', 'IN-PROCESS'],
+        createTypeIndex: -1,
+        recordTypeIndex: -1,
+
         // Create flow (always generates a new child batch + QR).
         createForm: {
             parentBatchNo: '',
@@ -39,12 +44,18 @@ Page({
 
         const opts = options || {}
         const id = opts.id ? String(opts.id) : ''
+        const typeFromUrl = opts.type || ''
+
         this.setData({ id })
 
         if (id) {
             this.loadRecord(id)
             return
         }
+
+        // Auto-select based on entry point if creating new.
+        if (typeFromUrl === 'RAW') this.setData({ createTypeIndex: 0 })
+        if (typeFromUrl === 'FINISHED') this.setData({ createTypeIndex: 1 })
 
         // Prefill from scan/manual entry.
         if (opts.parentBatchNo) {
@@ -84,7 +95,13 @@ Page({
         try {
             const res = await api.request(`/api/v1/inspection/${encodeURIComponent(String(id))}`)
             const r = res?.data || {}
+            let recordTypeIndex = -1
+            if (r.inspectionType === 'RAW') recordTypeIndex = 0
+            if (r.inspectionType === 'FINISHED') recordTypeIndex = 1
+            if (r.inspectionType === 'IN-PROCESS') recordTypeIndex = 2
+
             this.setData({
+                recordTypeIndex,
                 record: {
                     id: r.id ? String(r.id) : '',
                     batchNo: r.batchNo || '',
@@ -112,9 +129,20 @@ Page({
         this.setData({ [`record.${field}`]: e.detail.value })
     },
 
+    onCreateTypeChange(e) {
+        this.setData({ createTypeIndex: Number(e.detail.value) })
+    },
+
+    onRecordTypeChange(e) {
+        this.setData({ recordTypeIndex: Number(e.detail.value) })
+    },
+
     async submitAndGenQr() {
         const payload = { ...this.data.createForm }
         if (!payload.parentBatchNo) return wx.showToast({ title: '请先填写被检批次号', icon: 'none' })
+        if (this.data.createTypeIndex === -1) return wx.showToast({ title: '请选择质检环节 (类型)', icon: 'none' })
+        payload.inspectionType = this.data.typeValues[this.data.createTypeIndex]
+        
         if (!payload.result) return wx.showToast({ title: '请先填写检测结果', icon: 'none' })
         if (!payload.inspector) return wx.showToast({ title: '请先填写质检员', icon: 'none' })
 
@@ -150,6 +178,8 @@ Page({
         const r = this.data.record || {}
         if (!r.id) return
         if (!r.batchNo) return wx.showToast({ title: '缺少批次号', icon: 'none' })
+        if (this.data.recordTypeIndex === -1) return wx.showToast({ title: '请选择质检环节 (类型)', icon: 'none' })
+        const inspectionType = this.data.typeValues[this.data.recordTypeIndex]
         if (!r.result) return wx.showToast({ title: '请先填写检测结果', icon: 'none' })
         if (!r.inspector) return wx.showToast({ title: '请先填写质检员', icon: 'none' })
 
@@ -157,6 +187,7 @@ Page({
             wx.showLoading({ title: '正在保存' })
             await api.request(`/api/v1/inspection/${encodeURIComponent(String(r.id))}`, 'PUT', {
                 batchNo: r.batchNo,
+                inspectionType: inspectionType,
                 result: r.result,
                 reportUrl: r.reportUrl,
                 inspector: r.inspector

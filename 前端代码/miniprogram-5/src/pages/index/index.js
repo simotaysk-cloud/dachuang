@@ -132,9 +132,9 @@ Page({
     const isAdmin = current === 'ADMIN' || current === 'REGULATOR'
     return [
       { id: 'origin', name: '资源产地', detail: '道地药材基地', active: isAdmin || current === 'FARMER' },
-      { id: 'inspect1', name: '原料质检', detail: '原料入库检测', active: isAdmin || current === 'FARMER' || current === 'QUALITY' },
+      { id: 'inspect1', name: '原料质检', detail: '原料入库检测', active: isAdmin || current === 'QUALITY' },
       { id: 'process', name: '加工生产', detail: '工艺投料与加工', active: isAdmin || current === 'MANUFACTURER' || current === 'FACTORY' },
-      { id: 'inspect2', name: '成品检验', detail: '批次检验放行', active: isAdmin || current === 'QUALITY' || current === 'MANUFACTURER' },
+      { id: 'inspect2', name: '成品检验', detail: '批次检验放行', active: isAdmin || current === 'QUALITY' },
       { id: 'logistics', name: '物流流转', detail: '运输签收流转', active: isAdmin || current === 'LOGISTICS' }
     ]
   },
@@ -330,11 +330,83 @@ Page({
     this.setData({ healthStatus, healthTone, heroPanelTone }, () => this.refreshDerivedData())
   },
 
+  onNodeClick(e) {
+    const { id } = e.currentTarget.dataset
+    if (!id) return
+
+    const role = String(this.data.role || '').toUpperCase()
+    const isAdmin = role === 'ADMIN' || role === 'REGULATOR'
+
+    switch (id) {
+      case 'origin':
+        if (isAdmin || role === 'FARMER') {
+          wx.navigateTo({ url: '/pages/planting/index' })
+        } else {
+          wx.showToast({ title: '请使用农户账号登录', icon: 'none' })
+        }
+        break
+      case 'inspect1':
+        if (isAdmin || role === 'QUALITY') {
+          wx.navigateTo({ url: '/pages/inspection/index?type=RAW' })
+        } else {
+          wx.showToast({ title: '请使用质检员账号登录', icon: 'none' })
+        }
+        break
+      case 'process':
+        if (isAdmin || role === 'MANUFACTURER' || role === 'FACTORY') {
+          wx.navigateTo({ url: '/pages/processing/index' })
+        } else {
+          wx.showToast({ title: '请使用加工商账号登录', icon: 'none' })
+        }
+        break
+      case 'inspect2':
+        if (isAdmin || role === 'QUALITY') {
+          wx.navigateTo({ url: '/pages/inspection/index?type=FINISHED' })
+        } else {
+          wx.showToast({ title: '请使用质检员账号登录', icon: 'none' })
+        }
+        break
+      case 'logistics':
+        if (isAdmin || role === 'LOGISTICS' || role === 'MANUFACTURER') {
+          wx.navigateTo({ url: '/pages/logistics/index' })
+        } else {
+          wx.showToast({ title: '无物流权限', icon: 'none' })
+        }
+        break
+    }
+  },
+
   navTo(e) {
     const { url } = e.currentTarget.dataset
     if (!url) {
       return
     }
     wx.navigateTo({ url })
+  },
+
+  onProfileClick() {
+    wx.showActionSheet({
+      itemList: ['切换账号', '取消'],
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          // 彻底清除登录态
+          api.setToken('')
+          api.setRole('')
+          api.setUsername('')
+          
+          wx.showToast({
+            title: '已退出登录',
+            icon: 'success',
+            duration: 800
+          })
+          
+          setTimeout(() => {
+            wx.reLaunch({
+              url: '/pages/login/index'
+            })
+          }, 800)
+        }
+      }
+    })
   }
 })
