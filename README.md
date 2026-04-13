@@ -133,4 +133,3 @@ bash scripts/run-evm-dev.sh
 - `查询上链`：调用 `GET /api/v1/blockchain/{batchNo}`，查看数据库里保存的上链信息
 
 ---
-*本项目由 Antigravity AI 协作开发，致力于中药材产业数字化转型。*

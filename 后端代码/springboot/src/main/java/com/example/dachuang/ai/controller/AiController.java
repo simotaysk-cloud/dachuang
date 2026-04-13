@@ -36,14 +36,14 @@ public class AiController {
     @Value("${ai.compat.model:}")
     private String compatModelName;
 
-    @Value("${ai.openai.api-key:}")
-    private String openAiApiKey;
+    @Value("${ai.hunyuan.api-key:}")
+    private String hunyuanApiKey;
 
-    @Value("${ai.openai.base-url:}")
-    private String openAiBaseUrl;
+    @Value("${ai.hunyuan.base-url:}")
+    private String hunyuanBaseUrl;
 
-    @Value("${ai.openai.model:}")
-    private String openAiModelName;
+    @Value("${ai.hunyuan.model:}")
+    private String hunyuanModelName;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final ExecutorService executor = Executors.newCachedThreadPool();
@@ -89,9 +89,9 @@ public class AiController {
     public Map<String, Object> chatSync(@RequestBody AiChatRequest request) {
         Map<String, Object> result = new HashMap<>();
         try {
-            String apiKey = firstNonBlank(System.getenv("AI_API_KEY"), compatApiKey, openAiApiKey);
-            String baseUrl = firstNonBlank(compatBaseUrl, openAiBaseUrl);
-            String modelName = firstNonBlank(compatModelName, openAiModelName);
+            String apiKey = firstNonBlank(System.getenv("AI_API_KEY"), compatApiKey, hunyuanApiKey);
+            String baseUrl = firstNonBlank(compatBaseUrl, hunyuanBaseUrl);
+            String modelName = firstNonBlank(compatModelName, hunyuanModelName);
 
             List<Map<String, String>> messages = new ArrayList<>();
             messages.add(Map.of("role", "system", "content", buildSystemPrompt(request)));
@@ -150,9 +150,9 @@ public class AiController {
         SseEmitter emitter = new SseEmitter(240000L);
         executor.execute(() -> {
             try {
-                String apiKey = firstNonBlank(System.getenv("AI_API_KEY"), compatApiKey, openAiApiKey);
-                String baseUrl = firstNonBlank(compatBaseUrl, openAiBaseUrl);
-                String modelName = firstNonBlank(compatModelName, openAiModelName);
+                String apiKey = firstNonBlank(System.getenv("AI_API_KEY"), compatApiKey, hunyuanApiKey);
+                String baseUrl = firstNonBlank(compatBaseUrl, hunyuanBaseUrl);
+                String modelName = firstNonBlank(compatModelName, hunyuanModelName);
 
                 System.out.println("[AI] Starting stream request for model: " + modelName);
                 if (apiKey == null || apiKey.isBlank() || apiKey.equals("sk-placeholder")) {

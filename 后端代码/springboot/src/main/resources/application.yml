@@ -17,7 +17,7 @@ ai:
     base-url: ${AI_COMPAT_BASE_URL:}
     api-key: ${AI_COMPAT_API_KEY:}
     model: ${AI_COMPAT_MODEL:}
-  openai:
+  hunyuan:
     base-url: "https://api.hunyuan.cloud.tencent.com/v1"
     api-key: ${AI_API_KEY:sk-placeholder}
     model: "hunyuan-lite"
