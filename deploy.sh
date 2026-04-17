@@ -25,9 +25,16 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Port 80;
         proxy_read_timeout 120s;
         proxy_connect_timeout 30s;
+        # SSE Support
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_buffering off;
+        proxy_cache off;
+        chunked_transfer_encoding on;
+        add_header Cache-Control no-cache;
+        proxy_set_header X-Accel-Buffering no;
     }
 }
 
@@ -36,8 +43,8 @@ server {
     server_name _;
     client_max_body_size 100M;
 
-    ssl_certificate /etc/nginx/ssl/server.crt;
-    ssl_certificate_key /etc/nginx/ssl/server.key;
+    ssl_certificate /etc/nginx/certs/cpuzhbc.cn/fullchain.pem;
+    ssl_certificate_key /etc/nginx/certs/cpuzhbc.cn/privkey.pem;
 
     location / {
         proxy_pass http://127.0.0.1:8091;

@@ -243,11 +243,14 @@ public class AiController {
                                             if (delta.has("content")) {
                                                 String content = delta.get("content").asText();
                                                 System.out.print(content); // Log to backend.log
+                                                
                                                 Map<String, String> res = Map.of("content", content);
-                                                emitter.send(SseEmitter.event().data(res, MediaType.APPLICATION_JSON));
+                                                // Using explicit JSON string to ensure clean SSE 'data:' formatting
+                                                String jsonRes = objectMapper.writeValueAsString(res);
+                                                emitter.send(SseEmitter.event().data(jsonRes));
                                             }
                                         } catch (Exception e) {
-                                            // Handle case where SSE data isn't full JSON or mixed
+                                            System.err.println("[AI] Error parsing chunk: " + e.getMessage());
                                         }
                                     }
                                 }

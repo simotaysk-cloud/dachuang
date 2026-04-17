@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统总体架构图 - 学术论文风</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                fontFamily: '"Times New Roman", "SimSun", "宋体", serif',
+                primaryColor: '#ffffff',
+                primaryBorderColor: '#000000',
+                lineColor: '#000000',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#ffffff'
+            },
+            flowchart: {
+                curve: 'linear',
+                nodeSpacing: 40,
+                rankSpacing: 60,
+                useMaxWidth: true
+            }
+        });
+    </script>
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #000000;
+            font-family: "Times New Roman", "SimSun", serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+            margin: 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            border: 1px solid #ddd;
+            padding: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); 
+        }
+        h2 {
+            text-align: center;
+            font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #000;
+            padding-bottom: 15px;
+        }
+        .caption {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>基于区块链与大模型的农产品溯源系统总体技术架构</h2>
+        <div class="mermaid" style="display: flex; justify-content: center;">
+flowchart TD
+    %% 去除了不支持的 class 属性
+    classDef nodeBox fill:#ffffff,stroke:#000000,stroke-width:1px,color:#000
+    classDef highlightBox fill:#f0f4f8,stroke:#003366,stroke-width:1.5px,color:#000
+    classDef dataBox fill:#ffffff,stroke:#000000,stroke-width:1px,color:#000
+
+    subgraph Layer1 [1. 边缘终端表现层 Edge Presentation Layer]
+        direction LR
+        C[消费者溯源与微信监管前端<br/>QR扫描/时间轴/流式动态渲染]:::highlightBox
+        E[产业链协同角色管理前端<br/>网格控制台/GIS防伪/赋码快照]:::highlightBox
+    end
+
+    subgraph Layer2 [2. 网关与安全过滤层 Gateway & Security Layer]
+        direction LR
+        JWT[JWT 无状态双向鉴权守卫]:::nodeBox
+        WAF[请求限流与跨域边界隔离]:::nodeBox
+    end
+
+    subgraph Layer3 [3. 核心业务调度中台 Core Business Middleware]
+        direction TB
+        subgraph ModuleA [标准溯源状态机模块]
+            direction TB
+            A1(GS1-128 数值标准化转换引擎):::nodeBox
+            A2(批次流转与节点表单解析器):::nodeBox
+        end
+        subgraph ModuleB [防篡改特征提取模块]
+            direction TB
+            B1(元数据特征 Hash 计算映射):::nodeBox
+            B2(Anchor 锚定记录触发器):::nodeBox
+        end
+        subgraph ModuleC [大型语言模型集成模块]
+            direction TB
+            C1(RAG 溯源上下文特征隐式构造):::nodeBox
+            C2(SSE 服务端单向流分发代理):::nodeBox
+        end
+    end
+
+    subgraph Layer4 [4. 异构基础设施层 Heterogeneous Infrastructure Layer]
+        direction LR
+        DB[(关系型持久化存储底账<br/>MySQL 8.0)]:::dataBox
+        EVM[/分布式防篡改去中心化账本<br/>EVM Compatible/]:::highlightBox
+        AI{{自然语言生成服务集群<br/>Tencent Hunyuan API}}:::nodeBox
+    end
+
+    %% 拓扑数据流转线条
+    C -->|HTTP / SSE| JWT
+    E -->|RESTful API| WAF
+    
+    JWT --> Layer3
+    WAF --> Layer3
+
+    ModuleA ==>|JDBC 结构化写入| DB
+    ModuleB ==>|JSON-RPC 共识广播| EVM
+    
+    %% 这里修正为标准的双向箭头
+    ModuleC <-->|HTTPS 异步调用| AI
+
+    %% C端特有的链上校验线
+    EVM -.->|链上 TxHash 物理验证| C
+
+    %% 子图修饰
+    style Layer1 stroke:#000,stroke-width:1px,stroke-dasharray: 4 4,fill:#fcfcfc
+    style Layer2 stroke:#000,stroke-width:1px,stroke-dasharray: 4 4,fill:#fcfcfc
+    style Layer3 stroke:#000,stroke-width:1.5px,stroke-dasharray: 5 5,fill:#f9f9f9
+    style Layer4 stroke:#000,stroke-width:1px,stroke-dasharray: 4 4,fill:#fcfcfc
+        </div>
+        <div class="caption">图 1. 系统总体架构设计模型 (System Architecture Design Model)</div>
+    </div>
+
+</body>
+</html>

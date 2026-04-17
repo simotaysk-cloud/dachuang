@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>药途寻迹 - 科技风系统架构流程图</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+SC:wght@400;500;700&display=swap');
+
+        :root {
+            --bg-color: #0b0f19;
+            --grid-color: rgba(64, 153, 255, 0.05);
+            --consumer-color: #00d2ff; /* 科技绿/青 */
+            --consumer-hex: 0, 210, 255;
+            --enterprise-color: #3b82f6; /* 科技蓝 */
+            --enterprise-hex: 59, 130, 246;
+            --middleware-color: #a855f7; /* 科技紫 */
+            --middleware-hex: 168, 85, 247;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --card-bg: rgba(15, 23, 42, 0.6);
+            --border-width: 1px;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 30px 30px;
+            color: var(--text-main);
+            font-family: 'Noto Sans SC', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        .architecture-wrapper {
+            position: relative;
+            background: radial-gradient(circle at 50% 50%, rgba(30, 41, 59, 0.4) 0%, transparent 80%);
+            padding: 60px 80px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 50px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            font-family: 'Orbitron', 'Noto Sans SC', sans-serif;
+            font-size: 28px;
+            letter-spacing: 3px;
+            margin: 0;
+            text-align: center;
+            background: linear-gradient(90deg, #00d2ff, #3b82f6, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+        }
+
+        .layer-box {
+            position: relative;
+            width: 100%;
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 40px 30px 30px;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            box-sizing: border-box;
+        }
+
+        .layer-title {
+            position: absolute;
+            top: -14px;
+            left: 30px;
+            background: var(--bg-color);
+            padding: 0 15px;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text-sub);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .layer-title::before {
+            content: '';
+            display: block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .node-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 20px 30px;
+            text-align: center;
+            border: var(--border-width) solid;
+            flex: 1;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 20px rgba(var(--color-hex), 0.05),
+                        0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .node-card::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px; right: -1px; bottom: -1px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(var(--color-hex), 0.5), transparent);
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .node-consumer {
+            --color-hex: var(--consumer-hex);
+            border-color: rgba(var(--consumer-hex), 0.4);
+            color: var(--text-main);
+        }
+        .node-consumer .node-title { color: var(--consumer-color); }
+
+        .node-enterprise {
+            --color-hex: var(--enterprise-hex);
+            border-color: rgba(var(--enterprise-hex), 0.4);
+        }
+        .node-enterprise .node-title { color: var(--enterprise-color); }
+
+        .node-middleware {
+            --color-hex: var(--middleware-hex);
+            border-color: rgba(var(--middleware-hex), 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 15px 10px;
+        }
+
+        .node-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .node-desc {
+            font-size: 13px;
+            color: var(--text-sub);
+        }
+
+        /* Arrows Container */
+        .arrows-layer {
+            display: flex;
+            justify-content: center;
+            gap: 150px;
+            width: 100%;
+        }
+
+        .arrow-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .down-arrow {
+            width: 2px;
+            height: 40px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0.5));
+            position: relative;
+        }
+
+        .down-arrow::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: -4px;
+            border-width: 5px 5px 0;
+            border-style: solid;
+            border-color: rgba(255,255,255,0.6) transparent transparent transparent;
+        }
+
+        .arrow-label {
+            font-size: 13px;
+            color: #cbd5e1;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .middleware-grid {
+            display: flex;
+            width: 100%;
+            gap: 20px;
+        }
+
+        .middleware-grid .node-title {
+            font-size: 16px;
+            color: var(--middleware-color);
+            font-family: 'Orbitron', 'Noto Sans SC', sans-serif;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="architecture-wrapper">
+        <h1>[ SYSTEM ARCHITECTURE ]</h1>
+
+        <!-- 第一层：用户层 -->
+        <div class="layer-box" style="color: var(--text-main);">
+            <div class="layer-title" style="color: #94a3b8;">用户层</div>
+            
+            <div class="node-card node-consumer">
+                <div class="node-title">消费者端小程序</div>
+                <div class="node-desc">绿色生态 / C端触点</div>
+            </div>
+
+            <div class="node-card node-enterprise">
+                <div class="node-title">企业管理端小程序</div>
+                <div class="node-desc">蓝色赋能 / B端协同</div>
+            </div>
+        </div>
+
+        <!-- 箭头连接 -->
+        <div class="arrows-layer">
+            <div class="arrow-group">
+                <div class="down-arrow"></div>
+                <div class="arrow-label">扫码请求 / AI对话</div>
+                <div class="down-arrow"></div>
+            </div>
+            <div class="arrow-group">
+                <div class="down-arrow"></div>
+                <div class="arrow-label">表单提交 / 农事上报</div>
+                <div class="down-arrow"></div>
+            </div>
+        </div>
+
+        <!-- 第二层：业务中台层 -->
+        <div class="layer-box" style="color: var(--text-main);">
+            <div class="layer-title" style="color: #a855f7;">业务中台层 (Spring Boot)</div>
+            
+            <div class="middleware-grid">
+                <div class="node-card node-middleware">
+                    <div class="node-title">JWT</div>
+                    <div class="node-desc">多角色全域<br>鉴权网关</div>
+                </div>
+                <div class="node-card node-middleware">
+                    <div class="node-title">GS1</div>
+                    <div class="node-desc">国际标准<br>编码解析</div>
+                </div>
+                <div class="node-card node-middleware">
+                    <div class="node-title">EVM</div>
+                    <div class="node-desc">智能合约<br>快照上链</div>
+                </div>
+                <div class="node-card node-middleware">
+                    <div class="node-title">AI SSE</div>
+                    <div class="node-desc">大语言模型<br>流式传输</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

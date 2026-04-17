@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统架构 ER 图</title>
+    <!-- 引入 Mermaid -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f9f9f9;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>药途寻迹 - 核心库表与区块链关联 E-R 图</h2>
+        <pre class="mermaid">
+erDiagram
+    %% 核心实体关系定义
+    BATCHES ||--o{ TRACE_RECORDS : "1:N 包含追踪节点"
+    BATCHES ||--o| BLOCKCHAIN_TX : "1:1 / 1:N 锚定防篡改"
+
+    %% 批次总表 (MySQL)
+    BATCHES {
+        bigint id PK "主键自增"
+        string batch_no UK "GS1标准批次号 (核心关联)"
+        string product_name "产品名称"
+        decimal quantity "重量/体积属性"
+        string status "流转状态"
+        timestamp created_at "建档时间"
+    }
+
+    %% 业务过程记录表 (MySQL)
+    TRACE_RECORDS {
+        bigint id PK "主键自增"
+        string batch_no FK "关联 batches.batch_no"
+        string stage "阶段 (种植/加工/质检)"
+        string operator_id "操作者"
+        json metadata "扩展表单(组装成Hash前的数据)"
+        timestamp recorded_at "业务发生时间"
+    }
+
+    %% 区块链交易存证底账 (MySQL + EVM)
+    BLOCKCHAIN_TX {
+        bigint id PK "主键自增"
+        string batch_no FK "关联 batches.batch_no"
+        string data_hash "哈希值 (聚合上表数据)"
+        string tx_hash UK "链上唯一TxID (以太坊)"
+        string chain_env "上链网络(Sepolia)"
+        timestamp anchored_at "区块打包时间"
+    }
+        </pre>
+        <p style="color: #666; font-size: 14px; text-align: center; margin-top: 20px;">
+            提示：可以直接截图，或者右键另存为图片，插入到您的 Word 文稿中。
+        </p>
+    </div>
+</body>
+</html>

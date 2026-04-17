@@ -1,0 +1,30 @@
+erDiagram
+    BATCHES ||--o{ TRACE_RECORDS : "1:N records"
+    BATCHES ||--o| BLOCKCHAIN_TX : "1:1 / 1:N anchors"
+
+    BATCHES {
+        bigint id PK
+        string batch_no UK "GS1 Batch"
+        string product_name
+        decimal quantity
+        string status
+        timestamp created_at
+    }
+
+    TRACE_RECORDS {
+        bigint id PK
+        string batch_no FK
+        string stage
+        string operator_id
+        string metadata
+        timestamp recorded_at
+    }
+
+    BLOCKCHAIN_TX {
+        bigint id PK
+        string batch_no FK
+        string data_hash
+        string tx_hash UK
+        string chain_env
+        timestamp anchored_at
+    }
