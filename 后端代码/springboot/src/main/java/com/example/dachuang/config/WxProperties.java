@@ -11,9 +11,7 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "wx")
 public class WxProperties {
 
-    /**
-     * Map of app name (e.g., miniprogram5, consumer) to its WeChat config
-     */
+
     private Map<String, Config> configs;
 
     @Data

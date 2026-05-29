@@ -18,11 +18,7 @@ public class LogisticsWebhookController {
 
     private final ShipmentService shipmentService;
 
-    /**
-     * Callback endpoint for external logistics providers.
-     * In a production environment, this should be secured with an API Key or
-     * Signature.
-     */
+
     @PostMapping("/callback")
     public Result<Void> handleLogisticsCallback(@RequestBody LogisticsWebhookDTO callback) {
         log.info("Received logistics callback for trackingNo: {}", callback.getTrackingNo());

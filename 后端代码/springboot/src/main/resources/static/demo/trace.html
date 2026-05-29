@@ -54,7 +54,7 @@
         }
         .title { margin: 0 0 6px; font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: 0.5px; }
         .subtitle { margin: 0 0 20px; color: var(--text-muted); font-size: 13px; line-height: 1.5; }
-        
+
         .search-group { display: flex; gap: 10px; }
         .input { flex: 1; background: #fff; border: 1.5px solid var(--line); color: var(--text-main); border-radius: 12px; padding: 0 16px; height: 48px; font-size: 15px; transition: border 0.3s; }
         .input:focus { outline: none; border-color: var(--primary); }
@@ -78,14 +78,14 @@
 
         /* 英雄动态区 */
         #heroSection { display: none; flex-direction: column; align-items: center; padding: 10px 0 0; animation: fadeIn 0.8s ease forwards; }
-        
+
         .product-hero { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 24px; }
         .herb-circle { width: 120px; height: 120px; border-radius: 50%; background: var(--primary-light); border: 2px solid #fff; box-shadow: 0 10px 25px rgba(37,99,235,0.15); display: flex; align-items: center; justify-content: center; font-size: 50px; z-index: 2; position: relative; }
-        
+
         .laser-scanner { position: absolute; top: -10px; width: 140px; height: 140px; pointer-events: none; z-index: 10; display: flex; justify-content: center; }
         .laser-beam { width: 120%; height: 2px; background: var(--primary); box-shadow: 0 0 10px 2px rgba(37,99,235,0.5); animation: scan 2s linear infinite; position: relative; }
         @keyframes scan { 0% { transform: translateY(-10px); opacity:0;} 10% {opacity:1;} 90% {opacity:1;} 100% {transform: translateY(140px); opacity:0;} }
-        
+
         .scan-msg { font-family: monospace; font-size: 12px; color: var(--primary); animation: blink 1.2s infinite alternate; margin-top: 20px; font-weight: 600; }
         @keyframes blink { from {opacity: 0.5;} to {opacity: 1;} }
 
@@ -106,7 +106,7 @@
         .tcm-char { font-size: 48px; font-weight: 900; color: var(--tcm-color); margin-right: 20px; font-family: "STZhongsong", serif; }
         .tcm-tags { display: flex; flex-direction: column; gap: 8px; }
         .tcm-tag { background: #f3e8ff; border: 1px solid #e9d5ff; color: #7e22ce; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 6px; }
-        
+
         .tcm-meta { flex: 1; margin-left: 12px; font-size: 14px; line-height: 1.8; }
         .tcm-meta-row { display: flex; justify-content: space-between; align-items: center; }
         .tcm-meta-lbl { color: var(--text-muted); font-size: 13px; }
@@ -116,10 +116,10 @@
         .twin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; }
         .twin-box { background: #f8fafc; border-radius: 12px; padding: 16px; border: 1px solid var(--line); }
         .twin-title { font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 12px; border-bottom: 1px dashed var(--line); padding-bottom: 6px; }
-        
+
         .peiwu-item { font-size: 13px; color: var(--text-main); margin-bottom: 8px; display: flex; align-items: center; line-height: 1.5; }
         .peiwu-item::before { content: ''; width: 6px; height: 6px; background: var(--tcm-color); border-radius: 50%; margin-right: 8px; flex-shrink: 0; }
-        
+
         .env-inner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .env-val { font-size: 15px; color: var(--tcm-color); font-family: monospace; font-weight: 700; }
         .env-lbl { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
@@ -191,7 +191,7 @@
 
 <body>
     <div class="container">
-        <!-- 搜索域 -->
+
         <div class="glass-header">
             <h1 class="title">中药溯源查询</h1>
             <p class="subtitle">扫码后自动打开本页并展示该批次的全链路溯源与鉴伪信息。</p>
@@ -202,7 +202,7 @@
             <div id="tip" class="tip" style="display:none;"></div>
         </div>
 
-        <!-- 1. 英雄交互首屏 -->
+
         <div id="heroSection">
             <div class="product-hero">
                 <div class="laser-scanner" id="laserBeam"><div class="laser-beam"></div></div>
@@ -227,7 +227,7 @@
             </div>
         </div>
 
-        <!-- 2. 本草典籍与生态 (TCM & Origin) -->
+
         <div id="tcmSection" class="card">
             <div class="section-title tcm-header">数字本草鉴赏</div>
             <div class="tcm-hero-row">
@@ -245,7 +245,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="twin-grid">
                 <div class="twin-box">
                     <div class="twin-title">本草配伍精要</div>
@@ -258,13 +258,13 @@
             </div>
         </div>
 
-        <!-- 3. 数据流水线 -->
+
         <div id="pipelineSection" class="card">
             <div class="section-title">全域数据溯源图谱</div>
             <div class="timeline" id="timeline"></div>
         </div>
 
-        <!-- 4. 区块链凭证 -->
+
         <div id="bcSection" class="card">
             <div class="section-title">至信链不可篡改凭证</div>
             <div class="bc-kv">
@@ -283,13 +283,13 @@
         </div>
     </div>
 
-    <!-- 解密掩码 -->
+
     <div class="bc-decryption" id="decryptMask">
         <div class="bc-dec-text" id="decryptText">INITIATING DECRYPTION PROTOCOL...</div>
         <div class="bc-progress"><div class="bc-bar" id="decryptBar"></div></div>
     </div>
 
-    <!-- 详情模态框 -->
+
     <div class="modal-overlay" id="detailModal" onclick="closeDetailModal(event)">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
@@ -297,7 +297,7 @@
                 <button class="modal-close" onclick="closeDetailModal()">×</button>
             </div>
             <div class="modal-body" id="dmBody">
-                <!-- KV list goes here -->
+
             </div>
         </div>
     </div>
@@ -335,7 +335,7 @@
             const bar = byId('decryptBar');
             mask.style.display = 'flex';
             bar.style.width = '0%';
-            
+
             const steps = [
                 { t: 'CONNECTING SECURE NODE...', w: 20 },
                 { t: 'VALIDATING SHA-256 SIGNATURE...', w: 60 },
@@ -393,7 +393,7 @@
             'checkItem': '核心受检项目', 'result': '质量检测结论', 'inspector': '品控质检员',
             'status': '运务流转状态', 'location': '当前交接位置', 'trackingNo': '物流专线单号', 'updateTime': '位置更新时间', 'createdAt': '区块链记录时间', 'id': '链上数据流水号',
             'updatedAt': '数据更新时间', 'fieldName': '关联地块/产区', 'imageUrl': '现场抓拍图片', 'temperature': '环境温度', 'humidity': '环境湿度', 'soilMoisture': '土壤含水量', 'soilPh': '土壤pH值', 'lightIntensity': '光照强度',
-            'ownerUserId': '系统负责专员ID', 'minCode': '最小溯源防伪码', 'category': '溯源认证品类', 'description': '药检规格与详细说明', 'usageAdvice': '医疗服用建议指南', 'contraindications': '特殊禁忌与注意事项', 'commonPairings': '国鉴标准配伍药理', 
+            'ownerUserId': '系统负责专员ID', 'minCode': '最小溯源防伪码', 'category': '溯源认证品类', 'description': '药检规格与详细说明', 'usageAdvice': '医疗服用建议指南', 'contraindications': '特殊禁忌与注意事项', 'commonPairings': '国鉴标准配伍药理',
             'remainingQuantity': '仓位剩余有效库存', 'gs1LotNo': 'GS1认证全球统一批号', 'gs1Code': 'GS1商品复合追踪码', 'gs1Locked': 'GS1条码防伪锁定状态', 'reportUrl': '质检报告存证凭证(URL)', 'eventTime': '流转枢纽报到时间', 'remarks': '环节流转附加备注', 'distributorName': '接收方/下级经销商', 'carrier': '承运物流供应商'
         };
 
@@ -406,22 +406,22 @@
             byId('dmIcon').innerText = icon || '📝';
             const body = byId('dmBody');
             body.innerHTML = '';
-            
+
             // Render ordered keys first
             const rendered = new Set();
             rendered.add('batchId'); rendered.add('txHash'); // hide internal hashes
-            
+
             function renderKey(idx) {
                 if(rendered.has(idx) || obj[idx] === null || obj[idx] === undefined || obj[idx] === '') return;
                 rendered.add(idx);
-                
+
                 const label = dictMap[idx] || idx;
                 let displayVal = String(obj[idx]);
-                
+
                 if (idx.toLowerCase().includes('time') || idx.toLowerCase().includes('date') || idx === 'createdAt' || idx === 'updatedAt') {
                     displayVal = formatTime(obj[idx]);
                 }
-                
+
                 let valHtml = `<div class="val">${displayVal}</div>`;
                 if ((idx.toLowerCase().includes('image') || idx.toLowerCase().includes('pic')) && displayVal.startsWith('http')) {
                     valHtml = `<img src="${displayVal}" style="max-width:100%; border-radius:8px; margin-top:8px; border:1px solid #e2e8f0; display:block;" alt="现场图片" />`;
@@ -452,7 +452,7 @@
         function createTlNode(parent, title, badgeText, content, dateStr, rawData, icon) {
             const item = document.createElement('div');
             item.className = 'tl-item';
-            
+
             const styleExtra = rawData ? 'cursor: pointer; position: relative;' : '';
             const hintExtra = rawData ? `<div style="position:absolute; right:16px; top:16px; color:#2563eb; font-size:11px; font-weight:bold; background:#eff6ff; padding:4px 8px; border-radius:12px; transition:0.3s;" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">查看详情 <span>&rsaquo;</span></div>` : '';
 
@@ -517,7 +517,7 @@
             const bcc = byId('bcSection');
             if(!bc || !bc.txHash) { bcc.style.display = 'none'; return; }
             bcc.style.display = 'block';
-            
+
             byId('bcStatus').innerText = '至信链确权网络 / ' + text(bc.mode);
             byId('bcHash').innerText = bc.txHash;
             byId('bcTime').innerText = `Height ${16843029 + 120} / ${formatTime(bc.createdAt)}`;
@@ -534,7 +534,7 @@
             const msg = byId('scanMsg');
             const badge = byId('shieldBadge');
             const mg = byId('metricsGrid');
-            
+
             laser.style.display = 'block';
             msg.style.display = 'block';
             badge.classList.remove('show');
@@ -548,7 +548,7 @@
                 msg.style.display = 'none';
                 badge.classList.add('show');
                 mg.style.display = 'grid';
-                
+
                 setTimeout(() => { byId('tcmSection').style.display = 'block'; }, 200);
                 setTimeout(() => { byId('pipelineSection').style.display = 'block'; }, 400);
             }, 2000); // scan animation duration 2s
@@ -571,7 +571,7 @@
                         const data = await fetchTrace(b);
                         byId('tip').innerText = '追溯信息加载完成';
                         byId('tip').className = 'tip ok';
-                        
+
                         const n = new URL(window.location.href);
                         n.searchParams.set('batchNo', b);
                         window.history.replaceState({}, '', n.toString());

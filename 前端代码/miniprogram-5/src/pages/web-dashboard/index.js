@@ -38,7 +38,7 @@ Page({
     chainSectionCaption: '查看最近一次同步到链上的批次记录。',
     chainRecords: [],
     chainEmptyText: '暂无链上存证记录',
-    // AI 预测相关
+
     herbOptions: ['中药材 (全品种)'],
     herbIndex: 0,
     herbLoading: false,
@@ -54,7 +54,7 @@ Page({
       roleLabel: api.getRoleName(api.role)
     })
     this.loadStats()
-    this.loadHerbs() 
+    this.loadHerbs()
     this.loadMacroForecast()
     this.loadHerbForecast()
   },
@@ -84,21 +84,21 @@ Page({
   normalizeHerbName(name) {
     if (!name) return ''
     let n = name.trim()
-    // 1. 彻底剔除加工形态词 (饮片、颗粒、药材、粉等)
+
     const forms = [
-      '配方颗粒', '颗粒剂', '颗粒', '中药饮片', '饮片', '中药材', '原药材', '药材', 
+      '配方颗粒', '颗粒剂', '颗粒', '中药饮片', '饮片', '中药材', '原药材', '药材',
       '提取物', '打粉', '粉末', '粉', '切段', '原木', '干货', '鲜货', '成品', '原料'
     ]
     forms.forEach(f => {
-      // 使用全局正则替换所有出现的形态词
+
       const reg = new RegExp(f, 'g')
       n = n.replace(reg, '')
     })
 
-    // 2. 彻底剔除等级、规格与描述词 (特级、一级、统货、头等)
+
     const markers = [
-      '特级', '一级', '二级', '三级', '一等', '二等', '三等', 
-      '分拣', '精选', '优质', '道地', '原生', '出口', '内销', 
+      '特级', '一级', '二级', '三级', '一等', '二等', '三等',
+      '分拣', '精选', '优质', '道地', '原生', '出口', '内销',
       '统货', '选货', '机制', '手工', '头'
     ]
     markers.forEach(m => {
@@ -106,13 +106,13 @@ Page({
       n = n.replace(reg, '')
     })
 
-    // 3. 彻底清理各类符号括号及其内容
+
     n = n.replace(/\(.*\)|（.*）|\[.*\]|【.*】/g, '')
 
-    // 4. 清理数字 (处理像 "20头", "30头" 里的数字)
+
     n = n.replace(/\d+/g, '')
 
-    // 5. 清理首尾的多余符号、空格与连接符
+
     return n.trim().replace(/^[-\s·/、,，。]+|[-\s·/、,，。]+$/g, '')
   },
 
@@ -120,7 +120,7 @@ Page({
     try {
       let discoveredNames = []
 
-      // --- 尝试发现 1: 扫描所有批次 (不带过滤器) ---
+
       try {
         const resBatches = await api.request('/api/v1/batches', 'GET', null, { quiet: true })
         if (resBatches?.data && Array.isArray(resBatches.data)) {
@@ -129,7 +129,7 @@ Page({
         }
       } catch (e) { console.log('Batches discovery skip', e) }
 
-      // --- 尝试发现 2: 专有接口 ---
+
       if (discoveredNames.length === 0) {
         try {
           const resHerbs = await api.request('/api/v1/dashboard/herbs', 'GET', null, { quiet: true })
@@ -137,7 +137,7 @@ Page({
         } catch (e) {}
       }
 
-      // --- 尝试发现 3: 尝试公共接口 (兜底) ---
+
       if (discoveredNames.length === 0) {
         try {
           const resPublic = await api.request('/api/v1/public/herbs', 'GET', null, { quiet: true })
@@ -146,12 +146,12 @@ Page({
       }
 
       if (discoveredNames.length > 0) {
-        // 核心逻辑：智能聚类核心品种 (Core Species Aggregation)
+
         const coreNames = discoveredNames.map(name => this.normalizeHerbName(name)).filter(n => !!n)
         const cleanNames = [...new Set(coreNames)].sort()
-        
+
         console.log('Final Species Aggregation:', cleanNames.length)
-        this.setData({ 
+        this.setData({
           herbOptions: ['中药材 (全品种)', ...cleanNames]
         })
       } else {
@@ -194,7 +194,7 @@ Page({
         this.drawForecastChart('fc_v6_macro_legacy', this.data.macroForecast, '#FFCA28')
       }
     }, 500)
-    
+
     setTimeout(() => {
       if (this.data.herbForecast) {
         this.drawForecastChart('fc_v6_herb_legacy', this.data.herbForecast, '#4DB6AC')
@@ -225,7 +225,7 @@ Page({
       .exec((res) => {
         const w = (res && res[0]) ? res[0].width : width
         const h = (res && res[0]) ? res[0].height : height
-        
+
         const padding = { top: 20, right: 30, bottom: 30, left: 40 }
         const dates = data.dates || []
         const actual = data.actualValues || []
@@ -245,7 +245,7 @@ Page({
         ctx.setLineWidth(0.5)
         ctx.setFontSize(10)
         ctx.setFillStyle('#888888')
-        
+
         for (let i = 0; i <= 4; i++) {
           const yVal = minVal + (maxVal - minVal) * (i / 4)
           const yPos = getY(yVal)
@@ -626,13 +626,13 @@ Page({
           api.setToken('')
           api.setRole('')
           api.setUsername('')
-          
+
           wx.showToast({
             title: '已退出登录',
             icon: 'success',
             duration: 800
           })
-          
+
           setTimeout(() => {
             wx.reLaunch({
               url: '/pages/login/index'

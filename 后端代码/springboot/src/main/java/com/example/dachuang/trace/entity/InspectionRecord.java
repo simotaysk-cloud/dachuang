@@ -26,11 +26,11 @@ public class InspectionRecord extends BaseEntity {
     private String batchNo;
     @Column(nullable = false, columnDefinition = "TEXT")
     @NotBlank(message = "result cannot be blank")
-    private String result; // 质检详细结果报告
+    private String result;
     @Column(length = 255)
-    private String reportUrl; // 质检报告链接
+    private String reportUrl;
     @Column(length = 20)
-    private String inspectionType; // 'RAW' or 'FINISHED'
+    private String inspectionType;
     @Column(length = 64)
-    private String inspector; // 质检员
+    private String inspector;
 }

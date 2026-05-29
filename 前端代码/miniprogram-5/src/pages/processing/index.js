@@ -6,7 +6,7 @@ const LAST_QUERY_KEY = 'processingLastQueryNo'
 
 Page({
     data: {
-        batches: [], // list of root batches
+        batches: [],
         queryNo: '',
         loading: false,
         usernameRaw: 'user',
@@ -22,7 +22,7 @@ Page({
             canViewBatchArchive: hasFeatureAccess(api.role, 'BATCH')
         })
         await this.loadProfile()
-        // Default show latest list for demo.
+
         this.listAll()
     },
 
@@ -35,7 +35,7 @@ Page({
                 roleLabel: api.getRoleName(profile?.role || api.role)
             })
         } catch (err) {
-            // Ignore profile errors and keep cached identity.
+
         }
     },
 
@@ -68,10 +68,10 @@ Page({
     parseBatchNoFromScanResult(raw) {
         const s = String(raw || '').trim()
         if (!s) return ''
-        // Prefer query param: ...?batchNo=XXX
+
         const m1 = s.match(/[?&]batchNo=([^&]+)/i)
         if (m1 && m1[1]) return decodeURIComponent(m1[1])
-        // If it's a URL-like path, take last segment.
+
         if (s.startsWith('http://') || s.startsWith('https://') || s.includes('/')) {
             const noHash = s.split('#')[0]
             const noQuery = noHash.split('?')[0]

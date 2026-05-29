@@ -1,4 +1,4 @@
-/* components/supply-chain-steps/index.wxss */
+
 .stepper-wrapper {
     width: 100%;
     padding: 20rpx 0;
@@ -12,7 +12,7 @@
     align-items: flex-start;
     justify-content: space-between;
     padding: 60rpx 30rpx;
-    box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.03); /* Softer shadow */
+    box-shadow: 0 10rpx 40rpx rgba(0, 0, 0, 0.03);
     box-sizing: border-box;
 }
 
@@ -44,10 +44,10 @@
     font-weight: 500;
 }
 
-/* Arrow styling - much more refined */
+
 .arrow {
     flex: 1;
-    height: 48rpx; /* Match circle height */
+    height: 48rpx;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -60,7 +60,7 @@
     width: 100%;
     height: 2rpx;
     background: #EAEAEA;
-    transform: scaleX(0.7); /* Shorter line */
+    transform: scaleX(0.7);
 }
 
 .arrow::after {
@@ -75,7 +75,7 @@
     margin-top: -1rpx;
 }
 
-/* ACTIVE State - Sophisticated Green */
+
 .step-item.active .circle {
     background: linear-gradient(135deg, #388E3C, #2E7D32);
 }
@@ -91,14 +91,14 @@
     border-color: #2E7D32;
 }
 
-/* CURRENT State - Premium Highlight */
+
 .step-item.current {
     transform: translateY(-4rpx);
 }
 
 .step-item.current .circle {
-    box-shadow: 0 8rpx 24rpx rgba(46, 125, 50, 0.35), 
-                0 0 40rpx rgba(46, 125, 50, 0.15); /* Multi-layer glow */
+    box-shadow: 0 8rpx 24rpx rgba(46, 125, 50, 0.35),
+                0 0 40rpx rgba(46, 125, 50, 0.15);
     transform: scale(1.1);
 }
 
@@ -108,7 +108,7 @@
     position: relative;
 }
 
-/* Custom underline - doesn't stick to text */
+
 .step-item.current .label::after {
     content: '';
     position: absolute;

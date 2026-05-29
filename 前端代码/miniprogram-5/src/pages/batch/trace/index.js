@@ -15,7 +15,7 @@ Page({
         mockCert: {},
         currHashShort: '',
         prevHashShort: '',
-        // 模拟的本草数据 (TCM Properties)
+
         tcmProperties: {
             nature: '微温',
             taste: '甘、微苦',
@@ -26,7 +26,7 @@ Page({
             ],
             combinations: ['配黄芪：补气固表', '配麦冬：生津敛汗', '配五味子：益气生津']
         },
-        // 生态环境数据 (Environmental Data)
+
         envData: {
             altitude: 852,
             daylight: '2380h',
@@ -60,7 +60,7 @@ Page({
         try {
             const res = await api.request(`/api/v1/trace/${batchNo}`)
             const data = res.data || {}
-            
+
             // 数据解析：将扁平记录转换为“流水线工位”
             const stations = this.parseStations(data)
 
@@ -74,7 +74,7 @@ Page({
             setTimeout(() => {
                 this.setData({ scanCompleted: true })
             }, 2500)
-            
+
         } catch (err) {
             console.error('loadData Failed:', err)
             wx.showToast({ title: '流转数据解析失败', icon: 'none' })
@@ -165,7 +165,7 @@ Page({
             active: hasFinished,
             icon: '📋',
             time: hasFinished ? this.formatTime(finishedInspections[0].createdAt) : '',
-            records: hasFinished 
+            records: hasFinished
                 ? finishedInspections.map(r => ({ content: `放行：${r.result}` }))
                 : [{ content: '等待批次检验放行单' }],
             outputQty: '质签',
@@ -181,7 +181,7 @@ Page({
             active: !!lastLog,
             icon: '🚚',
             time: lastLog ? this.formatTime(lastLog.createdAt) : '',
-            records: lastLog 
+            records: lastLog
                 ? [{ content: `当前位置：${lastLog.location}` }, { content: `运输状态：${lastLog.status}` }]
                 : [{ content: '待集仓出库' }],
             outputQty: '物流',
@@ -201,7 +201,7 @@ Page({
         const nextStation = this.data.stations[idx + 1]
 
         wx.showLoading({ title: '链上数据核验...' })
-        
+
         setTimeout(() => {
             wx.hideLoading()
             wx.showModal({
@@ -226,7 +226,7 @@ Page({
         const hashStr = this.data.batchData.txHash || this.generateMockHash(this.data.batchNo + 'tx');
         const heightBase = 16843029;
         const offset = (this.data.batchNo || '').split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) * 47;
-        
+
         wx.showLoading({ title: '提取密码学证明', mask: true })
         setTimeout(() => {
             wx.showLoading({ title: '解析至信链回执', mask: true })
@@ -238,7 +238,7 @@ Page({
                         txHash: hashStr,
                         contractAddr: '0x3A9E8c3bF02D4A1B8C5F6A90eB32109F4aB2Cc41',
                         blockHeight: heightBase + offset,
-                        timestamp: this.formatTime(new Date()) 
+                        timestamp: this.formatTime(new Date())
                     }
                 })
             }, 600)
@@ -250,7 +250,7 @@ Page({
         const prevHash = this.generateMockHash(this.data.batchNo + 'prev');
         const heightBase = 16843029;
         const offset = (this.data.batchNo || '').split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) * 47;
-        
+
         wx.showLoading({ title: '连接共识节点...', mask: true })
         setTimeout(() => {
             wx.showLoading({ title: '同步账本拓扑...', mask: true })
@@ -262,7 +262,7 @@ Page({
                         txHash: hashStr,
                         contractAddr: '0x3A9E8c3bF02D4A1B8C5F6A90eB32109F4aB2Cc41',
                         blockHeight: heightBase + offset,
-                        timestamp: this.formatTime(new Date()) 
+                        timestamp: this.formatTime(new Date())
                     },
                     currHashShort: '0x' + hashStr.substring(2, 6) + '...' + hashStr.substring(60),
                     prevHashShort: '0x' + prevHash.substring(2, 6) + '...' + prevHash.substring(60)

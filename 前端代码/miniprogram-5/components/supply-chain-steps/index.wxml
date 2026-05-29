@@ -1,14 +1,14 @@
 <view class="stepper-wrapper">
     <view class="stepper-inner">
-        <!-- Step 0 -->
+
         <view class="step-item {{(mode === 'process' && active >= 0) || (mode === 'role' && activeMap[0]) ? 'active' : ''}} {{(mode === 'process' && active == 0) || (mode === 'role' && activeMap[0]) ? 'current' : ''}}" bindtap="goToStep" data-step="0">
             <view class="circle"></view>
             <view class="label">资源产地</view>
         </view>
-        
+
         <view class="arrow {{mode === 'process' && active > 0 ? 'active' : ''}}"></view>
 
-        <!-- Step 1 -->
+
         <view class="step-item {{(mode === 'process' && active >= 1) || (mode === 'role' && activeMap[1]) ? 'active' : ''}} {{(mode === 'process' && active == 1) || (mode === 'role' && activeMap[1]) ? 'current' : ''}}" bindtap="goToStep" data-step="1">
             <view class="circle"></view>
             <view class="label">原料质检</view>
@@ -16,7 +16,7 @@
 
         <view class="arrow {{mode === 'process' && active > 1 ? 'active' : ''}}"></view>
 
-        <!-- Step 2 -->
+
         <view class="step-item {{(mode === 'process' && active >= 2) || (mode === 'role' && activeMap[2]) ? 'active' : ''}} {{(mode === 'process' && active == 2) || (mode === 'role' && activeMap[2]) ? 'current' : ''}}" bindtap="goToStep" data-step="2">
             <view class="circle"></view>
             <view class="label">深加工</view>
@@ -24,7 +24,7 @@
 
         <view class="arrow {{mode === 'process' && active > 2 ? 'active' : ''}}"></view>
 
-        <!-- Step 3 -->
+
         <view class="step-item {{(mode === 'process' && active >= 3) || (mode === 'role' && activeMap[3]) ? 'active' : ''}} {{(mode === 'process' && active == 3) || (mode === 'role' && activeMap[3]) ? 'current' : ''}}" bindtap="goToStep" data-step="3">
             <view class="circle"></view>
             <view class="label">成品检验</view>
@@ -32,7 +32,7 @@
 
         <view class="arrow {{mode === 'process' && active > 3 ? 'active' : ''}}"></view>
 
-        <!-- Step 4 -->
+
         <view class="step-item {{(mode === 'process' && active >= 4) || (mode === 'role' && activeMap[4]) ? 'active' : ''}} {{(mode === 'process' && active == 4) || (mode === 'role' && activeMap[4]) ? 'current' : ''}}" bindtap="goToStep" data-step="4">
             <view class="circle"></view>
             <view class="label">终端溯源</view>

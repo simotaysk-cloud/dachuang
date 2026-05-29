@@ -18,5 +18,5 @@ public class InspectionDeriveRequest {
     @NotBlank(message = "inspector cannot be blank")
     private String inspector;
     private String details;
-    private String inspectionType; // 'RAW' or 'FINISHED'
+    private String inspectionType;
 }

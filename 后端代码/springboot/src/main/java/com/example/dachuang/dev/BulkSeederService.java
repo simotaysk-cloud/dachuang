@@ -39,7 +39,7 @@ public class BulkSeederService {
     private final String[] ORIGINS = { "吉林抚松", "宁夏中宁", "甘肃岷县", "浙江桐乡", "广东新会", "云南文山", "甘肃陇西", "安徽亳州" };
 
     public void syncPendingBatches() {
-        // ... (existing logic)
+
     }
 
     public void seedData(int count) {
@@ -48,9 +48,9 @@ public class BulkSeederService {
                 .or(() -> userRepository.findByUsername("farmer"))
                 .orElseThrow(() -> new RuntimeException("Farmer user not found"));
 
-        // ONLY patch existing batches based on user request
+
         patchExistingBatches(farmer);
-        
+
         log.info("Professional manual backfill completed.");
     }
 
@@ -61,17 +61,17 @@ public class BulkSeederService {
             List<Batch> matches = batchRepository.findAll().stream()
                     .filter(b -> b.getName() != null && b.getName().contains(herb))
                     .toList();
-            
+
             for (Batch b : matches) {
-                // Determine if it should have RAW or FINISHED based on category or lineage
+
                 boolean isLeaf = batchLineageRepository.findAll().stream()
                         .noneMatch(l -> l.getParentBatchNo().equals(b.getBatchNo()));
-                
+
                 String type = isLeaf ? "FINISHED" : "RAW";
-                
+
                 boolean alreadyHas = inspectionRecordRepository.findAllByBatchNo(b.getBatchNo()).stream()
                         .anyMatch(ir -> type.equals(ir.getInspectionType()));
-                
+
                 if (!alreadyHas) {
                     inspectionRecordRepository.save(InspectionRecord.builder()
                             .batchNo(b.getBatchNo())
@@ -90,7 +90,7 @@ public class BulkSeederService {
         String herb = HERB_NAMES[random.nextInt(HERB_NAMES.length)];
         String origin = ORIGINS[random.nextInt(ORIGINS.length)];
 
-        // 1. Root Planting Batch
+
         Batch pBatch = Batch.builder()
                 .name(herb + "药材")
                 .category("中药材")
@@ -104,7 +104,7 @@ public class BulkSeederService {
 
         Batch savedP = batchService.createBatch(pBatch, user.getUsername(), user.getRole());
 
-        // 2. Planting Record
+
         plantingRecordRepository.save(PlantingRecord.builder()
                 .batchNo(savedP.getBatchNo())
                 .operation("GAP规范采收")
@@ -114,7 +114,7 @@ public class BulkSeederService {
                 .operationTime(LocalDateTime.now().minusDays(30))
                 .build());
 
-        // 2b. Raw Material Inspection (NEW)
+
         inspectionRecordRepository.save(InspectionRecord.builder()
                 .batchNo(savedP.getBatchNo())
                 .inspectionType("RAW")
@@ -123,7 +123,7 @@ public class BulkSeederService {
                 .inspector("基地初检员")
                 .build());
 
-        // 3. Derived Processing Batch
+
         Batch procBatch = Batch.builder()
                 .name(herb + "饮片")
                 .category("中药饮片")
@@ -137,7 +137,7 @@ public class BulkSeederService {
 
         Batch savedProc = batchService.createBatch(procBatch, user.getUsername(), user.getRole());
 
-        // 4. Lineage
+
         batchLineageRepository.save(BatchLineage.builder()
                 .parentBatchNo(savedP.getBatchNo())
                 .childBatchNo(savedProc.getBatchNo())
@@ -146,7 +146,7 @@ public class BulkSeederService {
                 .details("标准化生产工艺：洗净去杂 -> 软化切片 -> 恒温干燥（无硫处理）")
                 .build());
 
-        // 5. Processing Record
+
         processingRecordRepository.save(ProcessingRecord.builder()
                 .batchNo(savedProc.getBatchNo())
                 .parentBatchNo(savedP.getBatchNo())
@@ -156,7 +156,7 @@ public class BulkSeederService {
                 .details("全自动化切片机处理，含水量精准控制。")
                 .build());
 
-        // 6. Finished Product Inspection
+
         inspectionRecordRepository.save(InspectionRecord.builder()
                 .batchNo(savedProc.getBatchNo())
                 .inspectionType("FINISHED")

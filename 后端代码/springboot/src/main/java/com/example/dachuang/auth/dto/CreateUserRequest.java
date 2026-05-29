@@ -8,7 +8,7 @@ public class CreateUserRequest {
     @NotBlank(message = "username cannot be blank")
     private String username;
 
-    // Optional: if blank, backend will set default password for demo.
+
     private String password;
 
     @NotBlank(message = "role cannot be blank")

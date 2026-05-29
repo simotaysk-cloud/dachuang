@@ -8,7 +8,7 @@ Page({
     data: {
         usernameRaw: api.username || 'user',
         roleLabel: '',
-        // When id is present, we are viewing/updating an existing record.
+
         id: '',
         loading: false,
         parentLocked: false,
@@ -18,7 +18,7 @@ Page({
         createTypeIndex: -1,
         recordTypeIndex: -1,
 
-        // Create flow (always generates a new child batch + QR).
+
         createForm: {
             parentBatchNo: '',
             result: '',
@@ -27,7 +27,7 @@ Page({
             details: ''
         },
 
-        // Detail/edit flow for an existing inspection record.
+
         record: {
             id: '',
             batchNo: '',
@@ -53,11 +53,11 @@ Page({
             return
         }
 
-        // Auto-select based on entry point if creating new.
+
         if (typeFromUrl === 'RAW') this.setData({ createTypeIndex: 0 })
         if (typeFromUrl === 'FINISHED') this.setData({ createTypeIndex: 1 })
 
-        // Prefill from scan/manual entry.
+
         if (opts.parentBatchNo) {
             this.setData({
                 'createForm.parentBatchNo': String(opts.parentBatchNo),
@@ -77,7 +77,7 @@ Page({
                 roleLabel: api.getRoleName(profile?.role || api.role)
             })
         } catch (err) {
-            // Ignore profile errors and keep cached identity.
+
         }
     },
 
@@ -142,7 +142,7 @@ Page({
         if (!payload.parentBatchNo) return wx.showToast({ title: '请先填写被检批次号', icon: 'none' })
         if (this.data.createTypeIndex === -1) return wx.showToast({ title: '请选择质检环节 (类型)', icon: 'none' })
         payload.inspectionType = this.data.typeValues[this.data.createTypeIndex]
-        
+
         if (!payload.result) return wx.showToast({ title: '请先填写检测结果', icon: 'none' })
         if (!payload.inspector) return wx.showToast({ title: '请先填写质检员', icon: 'none' })
 

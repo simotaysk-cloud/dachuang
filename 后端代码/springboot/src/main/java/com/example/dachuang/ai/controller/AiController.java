@@ -95,7 +95,7 @@ public class AiController {
 
             List<Map<String, String>> messages = new ArrayList<>();
             messages.add(Map.of("role", "system", "content", buildSystemPrompt(request)));
-            
+
             boolean hasUserMsg = false;
             if (request.getMessages() != null && !request.getMessages().isEmpty()) {
                 for (AiChatMessage msg : request.getMessages()) {
@@ -130,7 +130,7 @@ public class AiController {
             HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             String body = response.body();
             JsonNode root = objectMapper.readTree(body);
-            
+
             if (root.has("choices") && root.path("choices").size() > 0) {
                 result.put("success", true);
                 result.put("content", root.path("choices").get(0).path("message").path("content").asText());
@@ -161,15 +161,15 @@ public class AiController {
 
                 List<Map<String, String>> messages = new ArrayList<>();
                 StringBuilder systemContent = new StringBuilder(buildSystemPrompt(request));
-                
+
                 if (request.getMessages() != null && !request.getMessages().isEmpty()) {
                     AiChatMessage lastUserMsg = request.getMessages().get(request.getMessages().size() - 1);
                     String ragContext = performMockVectorSearch(lastUserMsg.getContent());
                     systemContent.append("\n\nRAG上下文：\n").append(ragContext);
                 }
-                
+
                 messages.add(Map.of("role", "system", "content", systemContent.toString()));
-                
+
                 boolean hasUserMsg = false;
                 if (request.getMessages() != null && !request.getMessages().isEmpty()) {
                     for (AiChatMessage msg : request.getMessages()) {
@@ -179,8 +179,8 @@ public class AiController {
                     }
                 }
 
-                // API requirement: messages list must end with a 'user' message. 
-                // If it's empty (e.g. after scan) or ends with assistant, append/ensure user prompt.
+
+
                 if (!hasUserMsg) {
                     String defaultMsg = "你好，请结合当前上下文为我提供一些专业建议。";
                     if (request.getTraceContext() != null && request.getTraceContext().getName() != null) {
@@ -207,7 +207,7 @@ public class AiController {
                         .thenAccept(response -> {
                             int statusCode = response.statusCode();
                             System.out.println("[AI] Received response headers. Status: " + statusCode);
-                            
+
                             if (statusCode >= 400) {
                                 try (java.io.InputStream is = response.body();
                                      java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(is, StandardCharsets.UTF_8))) {
@@ -224,11 +224,11 @@ public class AiController {
 
                             try (java.io.InputStream is = response.body();
                                  java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(is, StandardCharsets.UTF_8))) {
-                                
+
                                 String line;
                                 while ((line = reader.readLine()) != null) {
                                     if (line.isBlank()) continue;
-                                    
+
                                     if (line.startsWith("data:")) {
                                         String data = line.substring(line.indexOf(":") + 1).strip();
                                         if ("[DONE]".equals(data)) {
@@ -236,14 +236,13 @@ public class AiController {
                                             emitter.complete();
                                             return;
                                         }
-                                        
+
                                         try {
                                             JsonNode node = objectMapper.readTree(data);
                                             JsonNode delta = node.path("choices").get(0).path("delta");
                                             if (delta.has("content")) {
                                                 String content = delta.get("content").asText();
-                                                System.out.print(content); // Log to backend.log
-                                                
+                                                System.out.print(content);
                                                 Map<String, String> res = Map.of("content", content);
                                                 // Using explicit JSON string to ensure clean SSE 'data:' formatting
                                                 String jsonRes = objectMapper.writeValueAsString(res);

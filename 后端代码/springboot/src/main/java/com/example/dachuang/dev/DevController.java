@@ -21,7 +21,7 @@ public class DevController {
             return Result.error(400, "Maximum 500 batches at once to prevent server/blockchain overload.");
         }
 
-        // Run in background to avoid timeout
+
         CompletableFuture.runAsync(() -> {
             bulkSeederService.seedData(count);
         });

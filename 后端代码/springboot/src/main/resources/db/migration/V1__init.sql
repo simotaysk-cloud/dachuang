@@ -1,5 +1,5 @@
--- Initial schema for demo environment (MySQL 8.x, utf8mb4).
--- Note: this migration assumes the database already exists.
+
+
 
 CREATE TABLE IF NOT EXISTS users (
   id BIGINT NOT NULL AUTO_INCREMENT,

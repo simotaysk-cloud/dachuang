@@ -1,9 +1,9 @@
 <view class="bg-background text-on-background min-h-screen pb-32 overflow-x-hidden">
   <view class="px-5 space-y-8 mt-4">
-    <!-- Hero Banner: Scan to Trace -->
-    <view class="relative h-[420px] rounded-lg overflow-hidden group">
-      <view class="absolute inset-0 bg-gradient-to-br from-primary/60 via-primary/20 to-transparent z-10"></view>
-      <image class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5gIJ0brNQLaKCyrxuAlq-Im9nbld3saHIlNGbKVKI8iKESx-o9wLlK8QPoOQYGAZh7LeOp2ejjvMljp8tI-ZjryGFoDbee7BNrBAXbvRxngYzGC3beVCxFt9v6YYcgOl47wZtJopFmabH-nvjjWRoJpKhy-NjiJWke0BcYkvo7IPka9drorQfux38QTYTBCQTAktq2l_h20JnFRZysQPTy44MCv0PS06JCF1h6bzKR2nuofxF0mP-tjeNn0cCxwBbiKn7SRLzIA" mode="aspectFill"></image>
+
+    <view class="relative aspect-[3/4] rounded-lg overflow-hidden group">
+      <image class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="/assets/seasonal/hero-trace-design.jpg" mode="aspectFill"></image>
+      <view class="absolute inset-0 bg-gradient-to-br from-[#031b14]/90 via-primary/45 to-transparent z-10"></view>
       <view class="absolute inset-0 z-20 flex flex-col justify-end p-8 pb-20">
         <view class="mb-4 pr-24">
           <text class="block text-on-primary text-4xl font-extrabold tracking-tight leading-none mb-4">扫码寻迹</text>
@@ -20,7 +20,7 @@
       </view>
     </view>
 
-    <!-- Trust Overview -->
+
     <view>
       <view class="flex items-center justify-between mb-4 px-1">
         <text class="text-primary text-xl font-bold tracking-tight">信任概览</text>
@@ -48,26 +48,23 @@
             <view class="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></view>
             <text class="text-primary/70 text-[10px] font-bold uppercase">{{item.note}}</text>
           </view>
-          <!-- Removed large background text icon because emoji doesn't look as good transparently overlapping -->
+
         </view>
       </view>
     </view>
 
-    <!-- Seasonal Health Tips -->
+
     <view class="pb-8">
       <view class="flex items-center justify-between mb-5 px-1">
-        <text class="text-primary text-xl font-bold tracking-tight">时令养单</text>
-        <view class="text-secondary text-xs font-bold flex items-center gap-1">
+        <text class="text-primary text-xl font-bold tracking-tight">时令养生</text>
+        <view class="text-secondary text-xs font-bold flex items-center gap-1" bindtap="openSeasonalList">
           更多 <text class="text-sm font-bold">></text>
         </view>
       </view>
       <view class="space-y-6">
-        <view class="flex gap-4 group" wx:for="{{seasonalFeed}}" wx:key="id">
+        <view class="flex gap-4 group" wx:for="{{seasonalFeed}}" wx:key="id" bindtap="openSeasonalDetail" data-id="{{item.id}}">
           <view class="w-28 h-28 rounded-lg overflow-hidden flex-shrink-0 relative">
-            <image class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJ6LeVSi9bf6eA_jcgg6xtOItUJKkVBxrGkj5dszafhaS47Y1K7EbdHDuiautewthxbQYWVEApReCK7SjmyIIF1zc5oO-AQDtbYjsUazVvw5s5yxGwOLCzhLPk038V8su3VKroIfv7PEY2xt4E8GF18E1fpFsW4VN8dC3YpXMxiWx6TOmaaVzJDHa-ZumXU2j3ScqnAcIOgkag6qJ6gw3GfwejAJZzCgX1RdCfr4eZOMJpmyu0uideQaiU8IWeRMSDVZhKue1rcg" mode="aspectFill"></image>
-            <view class="absolute inset-0 bg-primary/5 flex items-center justify-center">
-              <text class="text-white font-bold opacity-30">{{item.mark}}</text>
-            </view>
+            <image class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="{{item.image}}" mode="aspectFill"></image>
           </view>
           <view class="flex flex-col justify-center text-left flex-1 min-w-0">
             <text class="text-secondary text-[10px] font-bold uppercase tracking-widest mb-1">{{item.tag}}</text>
@@ -77,6 +74,6 @@
         </view>
       </view>
     </view>
-    
+
   </view>
 </view>

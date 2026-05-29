@@ -48,20 +48,20 @@ public class TraceService {
         Collections.reverse(lineageBatches);
         Collections.reverse(lineageEdges);
 
-        // Keep a reference to the queried batch
+
         Batch queriedBatch = lineageBatches.stream()
                 .filter(b -> b.getBatchNo().equals(batchNo))
                 .findFirst()
                 .orElse(lineageBatches.get(lineageBatches.size() - 1));
 
-        // Forward tracing to get all descendants (children)
+
         cursor = batchNo;
         while (true) {
             List<BatchLineage> childrenEdges = batchService.getChildren(cursor);
             if (childrenEdges == null || childrenEdges.isEmpty()) {
                 break;
             }
-            // Take the first branch for main traceability lineage
+
             BatchLineage firstChildEdge = childrenEdges.get(0);
             lineageEdges.add(firstChildEdge);
             cursor = firstChildEdge.getChildBatchNo();
@@ -73,7 +73,7 @@ public class TraceService {
         String leafBatchNo = lineageBatches.get(lineageBatches.size() - 1).getBatchNo();
         List<String> batchNosInChain = lineageBatches.stream().map(Batch::getBatchNo).toList();
 
-        // Shipments are assigned to the final product (leaf), not necessarily the queried batch
+
         List<ShipmentWithEvents> shipmentsWithEvents = shipmentRepository.findAllByBatchNo(leafBatchNo).stream()
                 .map(shipment -> ShipmentWithEvents.builder()
                         .shipment(shipment)

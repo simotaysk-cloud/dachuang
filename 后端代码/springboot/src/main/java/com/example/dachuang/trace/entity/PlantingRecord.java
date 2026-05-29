@@ -27,22 +27,22 @@ public class PlantingRecord extends BaseEntity {
     @NotBlank(message = "batchNo cannot be blank")
     private String batchNo;
     @Column(length = 128)
-    private String fieldName; // 地块名称
+    private String fieldName;
     @Column(length = 64)
-    private String operation; // 操作类型（施肥、灌溉、采收）
+    private String operation;
     @Column(length = 1000)
-    private String details; // 详情
+    private String details;
     @Column(length = 64)
-    private String operator; // 操作员
+    private String operator;
 
     @Column(length = 255)
-    private String imageUrl; // 现场照片
+    private String imageUrl;
     @Column(length = 255)
-    private String audioUrl; // 语音录入
+    private String audioUrl;
 
-    private Double latitude; // 定位纬度
-    private Double longitude; // 定位经度
+    private Double latitude;
+    private Double longitude;
 
     @Column(name = "operation_time", nullable = false)
-    private LocalDateTime operationTime; // 实际操作时间（施肥/灌溉等）
+    private LocalDateTime operationTime;
 }

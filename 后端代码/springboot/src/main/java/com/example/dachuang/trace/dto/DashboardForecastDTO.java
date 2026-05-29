@@ -18,8 +18,8 @@ public class DashboardForecastDTO {
     private List<Double> predictedValues;
     private List<Double> lowerConfidenceBounds;
     private List<Double> upperConfidenceBounds;
-    
-    // 供前端展示的模型表现数据指标
+
+
     private double modelRmse;
     private double modelAccuracy;
 }

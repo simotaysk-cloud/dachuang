@@ -1,13 +1,13 @@
-// components/supply-chain-steps/index.js
+
 Component({
   properties: {
     active: {
-      type: null, // Allow Number or Array
+      type: null,
       value: 0
     },
     mode: {
       type: String,
-      value: 'role' // 'role' (single/multiple highlight) or 'process' (cumulative highlight)
+      value: 'role'
     }
   },
 
@@ -38,10 +38,10 @@ Component({
   methods: {
     goToStep(e) {
       const stepIdx = parseInt(e.currentTarget.dataset.step);
-      
+
       if (this.properties.mode === 'process') {
-         // In process mode, clicking a step should notify the parent container
-         // to show specific information about THIS batch, preventing general routing.
+
+
          this.triggerEvent('stepClick', { step: stepIdx });
          return;
       }
@@ -50,7 +50,7 @@ Component({
 
       const step = this.data.steps[stepIdx];
       if (step && step.url) {
-        // Use reLaunch to clear navigation stack between core supply chain phases
+
         wx.reLaunch({
           url: step.url,
           fail: (err) => {

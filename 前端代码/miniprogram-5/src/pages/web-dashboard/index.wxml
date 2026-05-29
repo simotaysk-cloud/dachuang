@@ -13,7 +13,7 @@
     </view>
   </view>
 
-  <!-- 将环节标签移回顶部，匹配原始界面 -->
+
   <view class="chart-card" wx:if="{{tagItems.length}}">
     <view class="chart-head">
       <text class="chart-title">{{tagSectionTitle}}</text>
@@ -90,9 +90,9 @@
 
 
 
-  <!-- 原位删除，准备移到末尾 -->
 
-  <!-- 原位删除，准备移到末尾 -->
+
+
 
   <view class="chart-card">
     <view class="chart-head">
@@ -113,8 +113,8 @@
     <view class="empty-state" wx:else>{{chainEmptyText}}</view>
   </view>
 
-  <!-- 移动到页面底部，防止 Native 组件向上偏移覆盖上方卡片 -->
-  <!-- 模块一：全域总产值推演 (宏观) -->
+
+
   <view class="chart-card" style="padding-bottom: 20px; margin-top: 20rpx;">
     <view class="chart-head">
       <view>
@@ -134,7 +134,7 @@
     </view>
   </view>
 
-  <!-- 模块二：分品种动态推演 (微观) -->
+
   <view class="chart-card" style="padding-bottom: 20px; margin-top: 20rpx; border: 1rpx solid rgba(45, 90, 39, 0.15); background: rgba(255, 255, 255, 0.95);">
     <view class="chart-head" style="display: flex; justify-content: space-between; align-items: flex-start;">
       <view>

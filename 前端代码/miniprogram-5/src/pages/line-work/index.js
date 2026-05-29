@@ -6,7 +6,7 @@ Page({
         usernameRaw: api.username || 'user',
         roleLabel: '',
         batchNo: '',
-        manualBatchNo: '', // Temporary input storage
+        manualBatchNo: '',
         batchInfo: null,
         sessionRecords: [],
         showAddModal: false,
@@ -51,7 +51,7 @@ Page({
                 roleLabel: api.getRoleName(profile?.role || api.role)
             })
         } catch (err) {
-            // Ignore profile errors and keep cached identity.
+
         }
     },
 
@@ -89,7 +89,7 @@ Page({
                 return
             }
         } catch (e) {
-            // ignore
+
         }
         if (!this.data.addForm.operator) {
             this.setData({

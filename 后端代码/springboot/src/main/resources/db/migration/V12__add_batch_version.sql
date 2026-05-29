@@ -1,4 +1,4 @@
--- Idempotent migration for version
+
 SET @has_version := (
   SELECT COUNT(*) FROM information_schema.columns
   WHERE table_schema = DATABASE() AND table_name = 'batches' AND column_name = 'version'

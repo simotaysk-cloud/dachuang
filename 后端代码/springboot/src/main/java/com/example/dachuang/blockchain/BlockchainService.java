@@ -27,7 +27,7 @@ public class BlockchainService {
     private String mode;
 
     public synchronized RecordResult recordOnChain(String batchNo, String data) {
-        // Check existence using repository directly to avoid circular dependency
+
         if (batchRepository.findByBatchNo(batchNo).isEmpty()) {
             throw new BusinessException(404, "Batch not found: " + batchNo);
         }
@@ -39,11 +39,11 @@ public class BlockchainService {
         if (BlockchainMode.EVM.name().equalsIgnoreCase(mode)) {
             EvmBlockchainClient.AnchorResult r = evmBlockchainClient.anchor(batchNo, data);
             txHash = r.txHash();
-            // keep dataHash computed from the provided payload (same as on-chain)
+
             dataHash = r.dataHash();
             txUrl = r.txUrl();
         } else {
-            // Mocking blockchain transaction
+
             txHash = "0x" + UUID.randomUUID().toString().replace("-", "");
         }
 

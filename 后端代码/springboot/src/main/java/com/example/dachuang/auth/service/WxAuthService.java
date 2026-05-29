@@ -39,7 +39,7 @@ public class WxAuthService {
         log.info("Login attempt - username: [{}], password length: {}", username,
                 password != null ? password.length() : 0);
 
-        // Find user by username
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> {
                     log.warn("Login failed: User not found [{}]", username);
@@ -49,7 +49,7 @@ public class WxAuthService {
         String stored = user.getPassword() == null ? "" : user.getPassword();
         boolean ok = passwordEncoder.matches(password, stored);
 
-        // Backward-compat: if old rows were stored as plain text, accept once and migrate.
+
         if (!ok && !stored.startsWith("$2a$") && !stored.startsWith("$2b$") && !stored.startsWith("$2y$")) {
             ok = stored.equals(password);
             if (ok) {
@@ -60,8 +60,8 @@ public class WxAuthService {
 
         if (!ok) {
             log.warn("Login failed: Password mismatch for user [{}]", username);
-            // Optional: for dev, log characters if suspicious, but let's stick to lengths
-            // for now
+
+
             throw new BusinessException(401, "Username or password incorrect");
         }
 

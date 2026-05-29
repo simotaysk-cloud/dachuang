@@ -1,0 +1,51 @@
+<view class="seasonal-page">
+  <block wx:if="{{mode === 'list'}}">
+    <view class="seasonal-hero">
+      <text class="seasonal-kicker">SEASONAL HERB GUIDE</text>
+      <text class="seasonal-title">时令养生</text>
+      <text class="seasonal-desc">按节气和日常场景整理的本草轻饮建议，图片均为真实药材质感展示。</text>
+    </view>
+
+    <view class="seasonal-list">
+      <view class="seasonal-card" wx:for="{{items}}" wx:key="id" bindtap="openDetail" data-id="{{item.id}}">
+        <image class="seasonal-card-image" src="{{item.image}}" mode="aspectFill"></image>
+        <view class="seasonal-card-body">
+          <view class="seasonal-card-meta">
+            <text>{{item.tag}}</text>
+            <text>{{item.season}}</text>
+          </view>
+          <text class="seasonal-card-title">{{item.title}}</text>
+          <text class="seasonal-card-desc">{{item.excerpt}}</text>
+          <text class="seasonal-card-link">查看养单</text>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <image class="detail-image" src="{{detail.image}}" mode="aspectFill" bindtap="previewImage" data-url="{{detail.image}}"></image>
+    <view class="detail-body">
+      <text class="detail-kicker">{{detail.tag}} · {{detail.season}}</text>
+      <text class="detail-title">{{detail.title}}</text>
+      <text class="detail-desc">{{detail.scenario}}</text>
+
+      <view class="detail-section">
+        <text class="detail-section-title">适合怎么喝</text>
+        <text class="detail-section-body">{{detail.usage}}</text>
+      </view>
+
+      <view class="detail-section">
+        <text class="detail-section-title">本草看点</text>
+        <view class="effect-item" wx:for="{{detail.effects}}" wx:key="*this">
+          <view class="effect-dot"></view>
+          <text class="effect-text">{{item}}</text>
+        </view>
+      </view>
+
+      <view class="notice-box">
+        <text class="notice-title">温馨提示</text>
+        <text class="notice-body">{{detail.cautions}}</text>
+      </view>
+    </view>
+  </block>
+</view>

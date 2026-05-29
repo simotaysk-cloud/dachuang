@@ -18,8 +18,8 @@ public class CodeService {
         Batch batch = batchRepository.findByBatchNo(batchNo)
                 .orElseThrow(() -> new BusinessException(404, "Batch not found: " + batchNo));
 
-        // Visible code: the traceability code that can be printed as QR (batchNo).
-        // Invisible code: anti-counterfeit hidden code (minCode) stored in DB.
+
+
         String minCode = (batch.getMinCode() == null) ? "" : batch.getMinCode().trim();
         if (minCode.isBlank()) {
             minCode = generateUniqueMinCode();
@@ -43,7 +43,7 @@ public class CodeService {
     }
 
     private String generateUniqueMinCode() {
-        // Keep it short for manual input, but still reasonably unique.
+
         for (int i = 0; i < 20; i++) {
             String c = UUID.randomUUID().toString().replace("-", "").substring(0, 16).toUpperCase();
             if (batchRepository.findByMinCode(c).isEmpty()) {

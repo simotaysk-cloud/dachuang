@@ -49,7 +49,7 @@ Page({
                 roleLabel: api.getRoleName(profile?.role || api.role)
             })
         } catch (err) {
-            // Ignore profile errors and keep cached identity.
+
         }
     },
 

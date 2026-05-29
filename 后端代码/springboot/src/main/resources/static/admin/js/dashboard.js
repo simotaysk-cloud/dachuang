@@ -40,7 +40,7 @@ async function loadDashboard() {
             updateDashboardStats(result.data);
             initOriginChart(result.data.originDist);
             initProcessChart(result.data.processTypeDist);
-            loadForecast(); // Added forecast load
+            loadForecast();
         }
     } catch (error) { console.error(error); }
 }
@@ -207,7 +207,7 @@ function initForecastChart(data) {
     const container = document.getElementById('forecastChart');
     if (!container) return;
     const chart = echarts.init(container, 'dark', { backgroundColor: 'transparent' });
-    
+
     const option = {
         tooltip: {
             trigger: 'axis',
@@ -271,7 +271,7 @@ function initForecastChart(data) {
             }
         ]
     };
-    
+
     chart.setOption(option);
     window.addEventListener('resize', () => chart.resize());
 }

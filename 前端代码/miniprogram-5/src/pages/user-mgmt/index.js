@@ -9,7 +9,7 @@ Page({
             username: '',
             password: '',
             nickname: '',
-            role: 'FARMER', // Default
+            role: 'FARMER',
             name: '',
             phone: ''
         },

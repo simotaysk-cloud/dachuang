@@ -1,5 +1,5 @@
--- Add consumer-facing fields for batches used by trace/consumer UI.
--- Use information_schema checks to keep migration rerunnable.
+
+
 
 SET @has_image_url := (
   SELECT COUNT(*) FROM information_schema.columns

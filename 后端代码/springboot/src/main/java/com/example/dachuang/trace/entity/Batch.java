@@ -17,57 +17,57 @@ import lombok.*;
 public class Batch extends BaseEntity {
 
     @Column(name = "owner_user_id")
-    private Long ownerUserId; // 所属用户ID（批次创建/归属）
+    private Long ownerUserId;
 
     @Column(unique = true, nullable = false, length = 64)
-    private String batchNo; // 批次号（业务主键）
+    private String batchNo;
 
     @Column(nullable = false, unique = true, length = 64)
-    private String minCode; // 隐形码（防伪校验）
+    private String minCode;
 
     @Column(length = 128)
-    private String name; // 中药材名称
+    private String name;
     @Column(length = 64)
-    private String category; // 类别（如：灵芝、当归）
+    private String category;
     @Column(length = 128)
-    private String origin; // 产地
+    private String origin;
     @Column(length = 32)
-    private String status; // 状态（如：PLANTING, PROCESSING, FINISHED）
+    private String status;
 
     @Column(length = 1000)
     private String description;
 
     @Column(length = 255)
-    private String imageUrl; // 药材主图
+    private String imageUrl;
 
     @Column(length = 1000)
-    private String usageAdvice; // 服用建议
+    private String usageAdvice;
 
     @Column(length = 1000)
-    private String contraindications; // 禁忌
+    private String contraindications;
 
     @Column(length = 1000)
-    private String commonPairings; // 常见配伍
+    private String commonPairings;
 
-    // Inventory & GS1
+
     @jakarta.persistence.Version
-    private Integer version; // 乐观锁机制防并发幻读
+    private Integer version;
 
     @Column(precision = 19, scale = 6)
-    private BigDecimal quantity; // 初始/入库数量
-    
+    private BigDecimal quantity;
+
     @Column(name = "remaining_quantity", precision = 19, scale = 6)
-    private BigDecimal remainingQuantity; // 剩余可用数量
+    private BigDecimal remainingQuantity;
 
     @Column(length = 16)
-    private String unit; // 单位 (kg, g, ton, etc.)
+    private String unit;
 
     @Column(name = "gs1_lot_no", unique = true, length = 32)
-    private String gs1LotNo; // GS1 AI(10) Lot/Batch (<= 20 chars, unique in our system)
+    private String gs1LotNo;
 
     @Column(name = "gs1_code", unique = true, length = 128)
-    private String gs1Code; // GS1-128 HRI: (01)...(10)...(310x)...
+    private String gs1Code;
 
     @Column(name = "gs1_locked", nullable = false)
-    private boolean gs1Locked; // after printing/applying, prevent changes to GS1-related fields
+    private boolean gs1Locked;
 }

@@ -21,24 +21,24 @@ public class ProcessingRecord extends BaseEntity {
         @Column(nullable = false, length = 64)
         private String batchNo;
         @Column(length = 64)
-        private String parentBatchNo; // 原料/上游批次号（分叉时填写）
+        private String parentBatchNo;
         @Column(length = 64)
-        private String processType; // 加工工艺
+        private String processType;
         @Column(length = 64)
-        private String lineName; // 生产线/工位名称（用于逻辑分组）
+        private String lineName;
         @Column(length = 128)
-        private String factory; // 工厂名称
+        private String factory;
         @Column(length = 1000)
         private String details;
         @Column(length = 64)
         private String operator;
 
         @Column(precision = 19, scale = 6)
-        private java.math.BigDecimal extractedQuantity; // 消耗原批次数量
-        
+        private java.math.BigDecimal extractedQuantity;
+
         @Column(precision = 19, scale = 6)
-        private java.math.BigDecimal outputQuantity; // 产出新批次数量
+        private java.math.BigDecimal outputQuantity;
 
         @Column(length = 255)
-        private String imageUrl; // 加工现场/成品照片
+        private String imageUrl;
 }

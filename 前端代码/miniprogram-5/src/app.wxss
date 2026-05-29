@@ -1,6 +1,6 @@
-/** app.wxss */
+
 page {
-  /* 统一高级感中式草本主题 (Premium Herb Theme) */
+
   --page-bg: #fbfaee;
   --page-ink: #1b1c15;
   --page-muted: #42493e;
@@ -18,7 +18,7 @@ page {
   --danger: #ba1a1a;
   --danger-soft: #ffdad6;
 
-  /* 兼容性桥接变量 (Legacy Compatibility) */
+
   --primary-color: var(--primary);
   --primary-strong: var(--primary-deep);
   --accent-color: var(--gold);
@@ -1145,7 +1145,7 @@ button.single-action {
   color: var(--text-light);
 }
 
-/* --- UNIFIED PREMIUM HERB GLOBAL COMPONENTS --- */
+
 .page-aura {
   position: absolute;
   border-radius: 999rpx;
@@ -1690,10 +1690,10 @@ button.single-action {
   color: var(--primary-deep);
 }
 
-/* --- END UNIFIED COMPONENTS --- */
 
 
-/* --- Form Support Additions --- */
+
+
 .grid-2 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1715,7 +1715,7 @@ button.single-action {
   margin-top: 18rpx;
 }
 
-/* --- COMPATIBILITY MAPPINGS FOR OTHERS --- */
+
 .empty-state {
   display: flex;
   flex-direction: column;

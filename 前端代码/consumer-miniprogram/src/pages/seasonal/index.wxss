@@ -1,0 +1,169 @@
+.seasonal-page {
+  min-height: 100vh;
+  padding: 34rpx 30rpx 72rpx;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #fbfaf6 0%, #f3efe6 100%);
+  color: #203329;
+}
+
+.seasonal-hero {
+  padding: 22rpx 0 28rpx;
+}
+
+.seasonal-kicker,
+.detail-kicker {
+  display: block;
+  color: #7b6a48;
+  font-size: 20rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+}
+
+.seasonal-title {
+  display: block;
+  margin-top: 14rpx;
+  font-size: 52rpx;
+  line-height: 1.12;
+  font-weight: 800;
+  color: #183326;
+}
+
+.seasonal-desc {
+  display: block;
+  margin-top: 16rpx;
+  max-width: 560rpx;
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: #68756b;
+}
+
+.seasonal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 26rpx;
+}
+
+.seasonal-card {
+  overflow: hidden;
+  border-radius: 18rpx;
+  background: #fffdf8;
+  box-shadow: 0 18rpx 42rpx rgba(38, 51, 42, 0.08);
+}
+
+.seasonal-card-image {
+  display: block;
+  width: 100%;
+  height: 330rpx;
+}
+
+.seasonal-card-body {
+  padding: 24rpx 24rpx 28rpx;
+}
+
+.seasonal-card-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 20rpx;
+  color: #8a7959;
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.seasonal-card-title {
+  display: block;
+  margin-top: 14rpx;
+  color: #1f3428;
+  font-size: 34rpx;
+  line-height: 1.35;
+  font-weight: 800;
+}
+
+.seasonal-card-desc {
+  display: block;
+  margin-top: 12rpx;
+  color: #68736b;
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.seasonal-card-link {
+  display: block;
+  margin-top: 18rpx;
+  color: #2d593c;
+  font-size: 24rpx;
+  font-weight: 800;
+}
+
+.detail-image {
+  display: block;
+  width: 100%;
+  height: 520rpx;
+  border-radius: 22rpx;
+}
+
+.detail-body {
+  padding-top: 30rpx;
+}
+
+.detail-title {
+  display: block;
+  margin-top: 14rpx;
+  color: #183326;
+  font-size: 44rpx;
+  line-height: 1.24;
+  font-weight: 800;
+}
+
+.detail-desc,
+.detail-section-body,
+.notice-body {
+  display: block;
+  margin-top: 14rpx;
+  color: #657068;
+  font-size: 25rpx;
+  line-height: 1.75;
+}
+
+.detail-section {
+  margin-top: 34rpx;
+  padding-top: 28rpx;
+  border-top: 1rpx solid rgba(103, 113, 105, 0.16);
+}
+
+.detail-section-title,
+.notice-title {
+  display: block;
+  color: #213629;
+  font-size: 30rpx;
+  font-weight: 800;
+}
+
+.effect-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14rpx;
+  margin-top: 18rpx;
+}
+
+.effect-dot {
+  width: 12rpx;
+  height: 12rpx;
+  margin-top: 14rpx;
+  border-radius: 50%;
+  background: #7b9a6b;
+  flex-shrink: 0;
+}
+
+.effect-text {
+  flex: 1;
+  color: #5f6c63;
+  font-size: 24rpx;
+  line-height: 1.7;
+}
+
+.notice-box {
+  margin-top: 36rpx;
+  padding: 24rpx;
+  border-radius: 18rpx;
+  background: #ebe5d8;
+}

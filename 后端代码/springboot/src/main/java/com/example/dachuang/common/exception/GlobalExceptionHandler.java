@@ -16,8 +16,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public Result<Void> handleMethodNotSupported(HttpRequestMethodNotSupportedException e) {
-        // Keep consistent with frontend assumption: HTTP 200 with business code.
-        // Use 405 to avoid hiding the real cause as "500 Internal Server Error".
+
+
         return Result.error(405, "Method Not Allowed: " + e.getMessage());
     }
 

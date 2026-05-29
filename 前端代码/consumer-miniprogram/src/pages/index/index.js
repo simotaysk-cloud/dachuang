@@ -13,30 +13,33 @@ Page({
     ],
     seasonalFeed: [
       {
-        id: 1,
-        mark: '草',
+        id: 'gan-cao',
+        herb: '甘草',
         tag: '节气·春养',
         time: '今日推荐',
-        title: '守胃和肝经日常适宜',
-        excerpt: '以一味甘淡平和的小材入饮，适合清晨温水同服。',
+        title: '甘草陈皮温润饮',
+        excerpt: '甘草切片清甜温和，适合换季时搭配陈皮作日常轻饮。',
+        image: '/assets/seasonal/season-gan-cao.jpg',
         tone: 'wood'
       },
       {
-        id: 2,
-        mark: '丸',
+        id: 'huang-qi',
+        herb: '黄芪',
         tag: '饮片推荐',
         time: '立夏前',
-        title: '北芪饮',
-        excerpt: '辛气小温，因承古方，可为春末体虚者作佐助参考。',
+        title: '黄芪麦冬清补茶',
+        excerpt: '黄芪片纹理饱满，适合在春夏交替时做清淡代茶饮。',
+        image: '/assets/seasonal/season-huang-qi.jpg',
         tone: 'earth'
       },
       {
-        id: 3,
-        mark: '花',
+        id: 'ju-hua',
+        herb: '菊花',
         tag: '节气·新材',
         time: '适合清饮',
-        title: '茶白山菊',
-        excerpt: '茶冷小香，不伤津液，适合作为清单中的日常轻选。',
+        title: '菊花枸杞清目茶',
+        excerpt: '干菊花花型完整、香气清浅，适合作为伏案后的温和茶饮。',
+        image: '/assets/seasonal/season-ju-hua.jpg',
         tone: 'mist'
       }
     ]
@@ -84,6 +87,19 @@ Page({
   openTraceExample: function() {
     wx.navigateTo({
       url: '/pages/trace/index?batchNo=HT20250815-ZJ001'
+    });
+  },
+
+  openSeasonalList: function() {
+    wx.navigateTo({
+      url: '/pages/seasonal/index'
+    });
+  },
+
+  openSeasonalDetail: function(e) {
+    var id = e.currentTarget.dataset.id;
+    wx.navigateTo({
+      url: '/pages/seasonal/index?id=' + encodeURIComponent(id)
     });
   },
 

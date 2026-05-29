@@ -32,8 +32,8 @@ public class DataInitializer implements CommandLineRunner {
 
         @Override
         public void run(String... args) {
-                // Dev-only: keep default accounts usable even if the DB already contains old
-                // rows.
+
+
                 ensureDefaultUser("admin", "123456", "ADMIN", "系统管理员", "dummy_admin");
                 ensureDefaultUser("farmer", "123456", "FARMER", "示范农户", "dummy_farmer");
                 ensureDefaultUser("manufacturer", "123456", "MANUFACTURER", "合作加工厂", "dummy_manufacturer");
@@ -72,7 +72,7 @@ public class DataInitializer implements CommandLineRunner {
         private void ensureMockData() {
                 Long farmerId = userRepository.findByUsername("farmer").map(User::getId).orElse(null);
 
-                // 1. Planting Batch: Changbai Mountain Ginseng
+
                 String plantingBatchNo = "MOCK-2024001";
                 if (batchRepository.findByBatchNo(plantingBatchNo).isEmpty()) {
                         com.example.dachuang.trace.entity.Batch pBatch = com.example.dachuang.trace.entity.Batch
@@ -121,7 +121,7 @@ public class DataInitializer implements CommandLineRunner {
                         log.info("Mock Planting Data Created: {}", plantingBatchNo);
                 }
 
-                // 2. Processing Batch (Derived)
+
                 String processBatchNo = "MOCK-2024001-P";
                 if (batchRepository.findByBatchNo(processBatchNo).isEmpty()) {
                         com.example.dachuang.trace.entity.Batch procBatch = com.example.dachuang.trace.entity.Batch
@@ -183,7 +183,7 @@ public class DataInitializer implements CommandLineRunner {
 
                         log.info("Mock Processing and Inspection Data Created: {}", processBatchNo);
 
-                        // Logistics
+
                         String shipmentNo = "SH-20241001";
                         if (shipmentRepository.findByShipmentNo(shipmentNo).isEmpty()) {
                                 shipmentRepository.save(com.example.dachuang.trace.entity.Shipment.builder()
@@ -226,7 +226,7 @@ public class DataInitializer implements CommandLineRunner {
                         }
                 }
 
-                // 3. New Chain: Yunnan Sanqi (云南三七)
+
                 String sanqiBatchNo = "MOCK-TRX-001";
                 if (batchRepository.findByBatchNo(sanqiBatchNo).isEmpty()) {
                         com.example.dachuang.trace.entity.Batch sBatch = com.example.dachuang.trace.entity.Batch

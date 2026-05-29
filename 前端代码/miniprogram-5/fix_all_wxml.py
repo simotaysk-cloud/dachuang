@@ -5,18 +5,18 @@ import re
 files_to_update = glob.glob('src/pages/**/*.wxml', recursive=True)
 
 replacements = {
-    # Layout and Aura
+
     r'ops-page': '',
     r'form-shell': '',
     r'ops-aura ops-aura-left': 'page-aura aura-left',
     r'ops-aura ops-aura-right': 'page-aura aura-right',
     r'ops-aura': 'page-aura',
 
-    # Topbar generic replacements including custom list tops
+
     r'ops-topbar': 'topbar',
     r'planting-topbar': 'topbar',
     r'ops-nav': 'nav-ghost',
-    r'nav-ghost': 'nav-ghost',       # already there in planting
+    r'nav-ghost': 'nav-ghost',
     r'ops-nav-arrow': 'nav-ghost-arrow',
     r'ops-brand': 'brand-title',
     r'topbar-brand': 'brand-title',
@@ -24,7 +24,7 @@ replacements = {
     r'ops-profile-name': 'profile-name',
     r'ops-profile-role': 'profile-role',
 
-    # Header generic
+
     r'ops-header': 'header',
     r'planting-header': 'header',
     r'ops-title': 'title',
@@ -32,7 +32,7 @@ replacements = {
     r'ops-desc': 'desc',
     r'planting-desc': 'desc',
 
-    # Hero Card
+
     r'form-hero-card': 'hero-panel hero-panel-warning',
     r'ops-hero-pattern': 'hero-pattern',
     r'form-hero-title': 'hero-title',
@@ -42,10 +42,10 @@ replacements = {
     r'batch-hero-pattern': 'hero-pattern',
     r'batch-hero-head': 'hero-head',
     r'batch-hero-copy': 'hero-copy',
-    r'batch-hero-eyebrow': 'hero-subtitle', # eyebrow -> subtitle
+    r'batch-hero-eyebrow': 'hero-subtitle',
     r'batch-hero-number': 'hero-title',
 
-    # form layout to generic layout
+
     r'form-card': 'card',
     r'ops-surface-card': 'card',
     r'action-card': 'card',
@@ -57,22 +57,22 @@ replacements = {
     r'form-subtitle': 'sub-title',
     r'form-meta': 'meta',
     r'form-grid-2': 'grid-2',
-    
-    # Chip row
+
+
     r'form-chip-row': 'chip-row',
     r'form-chip-active': 'chip-active',
     r'form-chip': 'chip',
 
-    # Readonly
+
     r'form-readonly-label': 'readonly-label',
     r'form-readonly-value': 'readonly-value',
     r'form-readonly': 'readonly-row',
 
-    # Actions
+
     r'form-action-row': 'action-row',
     r'form-single-action': 'single-action',
-    
-    # Lists
+
+
     r'ops-list': 'list',
     r'ops-list-item': 'list-item',
     r'ops-list-main': 'list-main',
@@ -82,11 +82,11 @@ replacements = {
     r'ops-list-side': 'list-action',
     r'ops-list-pill': 'list-action',
     r'ops-list-head': 'list-head',
-    
+
     r'ops-empty-state': 'empty-state',
     r'ops-empty-title': 'empty-title',
     r'ops-empty-desc': 'empty-desc',
-    
+
     r'ops-list-index': 'list-index',
     r'ops-list-index-text': 'list-index-text'
 }
@@ -105,7 +105,7 @@ for filepath in files_to_update:
             changed = True
 
     if changed:
-        # Specific fix: `<view class="">`
+
         content = re.sub(r'class="\s+"', '', content)
         content = re.sub(r'class="\s+([\w\s-]+)"', r'class="\1"', content)
         with open(filepath, 'w', encoding='utf-8') as f:

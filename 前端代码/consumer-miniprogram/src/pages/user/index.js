@@ -48,9 +48,9 @@ Page({
         points: 1280,
         level: '至信本草大师'
       };
-      
+
       app.globalData.userInfo = mockUser;
-      app.globalData.authToken = 'mock_vip_token_for_demo'; 
+      app.globalData.authToken = 'mock_vip_token_for_demo';
       wx.setStorageSync('userInfo', mockUser);
       wx.setStorageSync('authToken', 'mock_vip_token_for_demo');
 

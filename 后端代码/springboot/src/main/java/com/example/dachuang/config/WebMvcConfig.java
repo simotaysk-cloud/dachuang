@@ -35,7 +35,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Demo-only: serve uploaded files from local disk.
+
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:./uploads/");
     }

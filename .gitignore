@@ -1,5 +1,14 @@
 .DS_Store
 .vscode/
+.claire/
+.mcp/
+
+# Local generated deliverables and previews
+output/
+outputs/
+tmp/
+**/__pycache__/
+*.pyc
 
 # Java / Maven
 **/target/
@@ -20,6 +29,9 @@ project.private.config.json
 
 # WeChat DevTools
 miniprogram_npm/
+
+# Xcode user state
+**/xcuserdata/
 
 # Environmental tools
 tools/

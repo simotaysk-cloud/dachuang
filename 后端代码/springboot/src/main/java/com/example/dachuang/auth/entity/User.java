@@ -35,12 +35,12 @@ public class User extends BaseEntity {
     @Column(length = 255)
     private String avatarUrl;
     @Column(nullable = false, length = 32)
-    private String role; // ADMIN, USER, FARMER, etc.
+    private String role;
 
     @Column(length = 64)
-    private String name; // 真实姓名
+    private String name;
     @Column(length = 32)
-    private String phone; // 联系方式（需脱敏）
+    private String phone;
     @Column(nullable = true, unique = true, length = 128)
-    private String openid; // 保留作为可选识别码
+    private String openid;
 }

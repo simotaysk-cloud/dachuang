@@ -57,7 +57,7 @@ public class UserController {
                 .nickname(body.getNickname())
                 .name(body.getName())
                 .phone(body.getPhone())
-                // Keep it always populated for legacy schemas.
+
                 .openid("mock_openid_" + body.getUsername())
                 .build());
         return Result.success(UserResponse.builder()

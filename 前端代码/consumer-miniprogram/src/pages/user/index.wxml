@@ -1,8 +1,8 @@
 <view class="text-on-surface bg-background min-h-screen pb-32 overflow-x-hidden">
   <view class="pt-6 px-6 space-y-6 box-border">
-    <!-- User Profile Card -->
+
     <view class="bg-surface-container-lowest rounded-lg p-6 flex items-center gap-4 shadow-sm relative overflow-hidden">
-      <!-- Decor -->
+
       <view class="absolute -right-4 -top-4 opacity-5 pointer-events-none">
         <view class="ui-icon w-20 h-20 text-primary">
           <view class="ui-brand__ring"></view>
@@ -47,7 +47,7 @@
       </block>
     </view>
 
-    <!-- Stats Card (Traceability) -->
+
     <view class="bg-primary rounded-lg p-8 text-on-primary shadow-sm relative overflow-hidden">
       <view class="absolute top-0 right-0 w-32 h-32 bg-primary-container/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></view>
       <view class="relative z-10 flex justify-between items-center text-center">
@@ -68,12 +68,12 @@
       </view>
     </view>
 
-    <!-- Certs (Horizontal Scroll / Promotional Bento Style) -->
+
     <view class="mt-4">
       <view class="flex justify-between items-end mb-4">
         <text class="text-xl font-bold text-primary tracking-tight">可信存证</text>
       </view>
-      
+
       <scroll-view wx:if="{{hasUserInfo}}" scroll-x class="whitespace-nowrap pb-4" style="width: 100%;">
         <view wx:for="{{certs}}" wx:key="id" bindtap="showCert" data-cert="{{item}}" class="inline-block bg-secondary-container/30 rounded-lg p-5 w-48 aspect-square relative overflow-hidden group mr-4 align-top border border-primary/5">
           <view class="relative z-10 flex flex-col h-full justify-between">
@@ -107,13 +107,13 @@
       </view>
     </view>
 
-    <!-- Function List -->
+
     <view class="mt-4">
       <view class="flex justify-between items-end mb-4">
         <text class="text-xl font-bold text-primary tracking-tight">常用服务</text>
       </view>
       <view class="bg-surface-container-low rounded-lg overflow-hidden flex flex-col p-2 space-y-1">
-        
+
         <block wx:for="{{serviceMenus}}" wx:key="action">
           <view class="w-full flex items-center justify-between gap-3 p-4 bg-surface-container-lowest rounded-md transition-opacity active:scale-95 duration-200 box-border" data-action="{{item.action}}" bindtap="handleMenuAction">
             <view class="flex items-center gap-4 flex-1 min-w-0">

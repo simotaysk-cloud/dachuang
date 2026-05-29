@@ -1,5 +1,5 @@
 .planting-dashboard-page {
-  /* 使用 app.wxss 全局变量 */
+
   min-height: 100vh;
   padding: 28rpx 24rpx 72rpx;
   box-sizing: border-box;

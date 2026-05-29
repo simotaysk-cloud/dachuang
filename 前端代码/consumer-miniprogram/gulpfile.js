@@ -7,7 +7,7 @@ const { transformWxss, transformWxml, transformJs } = createPlugins();
 const src = './src';
 const dist = './dist';
 
-// 编译 WXSS
+
 gulp.task('css', () => {
   return gulp.src(`${src}/**/*.wxss`)
     .pipe(postcss())
@@ -28,15 +28,22 @@ gulp.task('js', () => {
     .pipe(gulp.dest(dist));
 });
 
-// 拷贝其他文件
-gulp.task('copy', () => {
+// 拷贝配置等文本文件
+gulp.task('copy-static', () => {
   return gulp.src([
     `${src}/**/*.json`,
     `${src}/**/*.wxs`,
-    `${src}/**/*.{png,jpg,jpeg,gif,svg,webp}`,
     `!${src}/**/*.md`
   ]).pipe(gulp.dest(dist));
 });
+
+// Gulp 5 默认按文本读取文件，图片等二进制资源需要显式关闭编码。
+gulp.task('copy-assets', () => {
+  return gulp.src(`${src}/**/*.{png,jpg,jpeg,gif,svg,webp}`, { encoding: false })
+    .pipe(gulp.dest(dist));
+});
+
+gulp.task('copy', gulp.parallel('copy-static', 'copy-assets'));
 
 // 监听文件变化
 gulp.task('watch', () => {
@@ -58,4 +65,3 @@ gulp.task('default', gulp.series(
   'build',
   'watch'
 ));
-

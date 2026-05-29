@@ -35,15 +35,15 @@ public class ProcessingRecordService {
         if (record == null) {
             throw new BusinessException(400, "Invalid processing payload");
         }
-        // If a parent is provided, treat this as a potential divergence point.
+
         if (record.getParentBatchNo() != null && !record.getParentBatchNo().isBlank()) {
             String parentNo = record.getParentBatchNo().trim();
             String childNo = record.getBatchNo();
             Batch child = batchService.deriveBatch(parentNo, childNo, "PROCESSING", record.getProcessType(),
-                    record.getDetails(), record.getLineName(), record.getOperator(), 
+                    record.getDetails(), record.getLineName(), record.getOperator(),
                     record.getExtractedQuantity(), record.getOutputQuantity());
-            // LOCK LOGIC: Immediately lock GS1 data for derived batches to prevent
-            // tampering
+
+
             batchService.lockGs1ByBatchNo(child.getBatchNo());
 
             record.setBatchNo(child.getBatchNo());

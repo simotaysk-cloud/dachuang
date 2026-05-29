@@ -1,5 +1,5 @@
--- Add production line name for processing records.
--- Use dynamic SQL to make it safe to run even if the column already exists.
+
+
 
 SET @has_line_name := (
   SELECT COUNT(*)

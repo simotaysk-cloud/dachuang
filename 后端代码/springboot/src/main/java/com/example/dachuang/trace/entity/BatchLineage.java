@@ -28,9 +28,9 @@ public class BatchLineage extends BaseEntity {
         private String childBatchNo;
 
         @Column(length = 32)
-        private String stage; // e.g. PROCESSING
+        private String stage;
         @Column(length = 64)
-        private String processType; // optional detail of divergence reason
+        private String processType;
 
         @Column(length = 64)
         private String lineName;

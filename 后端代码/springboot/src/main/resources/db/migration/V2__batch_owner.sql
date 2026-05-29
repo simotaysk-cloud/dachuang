@@ -1,5 +1,5 @@
--- Add ownership for batches (who created/owns the batch).
--- Demo-friendly: allow NULL for existing rows; application will always set it on create/derive.
+
+
 
 ALTER TABLE batches
   ADD COLUMN owner_user_id BIGINT NULL;

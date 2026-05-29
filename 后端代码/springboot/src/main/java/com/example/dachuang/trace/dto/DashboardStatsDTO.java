@@ -23,8 +23,8 @@ public class DashboardStatsDTO {
     private List<Map<String, Object>> originDist;
     private List<Map<String, Object>> processTypeDist;
 
-    // Traceability Statistics
-    private Map<String, Long> integrityStats; // {planting: 10, processing: 8, inspection: 5, blockchain: 3}
-    private List<Map<String, Object>> recentBlockchainRecords; // Recent tx summaries
-    private double overallTraceabilityRate; // Percent of batches with inspection
+
+    private Map<String, Long> integrityStats;
+    private List<Map<String, Object>> recentBlockchainRecords;
+    private double overallTraceabilityRate;
 }

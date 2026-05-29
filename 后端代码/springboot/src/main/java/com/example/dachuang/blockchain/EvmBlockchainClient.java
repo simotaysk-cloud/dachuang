@@ -172,7 +172,7 @@ public class EvmBlockchainClient {
         Web3j web3j = Web3j.build(new HttpService(rpcUrl));
         Credentials credentials = Credentials.create(normalizePrivateKey(privateKey));
         try {
-            // The minimal demo contract exposes: mapping(string => bytes32) public hashes;
+
             Function fn = new Function(
                     "hashes",
                     List.of(new Utf8String(batchNo)),
@@ -250,9 +250,9 @@ public class EvmBlockchainClient {
     private static String extractDataHashFromAnchoredEventData(String data) {
         if (data == null) return "";
         String hex = data.startsWith("0x") ? data.substring(2) : data;
-        // Anchored(string batchNo, bytes32 dataHash, address indexed sender, uint256 timestamp)
-        // Non-indexed payload starts with:
-        // word0: string offset, word1: bytes32 dataHash, word2: timestamp ...
+
+
+
         if (hex.length() < 128) return "";
         String hashHex = hex.substring(64, 128).toLowerCase(Locale.ROOT);
         if (hashHex.matches("^0+$")) return "";
@@ -289,7 +289,7 @@ public class EvmBlockchainClient {
             s = s.substring(2);
         }
         s = s.toLowerCase(Locale.ROOT);
-        // A private key is 32 bytes => 64 hex chars.
+
         if (s.length() != 64 || !s.matches("^[0-9a-f]{64}$")) {
             throw new IllegalArgumentException("invalid private key");
         }
@@ -301,7 +301,7 @@ public class EvmBlockchainClient {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             return md.digest((data == null ? "" : data).getBytes(StandardCharsets.UTF_8));
         } catch (NoSuchAlgorithmException e) {
-            // Should never happen on modern JVMs.
+
             throw new IllegalStateException("SHA-256 not available");
         }
     }

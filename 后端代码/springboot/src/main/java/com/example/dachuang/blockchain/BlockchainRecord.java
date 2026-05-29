@@ -17,13 +17,13 @@ public class BlockchainRecord extends BaseEntity {
     @Column(nullable = false, unique = true, length = 64)
     private String batchNo;
     @Column(unique = true, length = 80)
-    private String txHash; // 区块链交易哈希
+    private String txHash;
     @Column(length = 80)
-    private String dataHash; // 数据摘要摘要
+    private String dataHash;
 
     @Column(length = 16)
-    private String mode; // MOCK / EVM
+    private String mode;
 
     @Column(length = 255)
-    private String txUrl; // 浏览器链接（可选）
+    private String txUrl;
 }

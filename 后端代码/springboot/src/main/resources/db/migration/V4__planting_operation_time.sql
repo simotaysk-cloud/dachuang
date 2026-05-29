@@ -1,5 +1,5 @@
--- Record the actual operation time for planting actions.
--- For demo: backfill existing rows, then enforce NOT NULL.
+
+
 
 ALTER TABLE planting_records
   ADD COLUMN operation_time DATETIME(6) NULL;

@@ -393,13 +393,13 @@ Page({
           api.setToken('')
           api.setRole('')
           api.setUsername('')
-          
+
           wx.showToast({
             title: '已退出登录',
             icon: 'success',
             duration: 800
           })
-          
+
           setTimeout(() => {
             wx.reLaunch({
               url: '/pages/login/index'

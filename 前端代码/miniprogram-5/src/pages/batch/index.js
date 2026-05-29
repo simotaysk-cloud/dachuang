@@ -58,7 +58,7 @@ Page({
                 roleLabel: api.getRoleName(profile?.role || api.role)
             })
         } catch (err) {
-            // Ignore profile errors and keep cached identity.
+
         }
     },
 
@@ -95,7 +95,7 @@ Page({
         }
         this.setData({ loading: true })
         try {
-            // Batch management only shows root (original) batches.
+
             const res = await api.request('/api/v1/batches?rootOnly=true')
             const roots = Array.isArray(res.data) ? res.data : []
             const matched = roots.filter((item) => {

@@ -1,35 +1,35 @@
 {
-  "compileType": "miniprogram",
-  "description": "项目配置文件",
-  "miniprogramRoot": "src/",
-  "packOptions": {
-    "ignore": [],
-    "include": []
-  },
-  "setting": {
-    "coverView": true,
-    "es6": true,
-    "postcss": true,
-    "minified": true,
-    "enhance": true,
-    "showShadowRootInWxmlPanel": true,
-    "packNpmManually": false,
-    "packNpmRelationList": [],
-    "minifyWXSS": true,
-    "minifyWXML": true,
-    "localPlugins": false,
-    "condition": false,
-    "swc": false,
-    "disableSWC": true,
-    "disableUseStrict": false,
-    "useCompilerPlugins": false,
-    "urlCheck": false
-  },
-  "condition": {},
-  "editorSetting": {
-    "tabIndent": "auto",
-    "tabSize": 2
-  },
-  "appid": "wxb6004f50990df687",
-  "simulatorPluginLibVersion": {}
+    "compileType": "miniprogram",
+    "description": "项目配置文件",
+    "miniprogramRoot": "src/",
+    "packOptions": {
+        "ignore": [],
+        "include": []
+    },
+    "setting": {
+        "coverView": true,
+        "es6": true,
+        "postcss": true,
+        "minified": true,
+        "enhance": true,
+        "showShadowRootInWxmlPanel": true,
+        "packNpmManually": false,
+        "packNpmRelationList": [],
+        "minifyWXSS": true,
+        "minifyWXML": true,
+        "localPlugins": false,
+        "condition": false,
+        "swc": false,
+        "disableSWC": true,
+        "disableUseStrict": false,
+        "useCompilerPlugins": false,
+        "urlCheck": false
+    },
+    "condition": {},
+    "editorSetting": {
+        "tabIndent": "auto",
+        "tabSize": 2
+    },
+    "appid": "wxb6004f50990df687",
+    "simulatorPluginLibVersion": {}
 }

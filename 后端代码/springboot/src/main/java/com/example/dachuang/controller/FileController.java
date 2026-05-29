@@ -20,7 +20,7 @@ import java.util.UUID;
 @RequestMapping("/api/v1/files")
 public class FileController {
 
-    // Demo-only local file storage.
+
     private static final Path UPLOAD_DIR = Paths.get("uploads");
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

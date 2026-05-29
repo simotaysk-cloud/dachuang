@@ -35,9 +35,9 @@ wx:
       appid: wxaff7283d63d54a14
       secret: ${WX_CONSUMER_SECRET:mock-secret}
 
-# Blockchain (demo)
-# - mode=MOCK: generate fake txHash/dataHash
-# - mode=EVM: send real transaction to an EVM-compatible chain (testnet recommended)
+
+
+
 app:
   public-base-url: https://cpuzhbc.cn
   blockchain:

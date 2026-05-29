@@ -102,7 +102,7 @@ Page({
       this.setData({ rootBatchNo: batchNo })
       this.loadLeafBatches()
     } catch (e) {
-      // user cancel
+
     }
   },
 

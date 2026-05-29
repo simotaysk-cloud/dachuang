@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class UpdateUserRequest {
-    private String password; // optional; if blank, keep existing
+    private String password;
     private String role;
     private String nickname;
     private String name;

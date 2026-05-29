@@ -20,7 +20,7 @@ try {
         }
     }
 } catch (err) {
-    // Keep app usable even when config.js is not packaged in dev tools.
+
     console.warn('utils/config not loaded, using default apiBaseUrl')
 }
 
@@ -48,9 +48,9 @@ function normalizeBaseUrl(url) {
     let u = String(url || '').trim()
     if (!u) return u
 
-    // Ensure protocol is present
+
     if (u && !u.startsWith('http')) {
-        // 生产默认优先 https，减少上架时因 http 被拦截
+
         u = 'https://' + u
     }
 

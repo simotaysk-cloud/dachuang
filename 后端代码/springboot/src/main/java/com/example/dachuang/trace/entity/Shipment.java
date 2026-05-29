@@ -25,14 +25,14 @@ public class Shipment extends BaseEntity {
 
         @Column(nullable = false, length = 128)
         @NotBlank(message = "distributorName cannot be blank")
-        private String distributorName; // receiver / distributor
+        private String distributorName;
 
         @Column(length = 64)
         private String carrier;
         @Column(length = 64)
         private String trackingNo;
         @Column(length = 32)
-        private String status; // CREATED/IN_TRANSIT/DELIVERED/CANCELLED
+        private String status;
 
         @Column(length = 1000)
         private String remarks;

@@ -29,17 +29,17 @@ public class LogisticsRecord extends BaseEntity {
     @NotBlank(message = "batchNo cannot be blank")
     private String batchNo;
     @Column(length = 128)
-    private String fromLocation; // 起点
+    private String fromLocation;
     @Column(length = 128)
-    private String toLocation; // 终点
+    private String toLocation;
     @Column(length = 64)
-    private String trackingNo; // 物流单号
+    private String trackingNo;
 
     @Column(length = 128)
-    private String location; // 当前位置
+    private String location;
     @Column(length = 32)
-    private String status; // 运输状态
+    private String status;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime; // 更新时间
+    private LocalDateTime updateTime;
 }

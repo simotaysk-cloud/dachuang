@@ -17,6 +17,7 @@ Page({
         price: '298.00',
         unit: '500g',
         sales: 428,
+        image: '/assets/market/market-huang-lian.jpg',
         desc: '展示真实商品信息与来源说明，不用依赖大面积概念图片。'
       },
       {
@@ -29,6 +30,7 @@ Page({
         price: '860.00',
         unit: '100g',
         sales: 112,
+        image: '/assets/market/market-chong-lou.jpg',
         desc: '适合突出稀缺性、规格、库存和批次可查能力。'
       }
     ],
@@ -40,6 +42,7 @@ Page({
         price: '1999.00',
         status: '可认养',
         yield: '约 1.5kg/季',
+        image: '/assets/market/market-field-huang-lian.jpg',
         desc: '认养后可查看地块记录、管护节点和预计收成节奏。'
       },
       {
@@ -49,6 +52,7 @@ Page({
         price: '4500.00',
         status: '剩余 2 份',
         yield: '专属挂牌采挖权',
+        image: '/assets/market/market-forest-chong-lou.jpg',
         desc: '强调认养权益和后续可视化记录，而不是单纯概念展示。'
       }
     ]

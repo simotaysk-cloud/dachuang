@@ -1,6 +1,7 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/seasonal/index",
     "pages/trace/index",
     "pages/market/index",
     "pages/ai-consult/index",

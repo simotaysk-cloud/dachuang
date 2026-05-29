@@ -8,10 +8,7 @@ import java.math.RoundingMode;
 @Service
 public class Gs1Service {
 
-    /**
-     * Generate GS1-128 Human Readable Interpretation (HRI)
-     * e.g. (01)06912345678901(10)BATCH001(3102)000050
-     */
+
     public String generateGs1HRI(String lotNo, BigDecimal quantity, String unit) {
         String sanitizedLot = sanitizeLotNo(lotNo);
         StringBuilder sb = new StringBuilder();
@@ -21,7 +18,7 @@ public class Gs1Service {
 
         if (quantity != null) {
             BigDecimal weightInKg = convertToKg(quantity, unit);
-            // AI 3102 means "Net weight in kg, 2 decimal places"
+
             sb.append("(3102)").append(formatWeight(weightInKg));
         }
 
@@ -31,7 +28,7 @@ public class Gs1Service {
     public String sanitizeLotNo(String lotNo) {
         if (lotNo == null)
             return "NA";
-        // GS1-128 AI(10) allows up to 20 characters (alphanumeric, -, etc.)
+
         String sanitized = lotNo.replaceAll("[^a-zA-Z0-9-]", "");
         if (sanitized.length() > 20) {
             sanitized = sanitized.substring(0, 20);
@@ -60,7 +57,7 @@ public class Gs1Service {
             case "斤":
                 return quantity.multiply(new BigDecimal("0.5"));
             default:
-                return quantity; // Default assume kg
+                return quantity;
         }
     }
 
@@ -69,7 +66,7 @@ public class Gs1Service {
     }
 
     private String formatWeight(BigDecimal weight) {
-        // AI 3102 -> 2 decimal places. e.g. 50.00 -> 005000 (total 6 digits)
+
         if (weight == null) {
             return "000000";
         }

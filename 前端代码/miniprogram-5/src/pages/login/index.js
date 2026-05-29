@@ -89,19 +89,19 @@ Page({
 
         try {
             wx.showLoading({ title: '登录中...' })
-            // Use quiet: true to handle UI notifications manually and avoid showLoading/hideLoading mismatch warnings.
+
             const loginRes = await api.login(username, password, { quiet: true })
             wx.hideLoading()
 
             if (loginRes?.data?.token) {
                 const actualRole = (loginRes.data.role || '').toUpperCase()
                 const selectedRole = this.data.roleOptions[this.data.roleIndex].key
-                
-                // Identity Validation
+
+
                 if (actualRole !== selectedRole && actualRole !== 'ADMIN') {
                     wx.hideLoading()
                     wx.showToast({ title: '身份与账号不匹配', icon: 'none' })
-                    // Clear the session just in case
+
                     api.setToken('')
                     api.setRole('')
                     return
@@ -132,7 +132,7 @@ Page({
                 wx.showToast({ title: '网络错误：检查 Base URL/端口/同网段', icon: 'none' })
                 return
             }
-            // Backend 401 message might be English; show a friendly text.
+
             if (statusCode === 401 || businessCode === 401 || msg.toLowerCase().includes('incorrect') || msg.includes('401')) {
                 wx.showToast({ title: '账号或密码错误', icon: 'none' })
                 return
@@ -142,8 +142,8 @@ Page({
     },
 
     redirectByRole(role) {
-        // Keep navigation consistent across roles.
-        // FARMER needs access to both "批次管理" and "种植录入", so landing on index is required.
+
+
         const url = '/pages/index/index'
         wx.reLaunch({ url })
     }

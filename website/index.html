@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>药途寻迹 - 中药材全过程溯源管理系统</title>
+    <meta
+      name="description"
+      content="药途寻迹是一套覆盖种植、加工、质检、物流与消费者验真的中药材全过程溯源管理系统。"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header" aria-label="主导航">
+      <a class="brand" href="#top" aria-label="药途寻迹首页">
+        <img src="./assets/project-mark.png" alt="" />
+        <span>药途寻迹</span>
+      </a>
+      <nav>
+        <a href="#flow">流程</a>
+        <a href="#tech">技术</a>
+        <a href="#roles">角色</a>
+        <a href="#demo">演示</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-grid" aria-hidden="true"></div>
+        <div class="trace-lines" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="hero-copy reveal">
+          <p class="eyebrow">GS1-128 · EVM 存证 · 全链路质控</p>
+          <h1 id="hero-title">药途寻迹</h1>
+          <p class="hero-subtitle">中药材从种植到流通的可信数据底座。</p>
+          <p class="hero-text">
+            用扫码开工、质检准入、发运锁定和哈希存证，把每一批药材的时间、地点、责任人与质量记录串成可验证链路。
+          </p>
+          <div class="hero-actions" aria-label="页面快捷入口">
+            <a class="primary-action" href="#demo">查看演示批次</a>
+            <a class="secondary-action" href="#tech">查看技术架构</a>
+          </div>
+        </div>
+
+        <div class="hero-visual reveal" data-tilt>
+          <div class="scanner" aria-hidden="true"></div>
+          <div class="glass-plane">
+            <div class="plane-head">
+              <img src="./assets/project-mark.png" alt="" />
+              <div>
+                <strong>MOCK-2024001</strong>
+                <span>长白山人参 · 已完成验真</span>
+              </div>
+            </div>
+            <div class="trace-map" aria-label="溯源链路可视化">
+              <div class="map-node is-active">
+                <span>01</span>
+                <strong>扫码开工</strong>
+                <em>GPS / NTP</em>
+              </div>
+              <div class="map-node">
+                <span>02</span>
+                <strong>质检准入</strong>
+                <em>Inspection Passed</em>
+              </div>
+              <div class="map-node">
+                <span>03</span>
+                <strong>GS1 锁定</strong>
+                <em>READONLY</em>
+              </div>
+              <div class="map-node">
+                <span>04</span>
+                <strong>哈希存证</strong>
+                <em>TxHash</em>
+              </div>
+            </div>
+            <div class="hash-strip">
+              <span>DATA HASH</span>
+              <code>0x8f42...7ac9</code>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="metrics reveal" aria-label="系统能力概览">
+        <div>
+          <strong data-count="5">0</strong>
+          <span>业务角色</span>
+        </div>
+        <div>
+          <strong data-count="4">0</strong>
+          <span>核心环节</span>
+        </div>
+        <div>
+          <strong data-count="8091">0</strong>
+          <span>后端服务端口</span>
+        </div>
+        <div>
+          <strong>GS1</strong>
+          <span>工业编码标准</span>
+        </div>
+      </section>
+
+      <section id="flow" class="flow-section">
+        <div class="section-kicker reveal">可信流程</div>
+        <div class="section-heading reveal">
+          <h2>每一次扫码都改变批次状态。</h2>
+          <p>系统把移动端采集、后端状态机、质检报告和发运赋码绑定起来，让溯源不只是展示记录，而是控制流程。</p>
+        </div>
+        <div class="flow-line" aria-label="中药材溯源流程">
+          <article class="flow-step reveal">
+            <span>01</span>
+            <h3>种植建档</h3>
+            <p>农户录入产地、药材、批次和农事信息，形成最早的责任主体。</p>
+          </article>
+          <article class="flow-step reveal">
+            <span>02</span>
+            <h3>扫码开工</h3>
+            <p>进入加工或质检前采集位置和服务器时间，压缩补录空间。</p>
+          </article>
+          <article class="flow-step reveal">
+            <span>03</span>
+            <h3>质检准入</h3>
+            <p>未通过质检的批次无法发运，把质量检查变成硬性卡点。</p>
+          </article>
+          <article class="flow-step reveal">
+            <span>04</span>
+            <h3>发运验真</h3>
+            <p>GS1 编码、库存换算和上链哈希共同锁定流通侧数据。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="tech" class="tech-section">
+        <div class="tech-copy reveal">
+          <p class="section-kicker">技术架构</p>
+          <h2>小程序负责现场，Spring Boot 负责可信业务闭环。</h2>
+          <p>
+            后端以 JWT、JPA、Flyway 与 MySQL 组织权限和数据；溯源数据可按哈希锚定到 EVM 兼容链，消费者端通过批次查询展示完整链路。
+          </p>
+          <div class="tech-stack" aria-label="技术模块">
+            <button type="button" class="stack-item is-selected" data-stack="auth">JWT 权限</button>
+            <button type="button" class="stack-item" data-stack="gs1">GS1 换算</button>
+            <button type="button" class="stack-item" data-stack="chain">链上存证</button>
+            <button type="button" class="stack-item" data-stack="stream">智能咨询</button>
+          </div>
+          <p class="stack-note" id="stack-note">多角色账号体系覆盖管理员、农户、加工厂、物流与监管方。</p>
+        </div>
+        <figure class="architecture reveal">
+          <img src="./assets/system-architecture.svg" alt="药途寻迹系统架构图" />
+        </figure>
+      </section>
+
+      <section id="roles" class="roles-section">
+        <div class="section-heading reveal">
+          <p class="section-kicker">协同角色</p>
+          <h2>从生产现场到监管验真，各角色只看到自己该处理的任务。</h2>
+        </div>
+        <div class="role-grid">
+          <article class="role-panel reveal">
+            <span>Admin</span>
+            <h3>管理员</h3>
+            <p>维护用户、批次、基础数据和系统配置。</p>
+          </article>
+          <article class="role-panel reveal">
+            <span>Farmer</span>
+            <h3>农户</h3>
+            <p>录入种植档案与农事记录，建立源头凭证。</p>
+          </article>
+          <article class="role-panel reveal">
+            <span>Factory</span>
+            <h3>加工厂</h3>
+            <p>执行扫码开工、加工记录、质检联动和发运赋码。</p>
+          </article>
+          <article class="role-panel reveal">
+            <span>Regulator</span>
+            <h3>监管方</h3>
+            <p>按批次追踪数据、质量报告与异常环节。</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="demo" class="demo-section">
+        <div class="demo-copy reveal">
+          <p class="section-kicker">演示入口</p>
+          <h2>用一条完整人参批次看系统闭环。</h2>
+          <p>内置演示批次 `MOCK-2024001`，可用于展示从建档、生产、质检、物流到消费者扫码验真的完整链路。</p>
+          <div class="demo-actions">
+            <a class="primary-action" href="../README.md">查看项目说明</a>
+            <a class="secondary-action" href="../后端代码/springboot/src/main/resources/static/demo/trace.html">打开本地演示页</a>
+          </div>
+        </div>
+        <div class="demo-terminal reveal" aria-label="演示状态">
+          <div class="terminal-row"><span>batch</span><strong>MOCK-2024001</strong></div>
+          <div class="terminal-row"><span>product</span><strong>长白山人参</strong></div>
+          <div class="terminal-row"><span>quality</span><strong>Inspection Passed</strong></div>
+          <div class="terminal-row"><span>chain</span><strong>Anchor Ready</strong></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>药途寻迹 · 中药材全过程溯源管理系统</span>
+      <a href="#top">返回顶部</a>
+    </footer>
+
+    <script src="./script.js"></script>
+  </body>
+</html>

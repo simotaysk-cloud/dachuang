@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>药途寻迹 iOS 26 主色统一配色方案</title>
+  <style>
+    :root {
+      --bg: #F4FAF6;
+      --bg-2: #EAF4EE;
+      --surface: rgba(255, 255, 255, 0.74);
+      --surface-strong: rgba(255, 255, 255, 0.88);
+      --ink: #18211F;
+      --muted: #6A7470;
+      --line: rgba(23, 58, 49, 0.12);
+
+      --pine: #245C4B;
+      --pine-deep: #0E3C33;
+      --pine-soft: #E1EFE8;
+      --blue: #2F5D7C;
+      --blue-soft: #E4EEF4;
+      --bronze: #8A6A3E;
+      --bronze-soft: #F1EADB;
+      --clay: #9A5F46;
+      --clay-soft: #F2E7E1;
+      --indigo: #6357A3;
+      --indigo-soft: #EAE8F5;
+      --slate: #3F5362;
+      --slate-soft: #E8EEF1;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", "Hiragino Sans GB", sans-serif;
+      letter-spacing: 0;
+      background:
+        radial-gradient(circle at 18% 8%, rgba(228, 240, 236, 0.95), transparent 32%),
+        radial-gradient(circle at 84% 18%, rgba(228, 238, 244, 0.86), transparent 28%),
+        linear-gradient(145deg, var(--bg), #FFFFFF 54%, var(--bg-2));
+    }
+
+    main {
+      width: min(1180px, calc(100vw - 40px));
+      margin: 0 auto;
+      padding: 48px 0 72px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 28px;
+      align-items: end;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 62px);
+      line-height: 1.02;
+      font-weight: 860;
+      color: var(--pine-deep);
+    }
+
+    .subtitle {
+      margin: 12px 0 0;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.65;
+    }
+
+    .mark {
+      width: 88px;
+      height: 88px;
+      border-radius: 26px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.78);
+      box-shadow: 0 22px 48px rgba(15, 51, 44, 0.13);
+      backdrop-filter: blur(24px) saturate(1.4);
+    }
+
+    .mark-shape {
+      width: 52px;
+      height: 30px;
+      background: var(--pine);
+      border-radius: 70% 18% 70% 18%;
+      transform: rotate(-8deg);
+      position: relative;
+    }
+
+    .mark-shape::after {
+      content: "";
+      position: absolute;
+      width: 42px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--bg);
+      left: 8px;
+      top: 12px;
+      transform: rotate(5deg);
+    }
+
+    .panel {
+      border-radius: 28px;
+      background: var(--surface);
+      border: 1px solid rgba(255, 255, 255, 0.82);
+      box-shadow: 0 30px 70px rgba(15, 51, 44, 0.10), inset 0 1px 0 rgba(255,255,255,0.72);
+      backdrop-filter: blur(26px) saturate(1.35);
+    }
+
+    .palette {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 26px;
+    }
+
+    .swatch {
+      overflow: hidden;
+      min-height: 220px;
+    }
+
+    .chip {
+      height: 120px;
+    }
+
+    .meta {
+      padding: 16px;
+    }
+
+    .name {
+      font-size: 17px;
+      font-weight: 790;
+      margin-bottom: 7px;
+    }
+
+    .hex {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .usage {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.48;
+    }
+
+    .section-title {
+      margin: 34px 0 14px;
+      font-size: 24px;
+      font-weight: 830;
+      color: var(--pine-deep);
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .phone {
+      width: min(410px, 100%);
+      margin: 0 auto;
+      padding: 16px;
+      border-radius: 42px;
+      background: #111;
+      box-shadow: 0 38px 78px rgba(15, 51, 44, 0.22);
+    }
+
+    .screen {
+      min-height: 760px;
+      border-radius: 31px;
+      padding: 22px 18px 16px;
+      background:
+        radial-gradient(circle at 24% 0%, rgba(228,240,236,0.9), transparent 30%),
+        linear-gradient(160deg, #FFFFFF 0%, var(--bg) 48%, #FFFFFF 100%);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .status {
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 760;
+      margin-bottom: 16px;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .app-title {
+      font-size: 26px;
+      line-height: 1.05;
+      font-weight: 860;
+      color: var(--pine-deep);
+    }
+
+    .caption {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .glass {
+      background: rgba(255,255,255,0.68);
+      border: 1px solid rgba(255,255,255,0.84);
+      box-shadow: 0 18px 38px rgba(15, 51, 44, 0.09), inset 0 1px 0 rgba(255,255,255,0.72);
+      backdrop-filter: blur(24px) saturate(1.35);
+    }
+
+    .hero-card {
+      border-radius: 26px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    .hero-card h2 {
+      margin: 0;
+      font-size: 27px;
+      line-height: 1.12;
+      font-weight: 860;
+      color: var(--pine-deep);
+    }
+
+    .hero-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 13px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .metric {
+      border-radius: 22px;
+      padding: 14px;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 25px;
+      line-height: 1;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .module {
+      min-height: 116px;
+      border-radius: 23px;
+      padding: 14px;
+    }
+
+    .icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      margin-bottom: 11px;
+      font-weight: 850;
+      font-size: 18px;
+    }
+
+    .module-title {
+      font-size: 15px;
+      font-weight: 780;
+      margin-bottom: 4px;
+    }
+
+    .module-desc {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.38;
+    }
+
+    .tabbar {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 15px;
+      height: 70px;
+      border-radius: 30px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-items: center;
+      padding: 6px;
+    }
+
+    .tab {
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 680;
+    }
+
+    .tab .dot {
+      width: 30px;
+      height: 30px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 3px;
+      color: white;
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    .specs {
+      padding: 24px;
+    }
+
+    .spec-row {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .spec-row:last-child {
+      border-bottom: 0;
+    }
+
+    .spec-label {
+      color: var(--muted);
+      font-weight: 720;
+    }
+
+    .spec-value {
+      line-height: 1.62;
+    }
+
+    .icon-map {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .map-item {
+      border-radius: 22px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .map-item .icon {
+      margin: 0;
+      flex: none;
+    }
+
+    .map-title {
+      font-weight: 760;
+      margin-bottom: 2px;
+    }
+
+    .map-hex {
+      color: var(--muted);
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .pine { background: var(--pine-soft); color: var(--pine); }
+    .blue { background: var(--blue-soft); color: var(--blue); }
+    .bronze { background: var(--bronze-soft); color: var(--bronze); }
+    .clay { background: var(--clay-soft); color: var(--clay); }
+    .indigo { background: var(--indigo-soft); color: var(--indigo); }
+    .slate { background: var(--slate-soft); color: var(--slate); }
+
+    @media (max-width: 900px) {
+      header, .preview-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .palette {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .icon-map {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>药途寻迹 iOS 26 主色统一配色方案</h1>
+        <p class="subtitle">主调固定为同一个绿色 <strong>#245C4B</strong>，贯穿品牌、选中态、主操作和关键强调；辅助色可以跨到蓝、铜、陶土、靛紫等色系，但只用于图标分组和次级提示。</p>
+      </div>
+      <div class="mark" aria-hidden="true">
+        <div class="mark-shape"></div>
+      </div>
+    </header>
+
+    <section class="palette">
+      <article class="swatch panel">
+        <div class="chip" style="background:#F4FAF6"></div>
+        <div class="meta">
+          <div class="name">雾青白</div>
+          <div class="hex">#F4FAF6</div>
+          <div class="usage">全局背景。比纯白多一点青绿色空气感。</div>
+        </div>
+      </article>
+      <article class="swatch panel">
+        <div class="chip" style="background:#245C4B"></div>
+        <div class="meta">
+          <div class="name">主松绿</div>
+          <div class="hex">#245C4B</div>
+          <div class="usage">唯一主调。主操作、选中态、品牌核心色统一使用它。</div>
+        </div>
+      </article>
+      <article class="swatch panel">
+        <div class="chip" style="background:#0E3C33"></div>
+        <div class="meta">
+          <div class="name">深药青</div>
+          <div class="hex">#0E3C33</div>
+          <div class="usage">标题、关键数字、强强调。</div>
+        </div>
+      </article>
+      <article class="swatch panel">
+        <div class="chip" style="background:#E1EFE8"></div>
+        <div class="meta">
+          <div class="name">浅草雾</div>
+          <div class="hex">#E1EFE8</div>
+          <div class="usage">绿色图标底、状态胶囊、柔和 tint。</div>
+        </div>
+      </article>
+      <article class="swatch panel">
+        <div class="chip" style="background:#2F5D7C"></div>
+        <div class="meta">
+          <div class="name">批次蓝</div>
+          <div class="hex">#2F5D7C</div>
+          <div class="usage">批次、台账、数据模块图标。只作辅助，不参与主操作。</div>
+        </div>
+      </article>
+      <article class="swatch panel">
+        <div class="chip" style="background:#8A6A3E"></div>
+        <div class="meta">
+          <div class="name">工艺铜</div>
+          <div class="hex">#8A6A3E</div>
+          <div class="usage">加工、设备、产线流程图标。低饱和暖色，和绿色不冲突。</div>
+        </div>
+      </article>
+      <article class="swatch panel">
+        <div class="chip" style="background:#9A5F46"></div>
+        <div class="meta">
+          <div class="name">物流陶土</div>
+          <div class="hex">#9A5F46</div>
+          <div class="usage">物流、发运、外源登记图标。用于提示流转和来源。</div>
+        </div>
+      </article>
+      <article class="swatch panel">
+        <div class="chip" style="background:#6357A3"></div>
+        <div class="meta">
+          <div class="name">质检靛紫</div>
+          <div class="hex">#6357A3</div>
+          <div class="usage">质检、报告、监管分析图表点缀。只在局部出现。</div>
+        </div>
+      </article>
+    </section>
+
+    <div class="section-title">界面预览</div>
+    <section class="preview-grid">
+      <div class="phone">
+        <div class="screen">
+          <div class="status">
+            <span>13:26</span>
+            <span>••• 􀙇 􀛨</span>
+          </div>
+          <div class="title-row">
+            <div>
+              <div class="app-title">批次追溯工作台</div>
+              <div class="caption">种植、加工、质检、物流、核验</div>
+            </div>
+            <div class="icon pine">⌁</div>
+          </div>
+
+          <div class="hero-card glass">
+            <h2>全链路监管</h2>
+            <p>主操作和选中态统一使用 #245C4B；模块图标用低饱和辅助色区分功能，不抢主内容。</p>
+          </div>
+
+          <div class="metrics">
+            <div class="metric glass"><strong>128</strong><span>批次</span></div>
+            <div class="metric glass"><strong>42</strong><span>根批次</span></div>
+            <div class="metric glass"><strong>86</strong><span>叶子批次</span></div>
+            <div class="metric glass"><strong>31</strong><span>发运</span></div>
+          </div>
+
+          <div class="module-grid">
+            <div class="module glass">
+              <div class="icon blue">箱</div>
+              <div class="module-title">批次档案</div>
+              <div class="module-desc">台账、GS1、批次流转</div>
+            </div>
+            <div class="module glass">
+              <div class="icon pine">叶</div>
+              <div class="module-title">种植记录</div>
+              <div class="module-desc">地块、农事、定位</div>
+            </div>
+            <div class="module glass">
+              <div class="icon bronze">工</div>
+              <div class="module-title">加工记录</div>
+              <div class="module-desc">产线、工艺、产出</div>
+            </div>
+            <div class="module glass">
+              <div class="icon indigo">检</div>
+              <div class="module-title">质检记录</div>
+              <div class="module-desc">报告、放行、留痕</div>
+            </div>
+            <div class="module glass">
+              <div class="icon clay">运</div>
+              <div class="module-title">物流发运</div>
+              <div class="module-desc">运单、轨迹、事件</div>
+            </div>
+            <div class="module glass">
+              <div class="icon slate">链</div>
+              <div class="module-title">防伪存证</div>
+              <div class="module-desc">上链、验链、核验</div>
+            </div>
+          </div>
+
+          <div class="tabbar glass">
+            <div class="tab"><div class="dot pine">首</div>首页</div>
+            <div class="tab"><div class="dot blue">批</div>批次</div>
+            <div class="tab"><div class="dot bronze">产</div>生产</div>
+            <div class="tab"><div class="dot slate">核</div>核验</div>
+            <div class="tab"><div class="dot indigo">账</div>账号</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="specs panel">
+        <div class="section-title" style="margin-top:0">落地规则</div>
+        <div class="spec-row">
+          <div class="spec-label">背景</div>
+          <div class="spec-value">用 <strong>#F4FAF6</strong> 替代纯白。它只带一点青绿色，能承托玻璃层，不会像灰底。</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-label">主色</div>
+          <div class="spec-value">主操作、选中态、品牌识别、关键强调全部固定使用 <strong>#245C4B</strong>，不再出现多个主绿色。</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-label">图标</div>
+          <div class="spec-value">图标保持扁平色块，不做渐变；不同业务模块可以用低饱和辅助色，但这些颜色不用于主按钮和主状态。</div>
+        </div>
+        <div class="spec-row">
+          <div class="spec-label">玻璃层</div>
+          <div class="spec-value">Swift 里继续用 iOS 26 官方 <strong>.glassEffect</strong> 和 <strong>.glassProminent</strong>，不要回到手写边框阴影。</div>
+        </div>
+
+        <div class="section-title">图标色系</div>
+        <div class="icon-map">
+          <div class="map-item glass"><div class="icon blue">批</div><div><div class="map-title">批次</div><div class="map-hex">#2F5D7C</div></div></div>
+          <div class="map-item glass"><div class="icon pine">植</div><div><div class="map-title">种植</div><div class="map-hex">#245C4B</div></div></div>
+          <div class="map-item glass"><div class="icon bronze">工</div><div><div class="map-title">加工</div><div class="map-hex">#8A6A3E</div></div></div>
+          <div class="map-item glass"><div class="icon indigo">检</div><div><div class="map-title">质检</div><div class="map-hex">#6357A3</div></div></div>
+          <div class="map-item glass"><div class="icon clay">运</div><div><div class="map-title">物流</div><div class="map-hex">#9A5F46</div></div></div>
+          <div class="map-item glass"><div class="icon slate">核</div><div><div class="map-title">核验</div><div class="map-hex">#3F5362</div></div></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+</body>
+</html>

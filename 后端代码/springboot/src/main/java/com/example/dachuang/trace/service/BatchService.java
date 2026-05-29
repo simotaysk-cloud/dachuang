@@ -47,7 +47,7 @@ public class BatchService {
     private boolean autoAnchorOnBatchCreate;
 
     private static final SecureRandom RANDOM = new SecureRandom();
-    private static final DateTimeFormatter DAY_FMT = DateTimeFormatter.BASIC_ISO_DATE; // yyyyMMdd
+    private static final DateTimeFormatter DAY_FMT = DateTimeFormatter.BASIC_ISO_DATE;
 
     public List<Batch> getAllBatches(boolean rootOnly) {
         if (rootOnly) {
@@ -62,7 +62,7 @@ public class BatchService {
     }
 
     public Batch createBatch(Batch batch) {
-        // Backwards-compatible path (used by dev seeders). Treat as ADMIN/system.
+
         return createBatch(batch, "admin", "ADMIN");
     }
 
@@ -71,18 +71,18 @@ public class BatchService {
             throw new BusinessException(400, "Invalid batch payload");
         }
 
-        // Ownership: default to the authenticated user.
+
         if (batch.getOwnerUserId() == null) {
             User u = userRepository.findByUsername(username)
                     .orElseThrow(() -> new BusinessException(401, "User not found"));
             batch.setOwnerUserId(u.getId());
         }
 
-        // Batch number: farmers typically don't type it; backend generates a unique
-        // one.
+
+
         String requestedNo = (batch.getBatchNo() == null) ? "" : batch.getBatchNo().trim();
         if (!"ADMIN".equalsIgnoreCase(role)) {
-            requestedNo = ""; // ignore client-provided batchNo for non-admin
+            requestedNo = "";
         }
         if (requestedNo.isBlank()) {
             batch.setBatchNo(generateBatchNo(username));
@@ -94,23 +94,23 @@ public class BatchService {
             throw new BusinessException(400, "Batch number already exists");
         }
 
-        // ROLE CONSTRAINT: MANUFACTURER must provide proof for root batches (External
-        // Source)
+
+
         if ("MANUFACTURER".equalsIgnoreCase(role)) {
             if (batch.getImageUrl() == null || batch.getImageUrl().isBlank()) {
                 throw new BusinessException(400,
                         "Manufacturers must upload source proof (contract/invoice) when registering external materials.");
             }
-            // Optional: Enforce specific naming or category if needed
+
         }
 
-        // 生成隐形码（如果未提供）
+
         if (batch.getMinCode() == null || batch.getMinCode().isBlank()) {
             batch.setMinCode(java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 16));
         }
 
-        // Generate GS1 lot & code if not provided. Use a short unique lotNo for AI(10)
-        // to avoid collisions.
+
+
         if (batch.getGs1LotNo() == null || batch.getGs1LotNo().isBlank()) {
             batch.setGs1LotNo(generateGs1LotNo(batch.getBatchNo()));
         }
@@ -118,15 +118,15 @@ public class BatchService {
             batch.setGs1Code(gs1Service.generateGs1HRI(batch.getGs1LotNo(), batch.getQuantity(), batch.getUnit()));
         }
 
-        // 初始库存逻辑
+
         if (batch.getRemainingQuantity() == null) {
             batch.setRemainingQuantity(batch.getQuantity());
         }
 
         Batch saved = batchRepository.save(batch);
 
-        // Optional: auto-anchor to blockchain in background (disabled by default to
-        // avoid unexpected gas cost).
+
+
         if (autoAnchorOnBatchCreate) {
             blockchainService.autoAnchor(saved.getBatchNo(), "Initial batch creation: " + saved.getName());
         }
@@ -138,16 +138,16 @@ public class BatchService {
             String details, String lineName, String operator, java.math.BigDecimal extractedQuantity, java.math.BigDecimal outputQuantity) {
         Batch parent = getBatchByNo(parentBatchNo);
 
-        // --- 核心分包加工逻辑 (Mass Balance) ---
+
         java.math.BigDecimal toExtract = extractedQuantity;
         if (toExtract == null) {
-            // 如果前端没有传提取量，默认全额消耗父批次的剩余库存（兼容原有测试逻辑）
+
             toExtract = parent.getRemainingQuantity();
             if (toExtract == null) {
-                toExtract = parent.getQuantity(); // fallback
+                toExtract = parent.getQuantity();
             }
         }
-        
+
         java.math.BigDecimal currentRemaining = parent.getRemainingQuantity() != null ? parent.getRemainingQuantity() : parent.getQuantity();
         if (currentRemaining == null) currentRemaining = java.math.BigDecimal.ZERO;
 
@@ -155,11 +155,11 @@ public class BatchService {
             throw new BusinessException(400, "分包加工失败：父批次剩余库存不足。当前剩余: " + currentRemaining + "，申请消耗: " + toExtract);
         }
 
-        // 执行严格扣减
-        parent.setRemainingQuantity(currentRemaining.subtract(toExtract));
-        batchRepository.save(parent); // 保存扣减后的父批次（乐观锁防并发）
 
-        // 确定子批次的产出量
+        parent.setRemainingQuantity(currentRemaining.subtract(toExtract));
+        batchRepository.save(parent);
+
+
         java.math.BigDecimal finalOutput = outputQuantity != null ? outputQuantity : toExtract;
 
         String outputNo = childBatchNo;
@@ -172,7 +172,7 @@ public class BatchService {
             Batch b = Batch.builder()
                     .ownerUserId(parent.getOwnerUserId())
                     .batchNo(outputNo)
-                    .minCode(null) // auto-generate
+                    .minCode(null)
                     .name(parent.getName())
                     .category(parent.getCategory())
                     .origin(parent.getOrigin())
@@ -189,7 +189,7 @@ public class BatchService {
             child = createBatch(b);
         }
 
-        // Ensure a child only has one parent (tree model for now)
+
         batchLineageRepository.findByChildBatchNo(child.getBatchNo()).ifPresent(existing -> {
             if (!existing.getParentBatchNo().equals(parentBatchNo)) {
                 throw new BusinessException(400, "Child batch already derived from another parent");
@@ -365,8 +365,8 @@ public class BatchService {
             if (batchDetails.getUnit() != null)
                 batch.setUnit(batchDetails.getUnit());
 
-            // Refresh GS1 HRI when quantity/unit changes, but keep lotNo stable once
-            // created.
+
+
             if (batch.getGs1LotNo() == null || batch.getGs1LotNo().isBlank()) {
                 batch.setGs1LotNo(generateGs1LotNo(batch.getBatchNo()));
             }

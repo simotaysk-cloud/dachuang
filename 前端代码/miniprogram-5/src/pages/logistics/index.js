@@ -11,10 +11,10 @@ Page({
         currentShipment: null,
         usernameRaw: 'user',
         roleLabel: '',
-        // For searching shipments
+
         shipmentQueryBatchNo: '',
 
-        // For adding new event
+
         shipmentEventForm: {
             location: '',
             status: '',
@@ -42,7 +42,7 @@ Page({
                 roleLabel: api.getRoleName(profile?.role || api.role)
             })
         } catch (err) {
-            // Ignore profile errors and keep cached identity.
+
         }
     },
 

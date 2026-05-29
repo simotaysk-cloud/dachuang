@@ -20,7 +20,7 @@ public class JwtService {
     @Value("${jwt.secret:change-me-should-be-at-least-thirty-two-chars}")
     private String secret;
 
-    @Value("${jwt.expiration:86400000}") // 24 hours
+    @Value("${jwt.expiration:86400000}")
     private Long expiration;
 
     public String generateToken(String username, String role) {

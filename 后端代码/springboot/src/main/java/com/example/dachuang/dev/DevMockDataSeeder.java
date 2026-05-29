@@ -24,11 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Dev-only mock data seeder.
- *
- * Enable via env var: APP_MOCK_DATA_ENABLED=true
- */
+
 @Slf4j
 @Component
 @Profile("dev")
@@ -69,12 +65,12 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 if (!enabled)
                         return;
 
-                // Run seeding in a separate thread to avoid blocking the main startup thread,
-                // which can occasionally cause the application context to close after finishing 
-                // all runners in some environments.
+
+
+
                 new Thread(() -> {
                         try {
-                                Thread.sleep(2000); // Wait for web server to be fully ready
+                                Thread.sleep(2000);
                                 launchSeeding();
                         } catch (Exception e) {
                                 log.error("Seeder thread interrupted", e);
@@ -104,9 +100,9 @@ public class DevMockDataSeeder implements CommandLineRunner {
                         seedInspectionBranching();
                         seedShipmentsAndEvents();
                         seedBlockchain();
-                        
+
                         log.info("Triggering diverse professional herb seeding via BulkSeeder...");
-                        bulkSeederService.seedData(8); // Seed 8 professional chains (one for each herb type)
+                        bulkSeederService.seedData(8);
 
                         log.info("==========================================================");
                         log.info("   DEV MOCK DATA SEEDING COMPLETED SUCCESSFULLY         ");
@@ -188,7 +184,7 @@ public class DevMockDataSeeder implements CommandLineRunner {
                 Batch root = Batch.builder()
                                 .ownerUserId(ownerId)
                                 .batchNo(ROOT_BATCH_NO)
-                                .minCode("") // auto-generate
+                                .minCode("")
                                 .name("甘肃岷县当归")
                                 .category("中药材-根茎类")
                                 .origin("甘肃省定西市岷县GAP标准种植基地")
@@ -285,7 +281,7 @@ public class DevMockDataSeeder implements CommandLineRunner {
         private void seedInspectionBranching() {
                 LocalDateTime baseTime = LocalDateTime.now().minusDays(3);
 
-                // Add Raw material inspection for the root batch
+
                 inspectionRecordRepository.save(InspectionRecord.builder()
                                 .batchNo(ROOT_BATCH_NO)
                                 .inspectionType("RAW")

@@ -29,10 +29,10 @@ public class ShipmentService {
     private final BatchService batchService;
 
     private static final SecureRandom RANDOM = new SecureRandom();
-    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.BASIC_ISO_DATE; // yyyyMMdd
+    private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.BASIC_ISO_DATE;
 
     public Shipment create(CreateShipmentRequest request) {
-        // Validate all batches exist
+
         for (CreateShipmentRequest.Item item : request.getItems()) {
             batchService.getBatchByNo(item.getBatchNo());
         }
@@ -49,7 +49,7 @@ public class ShipmentService {
 
         Shipment savedShipment = shipmentRepository.save(shipment);
 
-        // Save items
+
         for (CreateShipmentRequest.Item item : request.getItems()) {
             ShipmentItem shipmentItem = ShipmentItem.builder()
                     .shipmentNo(shipmentNo)
@@ -86,7 +86,7 @@ public class ShipmentService {
                 .details(request.getDetails())
                 .build();
 
-        // If status is provided, also update shipment status for convenience.
+
         if (request.getStatus() != null && !request.getStatus().isBlank()) {
             shipment.setStatus(request.getStatus());
             shipmentRepository.save(shipment);

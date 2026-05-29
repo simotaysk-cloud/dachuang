@@ -32,7 +32,7 @@ Write-Host ""
 try {
     Write-Host "[1/2] Uploading JAR artifact to cloud..." -ForegroundColor Magenta
     scp .\target\dachuang-0.0.1-SNAPSHOT.jar root@cpuzhbc.cn:/root/
-    
+
     if ($LASTEXITCODE -ne 0) {
         throw "SCP upload failed. Please check the password or network."
     }
@@ -40,7 +40,7 @@ try {
     Write-Host ""
     Write-Host "[2/2] Upload SUCCESS! Now restarting cloud services..." -ForegroundColor Magenta
     ssh root@cpuzhbc.cn "fuser -k 8091/tcp 2>/dev/null; sleep 2; nohup env AI_API_KEY='$($env:AI_API_KEY)' java -jar /root/dachuang-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev --app.mock-data.enabled=true --app.mock-data.force=true > /root/backend.log 2>&1 &"
-    
+
     Write-Host ""
     Write-Host "==========================================================" -ForegroundColor Cyan
     Write-Host "   SUCCESS! THE TRACEABILITY ENGINE IS NOW RUNNING ON CLOUD!" -ForegroundColor Yellow

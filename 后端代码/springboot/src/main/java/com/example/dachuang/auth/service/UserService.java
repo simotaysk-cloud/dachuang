@@ -25,7 +25,7 @@ public class UserService {
             throw new BusinessException(400, "Username already exists");
         }
         if (user.getPassword() == null || user.getPassword().isBlank()) {
-            user.setPassword("123456"); // Default password (demo)
+            user.setPassword("123456");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
@@ -48,7 +48,7 @@ public class UserService {
             user.setName(userDetails.getName());
         }
 
-        // Only update password if provided and not empty
+
         if (userDetails.getPassword() != null && !userDetails.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
         }
