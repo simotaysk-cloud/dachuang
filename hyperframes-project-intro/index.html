@@ -1,0 +1,1010 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #0b2f24;
+        color: #f5f1e8;
+        font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      }
+
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 14% 18%, rgba(47, 163, 107, 0.28), transparent 30%),
+          radial-gradient(circle at 84% 72%, rgba(56, 189, 248, 0.16), transparent 34%),
+          linear-gradient(135deg, #071c17 0%, #0b2f24 48%, #132d28 100%);
+      }
+
+      audio {
+        display: none;
+      }
+
+      .scene {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        opacity: 0;
+      }
+
+      #scene-1 {
+        opacity: 1;
+      }
+
+      .grain,
+      .grid,
+      .soft-lines {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      .grain {
+        opacity: 0.68;
+        background-image:
+          linear-gradient(rgba(245, 241, 232, 0.028) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(245, 241, 232, 0.022) 1px, transparent 1px);
+        background-size: 64px 64px;
+        mask-image: linear-gradient(120deg, rgba(0, 0, 0, 0.84), rgba(0, 0, 0, 0.2));
+      }
+
+      .grid {
+        opacity: 0.22;
+        background:
+          linear-gradient(90deg, transparent 0 95%, rgba(56, 189, 248, 0.2) 95% 96%, transparent 96%),
+          linear-gradient(transparent 0 92%, rgba(216, 166, 75, 0.16) 92% 93%, transparent 93%);
+        background-size: 160px 160px;
+      }
+
+      .soft-lines {
+        opacity: 0.3;
+        background:
+          radial-gradient(ellipse at 72% 22%, transparent 0 38%, rgba(216, 166, 75, 0.18) 38.3% 38.7%, transparent 39%),
+          radial-gradient(ellipse at 20% 80%, transparent 0 48%, rgba(56, 189, 248, 0.15) 48.3% 48.7%, transparent 49%);
+      }
+
+      .scene-content {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        height: 100%;
+        padding: 104px 128px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 34px;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 70px;
+        align-items: center;
+      }
+
+      .kicker {
+        color: #d8a64b;
+        font-size: 28px;
+        line-height: 1.2;
+        font-weight: 800;
+      }
+
+      .title {
+        max-width: 1190px;
+        font-size: 104px;
+        line-height: 1.04;
+        font-weight: 900;
+        letter-spacing: 0;
+      }
+
+      .title.large {
+        font-size: 132px;
+      }
+
+      .subtitle {
+        max-width: 1080px;
+        color: rgba(245, 241, 232, 0.82);
+        font-size: 38px;
+        line-height: 1.36;
+        font-weight: 500;
+      }
+
+      .fine {
+        color: rgba(245, 241, 232, 0.66);
+        font-size: 24px;
+        line-height: 1.42;
+      }
+
+      .mark {
+        position: absolute;
+        right: 138px;
+        top: 116px;
+        width: 180px;
+        height: 180px;
+        border-radius: 34px;
+        box-shadow: 0 26px 70px rgba(0, 0, 0, 0.3);
+      }
+
+      .orbit {
+        position: absolute;
+        right: 130px;
+        bottom: 86px;
+        width: 650px;
+        height: 650px;
+        border: 1px solid rgba(56, 189, 248, 0.22);
+        border-radius: 50%;
+      }
+
+      .orbit::before,
+      .orbit::after {
+        content: "";
+        position: absolute;
+        inset: 82px;
+        border: 1px solid rgba(216, 166, 75, 0.24);
+        border-radius: 50%;
+      }
+
+      .orbit::after {
+        inset: 190px;
+        border-color: rgba(47, 163, 107, 0.4);
+      }
+
+      .signal-node {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #38bdf8;
+        box-shadow: 0 0 26px rgba(56, 189, 248, 0.62);
+      }
+
+      .node-a {
+        right: 720px;
+        bottom: 280px;
+      }
+
+      .node-b {
+        right: 220px;
+        bottom: 635px;
+        background: #d8a64b;
+      }
+
+      .node-c {
+        right: 405px;
+        bottom: 128px;
+        background: #2fa36b;
+      }
+
+      .meta-rail {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        max-width: 980px;
+      }
+
+      .pill {
+        border: 1px solid rgba(245, 241, 232, 0.18);
+        background: rgba(245, 241, 232, 0.07);
+        border-radius: 999px;
+        padding: 13px 20px;
+        color: rgba(245, 241, 232, 0.8);
+        font-size: 22px;
+        font-weight: 700;
+      }
+
+      .pain-layout {
+        display: grid;
+        grid-template-columns: 0.95fr 1.05fr;
+        gap: 64px;
+        align-items: center;
+      }
+
+      .pain-list {
+        display: grid;
+        gap: 18px;
+      }
+
+      .pain-item {
+        min-height: 116px;
+        border-radius: 8px;
+        border: 1px solid rgba(245, 241, 232, 0.15);
+        background: rgba(7, 31, 25, 0.64);
+        padding: 24px 28px;
+        display: grid;
+        grid-template-columns: 72px 1fr;
+        gap: 18px;
+        align-items: center;
+      }
+
+      .pain-num {
+        color: #38bdf8;
+        font-size: 34px;
+        font-weight: 900;
+      }
+
+      .pain-item strong {
+        display: block;
+        color: #f5f1e8;
+        font-size: 31px;
+        margin-bottom: 8px;
+      }
+
+      .pain-item span {
+        color: rgba(245, 241, 232, 0.72);
+        font-size: 23px;
+        line-height: 1.38;
+      }
+
+      .ledger {
+        min-height: 640px;
+        border-radius: 8px;
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        background:
+          linear-gradient(120deg, rgba(56, 189, 248, 0.1), transparent 34%),
+          rgba(245, 241, 232, 0.06);
+        padding: 38px;
+        display: grid;
+        gap: 18px;
+        align-content: center;
+      }
+
+      .ledger-row {
+        height: 76px;
+        border-radius: 8px;
+        background: rgba(245, 241, 232, 0.08);
+        border-left: 6px solid #2fa36b;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+        color: rgba(245, 241, 232, 0.78);
+        font-size: 24px;
+        font-weight: 700;
+      }
+
+      .ledger-row:nth-child(2),
+      .ledger-row:nth-child(5) {
+        border-left-color: #d8a64b;
+      }
+
+      .ledger-row:nth-child(3) {
+        border-left-color: #38bdf8;
+      }
+
+      .flow {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 28px;
+      }
+
+      .flow-line {
+        position: absolute;
+        left: 120px;
+        right: 120px;
+        top: 128px;
+        height: 3px;
+        background: linear-gradient(90deg, transparent, #2fa36b, #38bdf8, #d8a64b, transparent);
+        opacity: 0.64;
+      }
+
+      .step {
+        min-height: 560px;
+        border-radius: 8px;
+        border: 1px solid rgba(245, 241, 232, 0.15);
+        background: rgba(7, 31, 25, 0.66);
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .step-dot {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 8px solid rgba(56, 189, 248, 0.28);
+        background: #38bdf8;
+        box-shadow: 0 0 36px rgba(56, 189, 248, 0.45);
+      }
+
+      .step h3 {
+        color: #f5f1e8;
+        font-size: 50px;
+        line-height: 1.08;
+        font-weight: 900;
+      }
+
+      .step p,
+      .step li {
+        color: rgba(245, 241, 232, 0.74);
+        font-size: 24px;
+        line-height: 1.42;
+      }
+
+      .step ul {
+        display: grid;
+        gap: 10px;
+        list-style: none;
+      }
+
+      .workflow-grid,
+      .verify-grid,
+      .users-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 56px;
+        align-items: stretch;
+      }
+
+      .work-card,
+      .verify-panel,
+      .role-card {
+        border-radius: 8px;
+        border: 1px solid rgba(245, 241, 232, 0.15);
+        background: rgba(7, 31, 25, 0.66);
+        padding: 34px;
+      }
+
+      .work-card {
+        min-height: 560px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .work-card h3,
+      .verify-panel h3 {
+        font-size: 46px;
+        color: #f5f1e8;
+        line-height: 1.1;
+        margin-bottom: 18px;
+      }
+
+      .state-strip {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 24px 0;
+      }
+
+      .state {
+        flex: 1;
+        border-radius: 8px;
+        background: rgba(245, 241, 232, 0.08);
+        border: 1px solid rgba(245, 241, 232, 0.14);
+        padding: 18px 14px;
+        color: rgba(245, 241, 232, 0.78);
+        font-size: 20px;
+        text-align: center;
+        font-weight: 800;
+      }
+
+      .arrow {
+        color: #38bdf8;
+        font-size: 28px;
+        font-weight: 900;
+      }
+
+      .micro-table {
+        display: grid;
+        gap: 12px;
+      }
+
+      .micro-row {
+        display: grid;
+        grid-template-columns: 190px 1fr;
+        gap: 14px;
+        padding: 15px 0;
+        border-bottom: 1px solid rgba(245, 241, 232, 0.12);
+        color: rgba(245, 241, 232, 0.76);
+        font-size: 23px;
+      }
+
+      .micro-row b {
+        color: #d8a64b;
+      }
+
+      .arch {
+        display: grid;
+        grid-template-columns: 0.86fr 1.14fr;
+        gap: 54px;
+        align-items: center;
+      }
+
+      .stack {
+        display: grid;
+        gap: 16px;
+      }
+
+      .layer {
+        min-height: 88px;
+        border-radius: 8px;
+        border: 1px solid rgba(245, 241, 232, 0.14);
+        background: rgba(245, 241, 232, 0.075);
+        padding: 20px 26px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 27px;
+        font-weight: 900;
+      }
+
+      .layer span {
+        color: rgba(245, 241, 232, 0.68);
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .code-panel {
+        border-radius: 8px;
+        border: 1px solid rgba(56, 189, 248, 0.24);
+        background: rgba(4, 18, 16, 0.76);
+        padding: 34px 38px;
+        min-height: 620px;
+        display: grid;
+        align-content: center;
+        gap: 16px;
+      }
+
+      .code-line {
+        font-family: Menlo, Consolas, monospace;
+        color: rgba(245, 241, 232, 0.78);
+        font-size: 25px;
+        line-height: 1.34;
+      }
+
+      .code-line em {
+        color: #38bdf8;
+        font-style: normal;
+      }
+
+      .code-line b {
+        color: #d8a64b;
+      }
+
+      .barcode {
+        height: 160px;
+        border-radius: 8px;
+        border: 12px solid rgba(245, 241, 232, 0.86);
+        background:
+          repeating-linear-gradient(90deg, #0b2f24 0 8px, #f5f1e8 8px 12px, #0b2f24 12px 20px, #f5f1e8 20px 32px, #0b2f24 32px 38px);
+        margin: 28px 0 18px;
+      }
+
+      .hash {
+        font-family: Menlo, Consolas, monospace;
+        color: #38bdf8;
+        font-size: 29px;
+        overflow-wrap: anywhere;
+      }
+
+      .lock-diagram {
+        display: grid;
+        gap: 16px;
+        margin-top: 24px;
+      }
+
+      .lock-row {
+        display: grid;
+        grid-template-columns: 180px 1fr 116px;
+        gap: 16px;
+        align-items: center;
+        color: rgba(245, 241, 232, 0.78);
+        font-size: 23px;
+      }
+
+      .lock-row b {
+        color: #d8a64b;
+      }
+
+      .bar {
+        height: 12px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #2fa36b, #38bdf8);
+      }
+
+      .phone {
+        width: 426px;
+        height: 760px;
+        justify-self: end;
+        border: 12px solid rgba(245, 241, 232, 0.86);
+        border-radius: 50px;
+        background: linear-gradient(180deg, #f5f1e8 0%, #e6f1e9 100%);
+        padding: 38px 28px;
+        box-shadow: 0 34px 86px rgba(0, 0, 0, 0.34);
+      }
+
+      .phone-top {
+        height: 58px;
+        color: #0b2f24;
+        font-size: 25px;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .trace-line {
+        display: grid;
+        gap: 14px;
+        margin-top: 28px;
+      }
+
+      .trace-item {
+        border-radius: 8px;
+        background: rgba(47, 163, 107, 0.16);
+        padding: 16px;
+        color: #0b2f24;
+        font-size: 21px;
+        font-weight: 800;
+      }
+
+      .ai-box {
+        margin-top: 22px;
+        border-radius: 8px;
+        border: 2px solid rgba(56, 189, 248, 0.6);
+        background: #ffffff;
+        color: #0b2f24;
+        padding: 18px;
+        font-size: 21px;
+        line-height: 1.34;
+        font-weight: 700;
+      }
+
+      .role-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+      }
+
+      .role-card {
+        min-height: 178px;
+      }
+
+      .role-card b {
+        display: block;
+        color: #f5f1e8;
+        font-size: 32px;
+        margin-bottom: 10px;
+      }
+
+      .role-card span {
+        color: rgba(245, 241, 232, 0.74);
+        font-size: 22px;
+        line-height: 1.36;
+      }
+
+      .final-grid {
+        display: grid;
+        grid-template-columns: 1fr 540px;
+        gap: 82px;
+        align-items: center;
+      }
+
+      .stat-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-top: 18px;
+      }
+
+      .stat {
+        min-height: 142px;
+        border-radius: 8px;
+        border: 1px solid rgba(245, 241, 232, 0.15);
+        background: rgba(245, 241, 232, 0.08);
+        padding: 22px;
+      }
+
+      .stat b {
+        display: block;
+        color: #d8a64b;
+        font-size: 32px;
+        margin-bottom: 10px;
+      }
+
+      .stat span {
+        color: rgba(245, 241, 232, 0.74);
+        font-size: 22px;
+        line-height: 1.36;
+      }
+
+      .seal {
+        width: 520px;
+        height: 520px;
+        border-radius: 50%;
+        border: 4px solid rgba(216, 166, 75, 0.66);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background:
+          radial-gradient(circle, rgba(216, 166, 75, 0.19), transparent 58%),
+          rgba(245, 241, 232, 0.055);
+      }
+
+      .seal-inner {
+        width: 348px;
+        height: 348px;
+        border-radius: 50%;
+        border: 2px solid rgba(56, 189, 248, 0.48);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+      }
+
+      .seal-inner img {
+        width: 146px;
+        height: 146px;
+      }
+
+      .seal-inner span {
+        color: #f5f1e8;
+        font-size: 36px;
+        font-weight: 900;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="45"
+      data-width="1920"
+      data-height="1080"
+    >
+      <audio
+        id="bgm"
+        data-start="0"
+        data-duration="45"
+        data-track-index="20"
+        src="audio/yaotu-intro-45s-calm-tech.wav"
+        data-volume="0.86"
+      ></audio>
+
+      <div id="scene-1" class="scene">
+        <div class="grain"></div>
+        <div class="grid"></div>
+        <div class="soft-lines" data-layout-ignore></div>
+        <div class="orbit"></div>
+        <div class="signal-node node-a"></div>
+        <div class="signal-node node-b"></div>
+        <div class="signal-node node-c"></div>
+        <img class="mark" src="assets/project-mark.png" alt="药途寻迹标识" />
+        <div class="scene-content">
+          <div class="kicker">中药材全过程溯源管理系统</div>
+          <h1 class="title large">药途寻迹</h1>
+          <p class="subtitle">以一物一码连接种植、加工、质检、物流与消费核验，让每一批药材的来源、状态和责任节点形成可信数据链。</p>
+          <div class="meta-rail">
+            <span class="pill">微信小程序</span>
+            <span class="pill">Spring Boot</span>
+            <span class="pill">GS1-128</span>
+            <span class="pill">区块链哈希存证</span>
+            <span class="pill">上下文 AI 咨询</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="scene-2" class="scene">
+        <div class="grain"></div>
+        <div class="grid"></div>
+        <div class="scene-content pain-layout">
+          <div>
+            <div class="kicker">问题起点</div>
+            <h2 class="title">传统溯源断点太多</h2>
+            <p class="subtitle">纸质记录、事后补录、批次拆分和跨主体流转，让中药材质量责任难以闭环。</p>
+          </div>
+          <div class="pain-list">
+            <div class="pain-item">
+              <div class="pain-num">01</div>
+              <div><strong>记录不连续</strong><span>种植、加工、质检、物流数据分散，批次链路难以复原。</span></div>
+            </div>
+            <div class="pain-item">
+              <div class="pain-num">02</div>
+              <div><strong>核验成本高</strong><span>消费者只能看到静态信息，监管方缺少可追溯证据。</span></div>
+            </div>
+            <div class="pain-item">
+              <div class="pain-num">03</div>
+              <div><strong>质量卡点弱</strong><span>质检、发运和库存变更没有强约束，容易出现数据漂移。</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="scene-3" class="scene">
+        <div class="grain"></div>
+        <div class="soft-lines" data-layout-ignore></div>
+        <div class="scene-content">
+          <div>
+            <div class="kicker">全流程链路</div>
+            <h2 class="title">从田间记录到终端扫码</h2>
+          </div>
+          <div class="flow">
+            <div class="flow-line"></div>
+            <section class="step">
+              <div class="step-dot"></div>
+              <h3>种植</h3>
+              <ul>
+                <li>扫码开工</li>
+                <li>人员身份校验</li>
+                <li>地点与时间快照</li>
+              </ul>
+            </section>
+            <section class="step">
+              <div class="step-dot"></div>
+              <h3>加工</h3>
+              <ul>
+                <li>批次流转</li>
+                <li>工艺记录</li>
+                <li>产出重量换算</li>
+              </ul>
+            </section>
+            <section class="step">
+              <div class="step-dot"></div>
+              <h3>质检</h3>
+              <ul>
+                <li>报告绑定</li>
+                <li>合格准入</li>
+                <li>异常批次拦截</li>
+              </ul>
+            </section>
+            <section class="step">
+              <div class="step-dot"></div>
+              <h3>物流</h3>
+              <ul>
+                <li>发运赋码</li>
+                <li>链路锁定</li>
+                <li>公众核验入口</li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <div id="scene-4" class="scene">
+        <div class="grain"></div>
+        <div class="grid"></div>
+        <div class="scene-content">
+          <div>
+            <div class="kicker">关键业务机制</div>
+            <h2 class="title">扫码不是入口，是状态机</h2>
+          </div>
+          <div class="workflow-grid">
+            <section class="work-card">
+              <div>
+                <h3>扫码开工</h3>
+                <p class="fine">作业人员在现场扫码，系统验证角色、批次状态和作业权限，再写入地点、时间和开工流水。</p>
+              </div>
+              <div class="state-strip">
+                <div class="state">CREATED</div>
+                <div class="arrow">→</div>
+                <div class="state">IN_PROGRESS</div>
+                <div class="arrow">→</div>
+                <div class="state">RECORDED</div>
+              </div>
+              <div class="micro-table">
+                <div class="micro-row"><b>身份</b><span>JWT + 角色权限</span></div>
+                <div class="micro-row"><b>现场</b><span>经纬度 + 服务器时间</span></div>
+                <div class="micro-row"><b>批次</b><span>前置状态校验</span></div>
+              </div>
+            </section>
+            <section class="work-card">
+              <div>
+                <h3>扫码发运</h3>
+                <p class="fine">发运前自动检查质检合格状态，生成 GS1-128 编码，并锁定已经进入流通环节的关键溯源数据。</p>
+              </div>
+              <div class="state-strip">
+                <div class="state">QA PASS</div>
+                <div class="arrow">→</div>
+                <div class="state">GS1 LOCK</div>
+                <div class="arrow">→</div>
+                <div class="state">SHIPPED</div>
+              </div>
+              <div class="micro-table">
+                <div class="micro-row"><b>准入</b><span>质检合格后允许发运</span></div>
+                <div class="micro-row"><b>编码</b><span>GTIN + Batch + 重量</span></div>
+                <div class="micro-row"><b>锁定</b><span>流通数据只读保真</span></div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <div id="scene-5" class="scene">
+        <div class="grain"></div>
+        <div class="soft-lines" data-layout-ignore></div>
+        <div class="scene-content arch">
+          <div>
+            <div class="kicker">系统架构</div>
+            <h2 class="title">移动端采集，后端编排，可信层核验</h2>
+            <p class="subtitle">微信小程序承接一线操作，Spring Boot 负责权限、批次、质检、物流与编码服务，关键摘要进入区块链存证。</p>
+          </div>
+          <div class="stack">
+            <div class="layer">微信小程序 <span>企业录入 / 消费查询</span></div>
+            <div class="layer">API 网关 <span>JWT / 权限 / 参数校验</span></div>
+            <div class="layer">业务服务 <span>批次 / 质检 / 物流 / 编码</span></div>
+            <div class="layer">数据层 <span>MySQL / Flyway / 审计记录</span></div>
+            <div class="layer">可信层 <span>EVM Hash Anchor / TxHash</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="scene-6" class="scene">
+        <div class="grain"></div>
+        <div class="grid"></div>
+        <div class="scene-content verify-grid">
+          <section class="verify-panel">
+            <div class="kicker">标准编码</div>
+            <h3>GS1-128 把批次变成工业语言</h3>
+            <div class="barcode"></div>
+            <p class="hash">(01)06912345678901(10)B-FARMER-20260209-KY(3102)005780</p>
+            <p class="fine">系统自动统一产品代码、批次号、生产日期和重量单位，降低人工贴标与跨环节流转误差。</p>
+          </section>
+          <section class="verify-panel">
+            <div class="kicker">哈希存证</div>
+            <h3>不上链明细，上链证据</h3>
+            <p class="hash">0xeafd103af27942a7 · 0x38c0f788d64d402f</p>
+            <div class="lock-diagram">
+              <div class="lock-row"><b>种植记录</b><div class="bar"></div><span>已采集</span></div>
+              <div class="lock-row"><b>质检报告</b><div class="bar"></div><span>已合格</span></div>
+              <div class="lock-row"><b>物流事件</b><div class="bar"></div><span>已锁定</span></div>
+              <div class="lock-row"><b>TxHash</b><div class="bar"></div><span>可核验</span></div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div id="scene-7" class="scene">
+        <div class="grain"></div>
+        <div class="soft-lines" data-layout-ignore></div>
+        <div class="scene-content users-grid">
+          <div>
+            <div class="kicker">多角色协同</div>
+            <h2 class="title">同一条链路，不同的操作界面</h2>
+            <div class="role-list">
+              <div class="role-card"><b>农户</b><span>扫码开工、上传农事记录、形成批次起点。</span></div>
+              <div class="role-card"><b>加工厂</b><span>接收批次、记录工艺、换算产出重量。</span></div>
+              <div class="role-card"><b>物流</b><span>绑定发运单、记录节点、维护流向信息。</span></div>
+              <div class="role-card"><b>监管方</b><span>审计全链路、核查质检和上链凭证。</span></div>
+            </div>
+          </div>
+          <div class="phone">
+            <div class="phone-top"><span>长白山人参</span><span>已核验</span></div>
+            <div class="trace-line">
+              <div class="trace-item">种植：吉林白山 · 2026-02-09</div>
+              <div class="trace-item">加工：净制切片 · 重量守恒</div>
+              <div class="trace-item">质检：合格报告已绑定</div>
+              <div class="trace-item">物流：发运赋码 · 可追踪</div>
+            </div>
+            <div class="ai-box">AI 解读：该批次已完成质检与发运锁定，可查看产地、批次编码和存证记录。</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="scene-8" class="scene">
+        <div class="grain"></div>
+        <div class="grid"></div>
+        <div class="orbit"></div>
+        <div class="scene-content final-grid">
+          <div>
+            <div class="kicker">面向中药材产业数字化转型</div>
+            <h2 class="title">一物一码，一链到底</h2>
+            <p class="subtitle">药途寻迹把业务流程、质量控制和可信核验放进同一套系统，让企业可操作、监管可追溯、消费者可理解。</p>
+            <div class="stat-row">
+              <div class="stat"><b>全流程</b><span>种植、加工、质检、物流连续记录</span></div>
+              <div class="stat"><b>强卡点</b><span>质检准入、GS1 锁定、状态机约束</span></div>
+              <div class="stat"><b>可核验</b><span>批次编码、哈希存证、公众扫码展示</span></div>
+            </div>
+          </div>
+          <div class="seal">
+            <div class="seal-inner">
+              <img src="assets/project-mark-final.png" alt="药途寻迹标识" />
+              <span>药途寻迹</span>
+              <p class="fine">可信溯源平台</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      tl.set("#scene-2, #scene-3, #scene-4, #scene-5, #scene-6, #scene-7, #scene-8", { x: 2200, opacity: 0 }, 0)
+        .to(".grid", { opacity: 0.28, duration: 45, ease: "none" }, 0)
+        .to(".soft-lines", { scale: 1.06, opacity: 0.42, duration: 45, ease: "sine.inOut" }, 0)
+        .to("#scene-1 .orbit", { rotation: 28, duration: 5.2, ease: "none" }, 0.2)
+        .from("#scene-1 .kicker", { opacity: 0, y: 26, duration: 0.5, ease: "power3.out" }, 0.28)
+        .from("#scene-1 .title", { opacity: 0, y: 58, duration: 0.72, ease: "power3.out" }, 0.58)
+        .from("#scene-1 .subtitle", { opacity: 0, y: 34, duration: 0.58, ease: "power2.out" }, 1.04)
+        .from("#scene-1 .pill", { opacity: 0, y: 24, duration: 0.42, stagger: 0.08, ease: "power2.out" }, 1.58)
+        .from("#scene-1 .mark", { opacity: 0, scale: 0.82, duration: 0.62, ease: "back.out(1.5)" }, 0.72)
+        .from("#scene-1 .signal-node", { opacity: 0, scale: 0.2, duration: 0.36, stagger: 0.12, ease: "back.out(1.8)" }, 1.5)
+        .to("#scene-1", { opacity: 0, x: -2200, duration: 0.44, ease: "power2.in" }, 5.05);
+
+      tl.set("#scene-2", { opacity: 1, x: 0 }, 5.25)
+        .from("#scene-2 .kicker", { opacity: 0, y: 26, duration: 0.42, ease: "power3.out" }, 5.42)
+        .from("#scene-2 .title", { opacity: 0, y: 46, duration: 0.58, ease: "power3.out" }, 5.72)
+        .from("#scene-2 .subtitle", { opacity: 0, y: 28, duration: 0.44, ease: "power2.out" }, 6.08)
+        .from("#scene-2 .pain-item", { opacity: 0, x: 62, duration: 0.52, stagger: 0.16, ease: "power3.out" }, 6.2)
+        .to("#scene-2 .pain-item", { x: -10, duration: 0.5, stagger: 0.08, ease: "power1.inOut" }, 10.28)
+        .to("#scene-2", { opacity: 0, x: -2200, duration: 0.42, ease: "power2.in" }, 10.65);
+
+      tl.set("#scene-3", { opacity: 1, x: 0 }, 10.9)
+        .from("#scene-3 .kicker", { opacity: 0, y: 24, duration: 0.4, ease: "power3.out" }, 11.08)
+        .from("#scene-3 .title", { opacity: 0, y: 42, duration: 0.54, ease: "power3.out" }, 11.34)
+        .from("#scene-3 .flow-line", { opacity: 0, scaleX: 0, transformOrigin: "left center", duration: 0.9, ease: "power3.out" }, 11.92)
+        .from("#scene-3 .step", { opacity: 0, y: 58, duration: 0.56, stagger: 0.15, ease: "power3.out" }, 11.98)
+        .from("#scene-3 .step-dot", { scale: 0.2, duration: 0.38, stagger: 0.15, ease: "back.out(1.8)" }, 12.2)
+        .to("#scene-3 .step", { y: -14, duration: 0.46, stagger: 0.06, ease: "power1.inOut" }, 16.2)
+        .to("#scene-3", { opacity: 0, x: -2200, duration: 0.42, ease: "power2.in" }, 16.55);
+
+      tl.set("#scene-4", { opacity: 1, x: 0 }, 16.85)
+        .from("#scene-4 .kicker", { opacity: 0, y: 24, duration: 0.4, ease: "power3.out" }, 17.02)
+        .from("#scene-4 .title", { opacity: 0, y: 42, duration: 0.54, ease: "power3.out" }, 17.28)
+        .from("#scene-4 .work-card", { opacity: 0, y: 54, duration: 0.58, stagger: 0.16, ease: "power3.out" }, 17.86)
+        .from("#scene-4 .state", { opacity: 0, scale: 0.88, duration: 0.34, stagger: 0.06, ease: "back.out(1.5)" }, 18.5)
+        .from("#scene-4 .micro-row", { opacity: 0, x: -22, duration: 0.28, stagger: 0.05, ease: "power2.out" }, 19.04)
+        .to("#scene-4 .work-card", { y: -16, duration: 0.5, stagger: 0.1, ease: "power1.inOut" }, 22.1)
+        .to("#scene-4", { opacity: 0, x: -2200, duration: 0.42, ease: "power2.in" }, 22.45);
+
+      tl.set("#scene-5", { opacity: 1, x: 0 }, 22.75)
+        .from("#scene-5 .kicker", { opacity: 0, y: 24, duration: 0.4, ease: "power3.out" }, 22.92)
+        .from("#scene-5 .title", { opacity: 0, y: 42, duration: 0.56, ease: "power3.out" }, 23.18)
+        .from("#scene-5 .subtitle", { opacity: 0, y: 28, duration: 0.44, ease: "power2.out" }, 23.6)
+        .from("#scene-5 .layer", { opacity: 0, x: 70, duration: 0.46, stagger: 0.12, ease: "power3.out" }, 23.92)
+        .to("#scene-5 .layer", { x: -10, duration: 0.42, stagger: 0.05, ease: "power1.inOut" }, 28.05)
+        .to("#scene-5", { opacity: 0, x: -2200, duration: 0.42, ease: "power2.in" }, 28.38);
+
+      tl.set("#scene-6", { opacity: 1, x: 0 }, 28.7)
+        .from("#scene-6 .verify-panel", { opacity: 0, y: 62, duration: 0.58, stagger: 0.16, ease: "power3.out" }, 28.92)
+        .from("#scene-6 .barcode", { opacity: 0, scaleX: 0.72, duration: 0.62, ease: "power3.out" }, 29.46)
+        .from("#scene-6 .hash", { opacity: 0, y: 22, duration: 0.4, stagger: 0.14, ease: "power2.out" }, 29.9)
+        .from("#scene-6 .lock-row", { opacity: 0, x: 34, duration: 0.34, stagger: 0.1, ease: "power2.out" }, 30.36)
+        .to("#scene-6 .bar", { scaleX: 0.86, transformOrigin: "left center", duration: 1.2, ease: "sine.inOut" }, 32.1)
+        .to("#scene-6", { opacity: 0, x: -2200, duration: 0.42, ease: "power2.in" }, 34.25);
+
+      tl.set("#scene-7", { opacity: 1, x: 0 }, 34.55)
+        .from("#scene-7 .kicker", { opacity: 0, y: 24, duration: 0.4, ease: "power3.out" }, 34.74)
+        .from("#scene-7 .title", { opacity: 0, y: 42, duration: 0.54, ease: "power3.out" }, 35.0)
+        .from("#scene-7 .role-card", { opacity: 0, y: 36, duration: 0.42, stagger: 0.08, ease: "power3.out" }, 35.55)
+        .from("#scene-7 .phone", { opacity: 0, x: 86, rotation: 2, duration: 0.72, ease: "power3.out" }, 35.45)
+        .from("#scene-7 .trace-item", { opacity: 0, x: 26, duration: 0.3, stagger: 0.08, ease: "power2.out" }, 36.16)
+        .from("#scene-7 .ai-box", { opacity: 0, y: 22, duration: 0.44, ease: "power2.out" }, 36.9)
+        .to("#scene-7 .phone", { y: -16, duration: 1.2, ease: "power1.inOut" }, 38.8)
+        .to("#scene-7", { opacity: 0, x: -2200, duration: 0.42, ease: "power2.in" }, 40.18);
+
+      tl.set("#scene-8", { opacity: 1, x: 0 }, 40.72)
+        .to("#scene-8 .orbit", { rotation: 18, duration: 4.0, ease: "none" }, 40.74)
+        .from("#scene-8 .kicker", { opacity: 0, y: 24, duration: 0.4, ease: "power3.out" }, 40.9)
+        .from("#scene-8 .title", { opacity: 0, y: 48, duration: 0.58, ease: "power3.out" }, 41.17)
+        .from("#scene-8 .subtitle", { opacity: 0, y: 30, duration: 0.46, ease: "power2.out" }, 41.56)
+        .from("#scene-8 .stat", { y: 34, duration: 0.42, stagger: 0.1, ease: "power3.out" }, 41.94)
+        .from("#scene-8 .seal", { opacity: 0, scale: 0.74, duration: 0.72, ease: "back.out(1.4)" }, 41.42)
+        .to("#scene-8 .seal", { rotation: 4, duration: 2.25, ease: "power1.inOut" }, 42.35);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

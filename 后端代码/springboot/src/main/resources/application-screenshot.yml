@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:dachuang;DB_CLOSE_DELAY=-1;MODE=MySQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    database-platform: org.hibernate.dialect.H2Dialect
+  flyway:
+    enabled: false
+  sql:
+    init:
+      mode: never
+
+jwt:
+  secret: this-is-a-long-enough-secret-for-screenshot-capturing-purposes-32chars
+  expiration: 86400000
+
+wx:
+  configs:
+    miniprogram5:
+      appid: mock-appid
+      secret: mock-secret
+    consumer:
+      appid: mock-appid
+      secret: mock-secret
+
+app:
+  blockchain:
+    mode: MOCK
