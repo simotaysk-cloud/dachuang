@@ -86,6 +86,19 @@
   background: #e5ece4;
 }
 
+.avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-placeholder-text {
+  font-size: 42rpx;
+  line-height: 1;
+  font-weight: 700;
+  color: #35523e;
+}
+
 .profile-copy {
   min-width: 0;
 }

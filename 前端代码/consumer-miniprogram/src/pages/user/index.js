@@ -8,6 +8,15 @@ Page({
     },
     reminderText: '未设置',
     hasUserInfo: false,
+    profileLabel: '未登录',
+    profileName: '未登录保护用户',
+    profileLevel: '登录后查看数字凭证与积分权益',
+    syncStateText: '待登录',
+    displayStats: [
+      { label: '本草积分', value: 0, note: '权益成长值' },
+      { label: '数字凭证', value: 0, note: '可信存证' },
+      { label: '助农订单', value: 0, note: '演示记录' }
+    ],
     certs: [
       {
         id: 'C001',
@@ -17,10 +26,10 @@ Page({
       }
     ],
     serviceMenus: [
-      { action: 'trace', icon: '⌁', tone: 'trace', title: '扫描溯源码', desc: '直接进入批次详情与链上节点记录', meta: '立即前往' },
-      { action: 'reminder', icon: '⏰', tone: 'reminder', title: '用药提醒', desc: '设置演示提醒时间并同步到当前账号', meta: '' },
-      { action: 'service', icon: '问', tone: 'service', title: '专属药师问答', desc: '跳转至智问页面查看建议与搭配推荐', meta: '进入智问' },
-      { action: 'about', icon: 'i', tone: 'about', title: '关于平台', desc: '查看比赛版本说明与技术背景', meta: '查看说明' }
+      { action: 'trace', icon: '⌁', tone: 'trace', title: '扫描溯源码', desc: '直接进入批次详情与链上节点记录', meta: '立即前往', metaDisplay: '立即前往' },
+      { action: 'reminder', icon: '⏰', tone: 'reminder', title: '用药提醒', desc: '设置演示提醒时间并同步到当前账号', meta: '', metaDisplay: '未设置' },
+      { action: 'service', icon: '问', tone: 'service', title: '专属药师问答', desc: '跳转至智问页面查看建议与搭配推荐', meta: '进入智问', metaDisplay: '进入智问' },
+      { action: 'about', icon: 'i', tone: 'about', title: '关于平台', desc: '查看比赛版本说明与技术背景', meta: '查看说明', metaDisplay: '查看说明' }
     ]
   },
 
@@ -30,11 +39,36 @@ Page({
     }
     const app = getApp();
     if (app.globalData.userInfo) {
-      this.setData({
-        userInfo: app.globalData.userInfo,
-        hasUserInfo: true
-      });
+      this.applyProfileState(app.globalData.userInfo, true);
+    } else {
+      this.applyProfileState(this.data.userInfo, false);
     }
+    this.syncMenuMeta();
+  },
+
+  applyProfileState(userInfo, hasUserInfo) {
+    const certCount = hasUserInfo ? this.data.certs.length : 0;
+    this.setData({
+      userInfo,
+      hasUserInfo,
+      profileLabel: hasUserInfo ? '已实名' : '未登录',
+      profileName: hasUserInfo ? userInfo.nickName : '未登录保护用户',
+      profileLevel: hasUserInfo ? userInfo.level : '登录后查看数字凭证与积分权益',
+      syncStateText: hasUserInfo ? '已同步' : '待登录',
+      displayStats: [
+        { label: '本草积分', value: hasUserInfo ? userInfo.points : 0, note: '权益成长值' },
+        { label: '数字凭证', value: certCount, note: '可信存证' },
+        { label: '助农订单', value: hasUserInfo ? 2 : 0, note: '演示记录' }
+      ]
+    });
+  },
+
+  syncMenuMeta() {
+    const serviceMenus = this.data.serviceMenus.map((item) => ({
+      ...item,
+      metaDisplay: item.action === 'reminder' ? this.data.reminderText : item.meta
+    }));
+    this.setData({ serviceMenus });
   },
 
   getUserProfile() {
@@ -54,10 +88,7 @@ Page({
       wx.setStorageSync('userInfo', mockUser);
       wx.setStorageSync('authToken', 'mock_vip_token_for_demo');
 
-      this.setData({
-        userInfo: mockUser,
-        hasUserInfo: true
-      });
+      this.applyProfileState(mockUser, true);
       wx.showToast({ title: '授权成功', icon: 'success' });
     }, 600);
   },
@@ -96,6 +127,7 @@ Page({
       success: (res) => {
         const times = ['08:00', '12:30', '22:00'];
         this.setData({ reminderText: `已设 ${times[res.tapIndex]}` });
+        this.syncMenuMeta();
         wx.showToast({ title: '已开启微信强提醒', icon: 'success' });
       }
     });
